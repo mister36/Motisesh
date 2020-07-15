@@ -6,7 +6,9 @@ import {
   StyleSheet,
   Button,
   Image,
+  ActivityIndicator,
 } from 'react-native';
+
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   heightPercentageToDP as hp,
@@ -17,51 +19,128 @@ import {
   requestReadFilePermission,
 } from '../utils/permissions';
 import LinearGradient from 'react-native-linear-gradient';
+import {PieChart} from 'react-native-chart-kit';
 
 // Context
 import SessionContext from '../context/SessionContext';
-// Components
 // Styles
 import {ButtonStyle, CardStyle, HeaderStyle} from '../styles';
+// Icons
+import Icon from 'react-native-vector-icons/AntDesign';
+// Utils
+import getStats from '../utils/getStats';
 
 const SessionScreen = () => {
   requestDownloadPermission(requestReadFilePermission);
 
-  const {state, makeConfigVisible} = React.useContext(SessionContext);
-  const [cheerLeft, setCheerLeft] = React.useState(0);
+  const {makeConfigVisible} = React.useContext(SessionContext);
+  const [stats, setStats] = React.useState({});
+  const [pieData, setPieData] = React.useState({});
+
+  const chartConfig = {
+    backgroundGradientFrom: '#1E2923',
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientTo: '#08130D',
+    backgroundGradientToOpacity: 0.5,
+    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+    strokeWidth: 2, // optional, default 3
+    barPercentage: 0.5,
+    useShadowColorFromDataset: false, // optional
+  };
 
   React.useEffect(() => {
     const sessionsLeft = async () => {
       try {
-        setCheerLeft(await AsyncStorage.getItem('daily_sessions_remaining'));
+        const info = await getStats();
+        setStats(info);
+        setPieData([
+          {
+            name: 'Chores',
+            number: info.categoryCount.chores,
+            color: '#DC8E33',
+            legendFontColor: '#DC8E33',
+            legendFontSize: 15,
+          },
+          {
+            name: 'Workout',
+            number: info.categoryCount.workout,
+            color: '#D33232',
+            legendFontColor: '#D33232',
+            legendFontSize: 15,
+          },
+          {
+            name: 'General',
+            number: info.categoryCount.general,
+            color: '#3B66D3',
+            legendFontColor: '#3B66D3',
+            legendFontSize: 15,
+          },
+          {
+            name: 'Study',
+            number: info.categoryCount.study,
+            color: '#2A8FAD',
+            legendFontColor: '#2A8FAD',
+            legendFontSize: 15,
+          },
+          {
+            name: 'Work',
+            number: info.categoryCount.work,
+            color: 'purple',
+            legendFontColor: 'purple',
+            legendFontSize: 15,
+          },
+        ]);
+        console.log(stats);
       } catch (error) {
-        setCheerLeft(0);
+        setStats(-1);
       }
     };
     sessionsLeft();
   }, []);
 
-  return (
+  return JSON.stringify(stats) !== '{}' && JSON.stringify(pieData) !== '{}' ? (
     <LinearGradient
-      colors={['#5D1A1A', '#D3503B']}
+      colors={['#FFFFFF', '#FFFFFF']}
+      // colors={['#5D1A1A', '#D3503B']}
       start={{x: 1, y: 0}}
       end={{x: 0, y: 1}}
       style={styles.container}>
       <View style={styles.topView}>
         <Text style={styles.header}>Cheer Session</Text>
-        <Image
+        {/* <Image
           source={require('../assets/images/logo.png')}
           style={styles.logo}
-        />
+        /> */}
       </View>
 
-      <Text style={styles.randomText}>Ready to get excited? I am</Text>
-
-      {/* <View style={styles.cardContainer}>
-        <View style={styles.card}>
-          <Text style={styles.cardText}>{cheerLeft} sessions remaining</Text>
+      <View style={styles.sessionCompleted}>
+        <View style={styles.row}>
+          <Icon name="arrowup" style={styles.arrow} />
+          <Text style={styles.sessionNum}>{stats.sessionsToday}</Text>
+          <Text style={styles.sessionComText}>
+            Sessions completed{'\n'}today
+          </Text>
         </View>
-      </View> */}
+
+        <View style={styles.row}>
+          <Icon name="arrowup" style={styles.arrow} />
+          <Text style={styles.sessionNum}>{stats.sessionsOverall}</Text>
+          <Text style={styles.sessionComText}>
+            Sessions completed{'\n'}all time
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.pieContainer}>
+        <PieChart
+          data={pieData}
+          height={hp(30)}
+          width={wp(90)}
+          chartConfig={chartConfig}
+          accessor="number"
+          paddingLeft={wp(5)}
+        />
+      </View>
 
       <TouchableOpacity
         style={styles.continueButtonStyle}
@@ -69,6 +148,8 @@ const SessionScreen = () => {
         <Text style={styles.continueText}>Continue</Text>
       </TouchableOpacity>
     </LinearGradient>
+  ) : (
+    <ActivityIndicator color="blue" style={styles.spinner} />
   );
 };
 
@@ -78,8 +159,8 @@ const styles = StyleSheet.create({
   },
   header: {
     ...HeaderStyle.text,
+    ...HeaderStyle.color,
     alignSelf: 'center',
-    color: 'white',
     marginTop: hp(1),
   },
   logo: {
@@ -120,10 +201,43 @@ const styles = StyleSheet.create({
     color: 'black',
     marginLeft: wp(1),
   },
-  randomText: {
-    fontFamily: 'Merriweather-Regular',
-    color: 'white',
-    fontSize: hp(2.5),
+  arrow: {
+    color: '#0A3641',
+    fontSize: hp(7),
+    textAlignVertical: 'center',
+  },
+  sessionCompleted: {
+    ...CardStyle.mainStyle,
+    marginTop: hp(2),
+    borderRadius: 4,
+    width: wp(95),
+    alignSelf: 'center',
+    padding: hp(1),
+  },
+  sessionNum: {
+    fontFamily: 'Lato-Bold',
+    fontSize: hp(5),
+    color: '#0A3641',
+    textAlignVertical: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  sessionComText: {
+    fontFamily: 'Lato-Regular',
+    fontSize: hp(2.8),
+    marginLeft: wp(10),
+    textAlignVertical: 'center',
+  },
+  pieContainer: {
+    ...CardStyle.mainStyle,
+    width: wp(90),
+    alignSelf: 'center',
+    marginTop: hp(5),
+  },
+  spinner: {
+    marginTop: hp(50),
+    transform: [{scaleX: 3}, {scaleY: 3}],
   },
 });
 

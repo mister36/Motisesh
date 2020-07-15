@@ -18,7 +18,9 @@ import quotesObj from './quotes.json';
 export default () => {
   const {quotes} = quotesObj;
 
-  const randomQuote = quotes[Math.floor(Math.random() * 40)];
+  const randomNum = Math.floor(Math.random() * 40);
+  console.log('random number', randomNum);
+  const randomQuote = quotes[randomNum];
   const author = randomQuote.author;
 
   const authLower = author.toLowerCase().replace(/\s+/g, ''); //turns Andy Warhol => andywarhol

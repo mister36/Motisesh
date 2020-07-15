@@ -12,9 +12,11 @@ import {SessionProvider} from './src/context/SessionContext';
 // AsyncStorage
 import AsyncStorage from '@react-native-community/async-storage';
 
+// Date and time
+import date from 'date-and-time';
+
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
-import StatsScreen from './src/screens/StatsScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import AskNameScreen from './src/screens/AskNameScreen';
 import SessionScreen from './src/screens/SessionScreen';
@@ -24,7 +26,6 @@ import SplashScreen from 'react-native-splash-screen';
 
 // Icons
 import Entypo from 'react-native-vector-icons/Entypo';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 // Navigators
@@ -77,21 +78,6 @@ const BottomTabNav = () => {
           },
         }}
       />
-      <MainTabs.Screen
-        options={{
-          tabBarIcon: ({focused}) => {
-            return (
-              <Ionicons
-                name="ios-stats"
-                size={28}
-                color={focused ? '#0E4958' : 'black'}
-              />
-            );
-          },
-        }}
-        name="Stats"
-        component={StatsScreen}
-      />
     </MainTabs.Navigator>
   );
 };
@@ -111,25 +97,39 @@ const App = () => {
 
   // checks for name in storage to know whether to render Home or not
   React.useEffect(() => {
-    const checkForName = async () => {
+    const checkForName = async cal => {
       try {
         const storedName = await AsyncStorage.getItem('name');
         if (storedName) {
           setName(storedName);
+          cal();
         } else {
-          await AsyncStorage.setItem('daily_sessions_remaining', '5');
+          const today = date.format(new Date(), 'MMM DD YYYY');
+          const initial = {
+            [today]: [{category: 'workout'}, {category: 'general'}],
+            'Jun 20 2020': [{category: 'workout'}, {category: 'chores'}],
+          }; // allows variable to be used in object
+
+          await AsyncStorage.setItem('sessionInfo', JSON.stringify(initial));
+          cal();
         }
       } catch (error) {
         console.log(error);
       }
     };
-    checkForName();
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 700);
+    checkForName(SplashScreen.hide);
   }, []);
 
-  return state.name ? (
+  const isName = async () => {
+    try {
+      const value = await AsyncStorage.getItem('name');
+      value != null ? true : false;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return isName() ? (
     <NavigationContainer>
       <DrawerNav />
     </NavigationContainer>
