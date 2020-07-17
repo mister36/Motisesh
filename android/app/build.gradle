@@ -190,6 +190,10 @@ dependencies {
 
     implementation "com.android.support:multidex:1.0.3"
 
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+
+    implementation project(path: ':react-native-interactable')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }
