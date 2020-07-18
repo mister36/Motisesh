@@ -18,8 +18,7 @@ import quotesObj from './quotes.json';
 export default () => {
   const {quotes} = quotesObj;
 
-  const randomNum = Math.floor(Math.random() * 40);
-  console.log('random number', randomNum);
+  const randomNum = Math.floor(Math.random() * 39);
   const randomQuote = quotes[randomNum];
   const author = randomQuote.author;
 

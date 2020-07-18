@@ -10,6 +10,8 @@ target 'TopCheerProj' do
 
   pod 'react-native-video', :path => '../node_modules/react-native-video'
 
+  pod 'Interactable', :path => '../node_modules/react-native-interactable'
+
   target 'TopCheerProjTests' do
     inherit! :complete
     # Pods for testing

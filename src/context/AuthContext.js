@@ -19,7 +19,7 @@ const authReducer = (state, action) => {
 };
 
 export const AuthProvider = ({children}) => {
-  const [state, dispatch] = React.useReducer(authReducer, {name: ''});
+  const [state, dispatch] = React.useReducer(authReducer, {name: null});
 
   const setName = async (nameGiven, isNew) => {
     try {

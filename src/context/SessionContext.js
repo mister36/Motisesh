@@ -3,6 +3,8 @@ import Video from 'react-native-video';
 import audioSocket from '../api/socketApi';
 import RNFetchBlob from 'rn-fetch-blob';
 import PlayMusic from '../../playMusic';
+import Wakeful from 'react-native-wakeful';
+import VIForegroundService from '@voximplant/react-native-foreground-service';
 
 const SessionContext = React.createContext();
 
@@ -61,9 +63,12 @@ export const SessionProvider = ({children}) => {
     dispatch({type: `session_playing_${bool}`});
   };
 
+  let wakeful = new Wakeful();
+
   return (
     <>
-      {state.sessionPlaying ? <PlayMusic /> : null}
+      {state.sessionPlaying ? <PlayMusic /> : wakeful.release()}
+      {/* {!state.sessionPlaying ? console.log('true') : console.log('false')} */}
       <SessionContext.Provider
         value={{state, makeConfigVisible, voicePlaying, sessionPlaying}}>
         {children}

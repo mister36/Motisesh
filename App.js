@@ -15,6 +15,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 // Date and time
 import date from 'date-and-time';
 
+// App setup (saving videos)
+import RNFetchBlob from 'rn-fetch-blob';
+import {saveSessionVideo} from './setup';
+
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
@@ -94,15 +98,16 @@ const DrawerNav = () => {
 // App
 const App = () => {
   const {state, setName} = React.useContext(AuthContext);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   // checks for name in storage to know whether to render Home or not
   React.useEffect(() => {
-    const checkForName = async cal => {
+    const checkForName = async () => {
       try {
         const storedName = await AsyncStorage.getItem('name');
         if (storedName) {
           setName(storedName);
-          cal();
+          setIsLoading(false);
         } else {
           const today = date.format(new Date(), 'MMM DD YYYY');
           const initial = {
@@ -111,31 +116,44 @@ const App = () => {
           }; // allows variable to be used in object
 
           await AsyncStorage.setItem('sessionInfo', JSON.stringify(initial));
-          cal();
+
+          // Downloads video for Session Screen
+          RNFetchBlob.config({
+            fileCache: true,
+            appendExt: 'mp4',
+            path: `${RNFetchBlob.fs.dirs.DocumentDir}/hype.mp4`,
+          })
+            .fetch('GET', 'http://192.168.1.73:4000/api/v1/video')
+            .then(res => {
+              console.log(`File saved to ${res.path()}`);
+            })
+            .catch(err => console.error(err));
+
+          setIsLoading(false);
         }
       } catch (error) {
-        console.log(error);
+        console.log('check name error: ', error);
       }
     };
-    checkForName(SplashScreen.hide);
+    checkForName();
   }, []);
 
-  const isName = async () => {
+  if (state.name && !isLoading) {
     try {
-      const value = await AsyncStorage.getItem('name');
-      value != null ? true : false;
-    } catch (error) {
-      console.error(error);
+      return (
+        <NavigationContainer>
+          <DrawerNav />
+        </NavigationContainer>
+      );
+    } finally {
+      SplashScreen.hide();
     }
-  };
-
-  return isName() ? (
-    <NavigationContainer>
-      <DrawerNav />
-    </NavigationContainer>
-  ) : (
-    <AskNameScreen />
-  );
+  } else if (!isLoading) {
+    SplashScreen.hide();
+    return <AskNameScreen />;
+  } else {
+    return null;
+  }
 };
 
 export default () => {

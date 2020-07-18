@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image, Button} from 'react-native';
+import Video from 'react-native-video';
 
 // Components
 import QuoteCard from '../components/QuoteCard';
@@ -8,20 +9,30 @@ import BackgroundImg from '../components/BackgroundImg';
 import NewSession from '../components/NewSession';
 
 import AuthContext from '../context/AuthContext';
+import SessionContext from '../context/SessionContext';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import greeting from '../utils/greeting';
 import generateQuote from '../utils/generateQuote';
+import VIForegroundService from '@voximplant/react-native-foreground-service';
+import MusicControl from 'react-native-music-control';
+
+// File access
+import RNFetchBlob from 'rn-fetch-blob';
 
 const HomeScreen = ({navigation}) => {
   const {state} = React.useContext(AuthContext);
+  const {state: sessState, sessionPlaying} = React.useContext(SessionContext);
+
   const [quoteInfo, setQuoteInfo] = React.useState([]);
 
   React.useEffect(() => {
     setQuoteInfo(generateQuote());
   }, []);
+
+  // console.log(new Wakeful.isHeld());
 
   return (
     <View>
@@ -36,6 +47,20 @@ const HomeScreen = ({navigation}) => {
         />
       ) : null}
       <NewSession navigation={navigation} />
+      <Button
+        title="Press"
+        onPress={() => {
+          if (sessState.sessionPlaying) {
+            sessionPlaying(false);
+            MusicControl.stopControl();
+            // VIForegroundService.stopService().then(() =>
+            //   console.log('stopped'),
+            // );
+          } else {
+            sessionPlaying(true);
+          }
+        }}
+      />
     </View>
   );
 };
