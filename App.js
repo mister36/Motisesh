@@ -1,9 +1,10 @@
-import 'react-native-gesture-handler';
 import * as React from 'react';
+import {View} from 'react-native';
 // Importing Navigation
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import {createStackNavigator} from '@react-navigation/stack';
 
 // Providers and Context
 import AuthContext, {AuthProvider} from './src/context/AuthContext';
@@ -17,24 +18,34 @@ import date from 'date-and-time';
 
 // App setup (saving videos)
 import RNFetchBlob from 'rn-fetch-blob';
-import {saveSessionVideo} from './setup';
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import StatsScreen from './src/screens/StatsScreen';
 import AskNameScreen from './src/screens/AskNameScreen';
 import SessionScreen from './src/screens/SessionScreen';
+import SessionPlayingScreen from './src/screens/SessionPlayingScreen';
+
+// Responsiveness
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 // Splash Screen
 import SplashScreen from 'react-native-splash-screen';
 
 // Icons
 import Entypo from 'react-native-vector-icons/Entypo';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // Navigators
 const MainTabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
+const SessionStack = createStackNavigator();
 
 // Building App Navigation
 const BottomTabNav = () => {
@@ -42,11 +53,7 @@ const BottomTabNav = () => {
     <MainTabs.Navigator
       tabBarOptions={{
         style: {
-          backgroundColor: 'transparent',
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
+          height: hp(7),
           elevation: 0,
           borderTopWidth: 0,
         },
@@ -56,7 +63,7 @@ const BottomTabNav = () => {
         options={{
           tabBarIcon: ({focused}) => {
             return (
-              <Entypo
+              <SimpleLineIcons
                 name="home"
                 size={28}
                 color={focused ? '#0E4958' : 'black'}
@@ -73,9 +80,24 @@ const BottomTabNav = () => {
         options={{
           tabBarIcon: ({focused}) => {
             return (
-              <FontAwesome
+              <EvilIcons
                 name="play"
-                size={28}
+                size={48}
+                color={focused ? '#0E4958' : 'black'}
+              />
+            );
+          },
+        }}
+      />
+      <MainTabs.Screen
+        name="Stats"
+        component={StatsScreen}
+        options={{
+          tabBarIcon: ({focused}) => {
+            return (
+              <SimpleLineIcons
+                name="chart"
+                size={30}
                 color={focused ? '#0E4958' : 'black'}
               />
             );
@@ -86,10 +108,38 @@ const BottomTabNav = () => {
   );
 };
 
+// Needed for animation between tabs and music player
+const MusicStackNav = () => {
+  return (
+    <SessionStack.Navigator
+      initialRouteName="Main Tabs"
+      screenOptions={{mode: 'modal', headerShown: false}}>
+      <SessionStack.Screen name="Main Tabs" component={BottomTabNav} />
+      <SessionStack.Screen
+        name="Music"
+        component={SessionPlayingScreen}
+        options={{
+          gestureEnabled: true,
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: {
+              animation: 'timing',
+              config: {
+                duration: 200,
+              },
+            },
+            close: {animation: 'timing', config: {duration: 200}},
+          },
+        }}
+      />
+    </SessionStack.Navigator>
+  );
+};
+
 const DrawerNav = () => {
   return (
     <Drawer.Navigator>
-      <Drawer.Screen name="Home" component={BottomTabNav} />
+      <Drawer.Screen name="Home" component={MusicStackNav} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />
     </Drawer.Navigator>
   );

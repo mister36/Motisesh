@@ -12,7 +12,7 @@ import {
 import SessionContext from '../context/SessionContext';
 
 const NewSession = ({navigation}) => {
-  const {makeConfigVisible} = React.useContext(SessionContext);
+  // const {makeConfigVisible} = React.useContext(SessionContext);
   return (
     <View style={styles.container}>
       <Text style={styles.header}>New cheer session waiting!</Text>
@@ -34,7 +34,7 @@ const NewSession = ({navigation}) => {
           <TouchableOpacity
             activeOpacity={0.7}
             style={styles.button}
-            onPress={() => makeConfigVisible(true)}>
+            onPress={() => console.log('new pressed')}>
             <Text style={styles.buttonText}>Continue</Text>
           </TouchableOpacity>
         </View>

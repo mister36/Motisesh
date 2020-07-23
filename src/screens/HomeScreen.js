@@ -1,22 +1,30 @@
 import * as React from 'react';
 import {View, Text, StyleSheet, Image, Button} from 'react-native';
-import Video from 'react-native-video';
 
 // Components
+import BottomMusic from '../components/BottomMusic';
+import SessionPlaying from '../components/SessionPlaying';
 import QuoteCard from '../components/QuoteCard';
 import Header from '../components/Header';
 import BackgroundImg from '../components/BackgroundImg';
 import NewSession from '../components/NewSession';
 
+// Context
 import AuthContext from '../context/AuthContext';
 import SessionContext from '../context/SessionContext';
+
+// Motion
+
+// Styling
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+
+// Utils
 import greeting from '../utils/greeting';
 import generateQuote from '../utils/generateQuote';
-import VIForegroundService from '@voximplant/react-native-foreground-service';
+
 import MusicControl from 'react-native-music-control';
 
 // File access
@@ -32,10 +40,8 @@ const HomeScreen = ({navigation}) => {
     setQuoteInfo(generateQuote());
   }, []);
 
-  // console.log(new Wakeful.isHeld());
-
   return (
-    <View>
+    <View style={styles.container}>
       <BackgroundImg />
       <Header navigation={navigation} />
       <Text style={styles.mainHeader}>{greeting(state.name)}</Text>
@@ -47,25 +53,30 @@ const HomeScreen = ({navigation}) => {
         />
       ) : null}
       <NewSession navigation={navigation} />
-      <Button
+
+      {/* {!sessState.sessionPlaying ? (
+        <BottomMusic onPress={() => navigation.navigate('Music')} />
+      ) : null} */}
+
+      {/* <Button
         title="Press"
         onPress={() => {
           if (sessState.sessionPlaying) {
             sessionPlaying(false);
             MusicControl.stopControl();
-            // VIForegroundService.stopService().then(() =>
-            //   console.log('stopped'),
-            // );
           } else {
             sessionPlaying(true);
           }
         }}
-      />
+      /> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   mainHeader: {
     fontFamily: 'Lato-Bold',
     fontSize: hp(3),

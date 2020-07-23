@@ -45,14 +45,15 @@ const styles = StyleSheet.create({
     marginTop: hp(1),
   },
   quoteText: {
-    fontFamily: 'Merriweather-Italic',
-    fontSize: 15,
+    fontFamily: 'OpenSans-Italic',
+    // fontWeight: '700',
+    fontSize: wp(4.3),
   },
   author: {
-    fontFamily: 'Merriweather-Regular',
+    fontFamily: 'Lato-Regular',
     color: '#7F7F7F',
     textAlignVertical: 'center',
-    fontSize: 11,
+    fontSize: wp(3.5),
     marginRight: wp(2),
   },
 });

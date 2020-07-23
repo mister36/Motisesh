@@ -49,9 +49,9 @@ export const SessionProvider = ({children}) => {
   // !action functions
 
   // sets if config pop up is showing
-  const makeConfigVisible = bool => {
-    dispatch({type: `set_config_visible_${bool}`});
-  };
+  // const makeConfigVisible = bool => {
+  //   dispatch({type: `set_config_visible_${bool}`});
+  // };
 
   // sets if GTTS voice is playing
   const voicePlaying = bool => {
@@ -69,8 +69,7 @@ export const SessionProvider = ({children}) => {
     <>
       {state.sessionPlaying ? <PlayMusic /> : wakeful.release()}
       {/* {!state.sessionPlaying ? console.log('true') : console.log('false')} */}
-      <SessionContext.Provider
-        value={{state, makeConfigVisible, voicePlaying, sessionPlaying}}>
+      <SessionContext.Provider value={{state, voicePlaying, sessionPlaying}}>
         {children}
       </SessionContext.Provider>
     </>

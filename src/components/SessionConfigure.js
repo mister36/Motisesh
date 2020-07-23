@@ -14,30 +14,27 @@ import {CardStyle, ButtonStyle} from '../styles';
 import SessionContext from '../context/SessionContext';
 
 const SessionConfigure = ({navigation}) => {
-  const {state, makeConfigVisible, sessionPlaying} = React.useContext(
-    SessionContext,
-  );
+  const {state, sessionPlaying} = React.useContext(SessionContext);
   const [categoryState, setCategoryState] = React.useState('general');
   const [duration, setDuration] = React.useState(1);
   const [intensity, setIntensity] = React.useState(1);
 
   const options = [
-    {label: 'REGULAR', value: 'regular'},
-    {label: 'MEDIUM', value: 'medium'},
-    {label: 'INTENSE', value: 'intense'},
+    {label: 'CHEER', value: 'regular'},
+    {label: 'EXTRA CHEER', value: 'extra'},
   ];
 
   return (
     <Modal
       isVisible={state.configVisible}
-      onBackButtonPress={() => makeConfigVisible(false)}
+      onBackButtonPress={() => console.log('under construction')}
       useNativeDriver={true}
       hideModalContentWhileAnimating={true}
       style={styles.container}>
       <View style={styles.topView}>
         <TouchableOpacity
           style={styles.cancelButton}
-          onPress={() => makeConfigVisible(false)}>
+          onPress={() => console.log('under construction')}>
           <Text style={styles.cancelText}>cancel</Text>
         </TouchableOpacity>
       </View>
@@ -93,7 +90,7 @@ const SessionConfigure = ({navigation}) => {
         style={styles.beginButton}
         activeOpacity={0.7}
         onPress={() => {
-          makeConfigVisible(false);
+          console.log('under construction');
         }}>
         <Text style={styles.beginButtonText}>Begin</Text>
       </TouchableOpacity>
@@ -127,7 +124,7 @@ const styles = StyleSheet.create({
   },
   selectorText: {
     fontFamily: 'Lato-Bold',
-    fontSize: hp(2.2),
+    fontSize: hp(2.5),
   },
   descriptionBox: {
     marginTop: hp(3),

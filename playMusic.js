@@ -41,8 +41,8 @@ const PlayMusic = () => {
       playWhenInactive={true}
       onLoad={data => {
         MusicControl.setNowPlaying({
-          title: 'Yahyah',
-          artist: 'Kenwood',
+          title: 'I want Yahyah from kenwood. Freshman',
+          artist: 'this guy',
         });
 
         console.log('loadeed');

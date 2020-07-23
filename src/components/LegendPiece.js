@@ -10,7 +10,7 @@ const LegendPiece = ({text, percentage, color}) => {
   return (
     <View style={styles.container}>
       <View style={[styles.dot, {backgroundColor: color}]} />
-      <Text style={([styles.text], {color})}>{text}</Text>
+      <Text style={[styles.text, {color}]}>{text}</Text>
     </View>
   );
 };
@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: hp(0.5),
   },
   dot: {
     height: hp(1.8),
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
     marginRight: wp(2),
   },
   text: {
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'Lato-Bold',
   },
 });
 

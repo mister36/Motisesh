@@ -14,8 +14,9 @@ export const color = {
 };
 
 export const text = {
-  fontFamily: 'Lato-Black',
-  fontSize: hp(5),
+  fontFamily: 'OpenSans-ExtraBold',
+  fontSize: hp(4.5),
+  letterSpacing: -wp(0.4),
 };
 
 export const icon = {
