@@ -22,7 +22,9 @@ const AskNameScreen = ({navigation}) => {
   return (
     <View>
       <BackgroundImg />
-      <Text style={styles.header}>What is your first name?</Text>
+      <Text numberOfLines={2} style={styles.header}>
+        What is your first name?
+      </Text>
       <TextInput
         style={styles.input}
         value={nameGiven}

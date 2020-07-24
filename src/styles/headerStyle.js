@@ -14,7 +14,7 @@ export const color = {
 };
 
 export const text = {
-  fontFamily: 'OpenSans-ExtraBold',
+  fontFamily: 'NunitoSans-ExtraBold',
   fontSize: hp(4.5),
   letterSpacing: -wp(0.4),
 };

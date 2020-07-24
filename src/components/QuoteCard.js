@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     marginTop: hp(1),
   },
   quoteText: {
-    fontFamily: 'OpenSans-Italic',
+    fontFamily: 'NunitoSans-Italic',
     // fontWeight: '700',
     fontSize: wp(4.3),
   },
