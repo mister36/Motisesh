@@ -37,15 +37,13 @@ export default async () => {
   }
 };
 
-// export const decToMin = dec => {
-//   // decimal
-//   const num = dec.toString();
+export const decToMin = dec => {
+  // decimal
+  const num = dec.toString();
 
-//   const min = num.split('.')[0]; // minutes
-//   const afterDec = num.split('.')[1];
-//   const sec = Math.round(parseFloat(`0.${afterDec}`) * 60); // seconds
+  const min = num.split('.')[0]; // minutes
+  const afterDec = num.split('.')[1];
+  const sec = Math.round(parseFloat(`0.${afterDec}`) * 60); // seconds
 
-//   return `${min}m ${sec}s`;
-// };
-
-// console.log(decToMin(8.5));
+  return `${min}m ${sec}s`;
+};

@@ -34,7 +34,7 @@ const NewSession = ({navigation}) => {
           <TouchableOpacity
             activeOpacity={0.7}
             style={styles.button}
-            onPress={() => console.log('new pressed')}>
+            onPress={() => navigation.navigate('Session')}>
             <Text style={styles.buttonText}>Continue</Text>
           </TouchableOpacity>
         </View>

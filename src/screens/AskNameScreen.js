@@ -53,8 +53,10 @@ const AskNameScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   header: {
-    ...HeaderStyle.text,
+    // ...HeaderStyle.text,
     ...HeaderStyle.color,
+    fontFamily: 'Lato-Black',
+    fontSize: hp(4.5),
     flexDirection: 'column',
     textAlign: 'center',
     marginTop: hp(30),

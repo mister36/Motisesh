@@ -7,11 +7,11 @@ import {
 
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 
-const SessionsLeftCircle = ({svgSide, radius, completed}) => {
+const SessionsLeftCircle = ({svgSide, radius, completed, style}) => {
   const remaining = 5 - completed;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <View style={styles.progressContainer}>
         <AnimatedProgressWheel
           size={wp(30)}

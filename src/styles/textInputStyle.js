@@ -9,6 +9,6 @@ export const textInput = {
   borderRadius: 10,
   marginTop: hp(10),
   alignSelf: 'center',
-  fontFamily: 'Merriweather-Bold',
+  fontFamily: 'NunitoSans-Bold',
   fontSize: hp(3),
 };
