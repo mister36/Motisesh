@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import date from 'date-and-time';
 
 // App setup (saving videos)
-import RNFetchBlob from 'rn-fetch-blob';
+// import RNFetchBlob from 'rn-fetch-blob';
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -37,10 +37,16 @@ import {
 import SplashScreen from 'react-native-splash-screen';
 
 // Icons
-import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn:
+    'https://08475c6e4f54468fb9bc371f33c6e960@o426850.ingest.sentry.io/5370182',
+  enableAutoSessionTracking: true,
+});
 
 // Navigators
 const MainTabs = createBottomTabNavigator();
@@ -166,18 +172,6 @@ const App = () => {
           }; // allows variable to be used in object
 
           await AsyncStorage.setItem('sessionInfo', JSON.stringify(initial));
-
-          // Downloads video for Session Screen
-          RNFetchBlob.config({
-            fileCache: true,
-            appendExt: 'mp4',
-            path: `${RNFetchBlob.fs.dirs.DocumentDir}/hype.mp4`,
-          })
-            .fetch('GET', 'http://192.168.1.73:4000/api/v1/video')
-            .then(res => {
-              console.log(`File saved to ${res.path()}`);
-            })
-            .catch(err => console.error(err));
 
           setIsLoading(false);
         }

@@ -7,6 +7,10 @@ import {
 
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 
+// class SessionsLeftCircle extends React.Component {
+//   state: {svgSide}
+// }
+
 const SessionsLeftCircle = ({svgSide, radius, completed, style}) => {
   const remaining = 5 - completed;
 

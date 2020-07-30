@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.wix.interactable.Interactable;
 import com.airbnb.android.react.lottie.LottiePackage;
+import com.tanguyantoine.react.MusicControl;
 
 public class MainApplication extends Application implements ReactApplication {
 

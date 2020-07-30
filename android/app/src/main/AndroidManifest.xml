@@ -33,7 +33,11 @@
         
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-      <service android:name="com.voximplant.foregroundservice.VIForegroundService"> </service>
+
+        <meta-data android:name="io.sentry.dsn" android:value="https://08475c6e4f54468fb9bc371f33c6e960@o426850.ingest.sentry.io/5370182" />
+        <meta-data android:name="io.sentry.session-tracking.enable" android:value="true" />
+
+        <service android:name="com.voximplant.foregroundservice.VIForegroundService"></service>
     </application>
 
 </manifest>

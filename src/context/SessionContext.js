@@ -1,10 +1,8 @@
 import * as React from 'react';
 import Video from 'react-native-video';
-import audioSocket from '../api/socketApi';
-import RNFetchBlob from 'rn-fetch-blob';
+// import audioSocket from '../api/socketApi';
 import PlayMusic from '../../playMusic';
 import Wakeful from 'react-native-wakeful';
-import VIForegroundService from '@voximplant/react-native-foreground-service';
 
 const SessionContext = React.createContext();
 
@@ -22,16 +20,23 @@ const sessionReducer = (state, action) => {
       return {...state, sessionPlaying: true};
     case 'session_playing_false':
       return {...state, sessionPlaying: false};
+    case 'unpause_session':
+      return {...state, sessionPaused: false};
+    case 'pause_session':
+      return {...state, sessionPaused: true};
     default:
       return state;
   }
 };
+
+// let wakeful = new Wakeful();
 
 export const SessionProvider = ({children}) => {
   const [state, dispatch] = React.useReducer(sessionReducer, {
     configVisible: false,
     voicePlaying: false,
     sessionPlaying: false,
+    // sessionPaused: false,
   });
 
   // audioSocket.on('receiveAudio', data => {
@@ -48,11 +53,6 @@ export const SessionProvider = ({children}) => {
 
   // !action functions
 
-  // sets if config pop up is showing
-  // const makeConfigVisible = bool => {
-  //   dispatch({type: `set_config_visible_${bool}`});
-  // };
-
   // sets if GTTS voice is playing
   const voicePlaying = bool => {
     dispatch({type: `voice_playing_${bool}`});
@@ -63,11 +63,23 @@ export const SessionProvider = ({children}) => {
     dispatch({type: `session_playing_${bool}`});
   };
 
+  // const toggleSessionPaused = () => {
+  //   state.sessionPaused
+  //     ? dispatch({type: 'unpause_session'})
+  //     : dispatch({type: 'pause_session'});
+  // };
+
   let wakeful = new Wakeful();
+  if (state.sessionPlaying) {
+    wakeful.acquire();
+  } else {
+    wakeful.release();
+  }
 
   return (
     <>
-      {state.sessionPlaying ? <PlayMusic /> : wakeful.release()}
+      {state.sessionPlaying ? <PlayMusic /> : null}
+      {/* {state.sessionPlaying ? console.log('Yay i am being played') : null} */}
       {/* {!state.sessionPlaying ? console.log('true') : console.log('false')} */}
       <SessionContext.Provider value={{state, voicePlaying, sessionPlaying}}>
         {children}
