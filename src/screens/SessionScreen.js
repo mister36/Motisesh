@@ -15,11 +15,33 @@ import {
 } from '../utils/permissions';
 
 // Motion
-import Animated, {Easing, Value, timing} from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  Clock,
+  Value,
+  set,
+  cond,
+  startClock,
+  clockRunning,
+  timing,
+  debug,
+  stopClock,
+  block,
+  not,
+  spring,
+  divide,
+  diff,
+  greaterThan,
+  useCode,
+  sub,
+  add,
+  eq,
+  call,
+  interpolate,
+} from 'react-native-reanimated';
 
 // Components
 import SessionsLeftCircle from '../components/SessionsLeftCircle';
-import Slider from '@react-native-community/slider';
 
 // Context
 import SessionContext from '../context/SessionContext';
@@ -35,438 +57,315 @@ import {useMemoOne} from 'use-memo-one';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+// Redash
+import {loop, delay, timing as timingDash} from 'react-native-redash';
+
 // Styling
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
-import SwitchSelector from 'react-native-switch-selector';
+
+// Lottie animations
+import LottieView from 'lottie-react-native';
 
 // Utils
 import {decToMin} from '../utils/getStats';
 
-// Code needed for screen
-
 const SessionScreen = ({navigation}) => {
   // Context
   const {state: sessState, sessionPlaying} = React.useContext(SessionContext);
-  // Refs
-  const switchRef = React.useRef('switchRef');
-  const excitedIcon = React.useRef('excitedIcon');
-  const liftIcon = React.useRef('liftIcon');
   // State
   const [completed, setCompleted] = React.useState(-1);
-  const [duration, setDuration] = React.useState(1);
-  const [descriptionText, setDescriptionText] = React.useState(0);
+  const [lightningVisible, setLightningVisible] = React.useState(false);
 
-  // Animation with Reanimated
-  const {buttonBorder} = useMemoOne(
-    () => ({
-      buttonBorder: new Value(0),
-    }),
-    [],
-  );
-  const buttonConfig = {
-    duration: 500,
-    toValue: hp(2.5),
-    easing: Easing.inOut(Easing.ease),
-  };
-  const buttonAnim = timing(buttonBorder, buttonConfig);
-
-  const {bottomViewY} = useMemoOne(
-    () => ({
-      bottomViewY: new Value(0),
-    }),
-    [],
-  );
-  const bottomViewConfig = {
-    duration: 700,
-    toValue: hp(70),
-    easing: Easing.inOut(Easing.ease),
-  };
-  const bottomViewAnim = timing(bottomViewY, bottomViewConfig);
-
-  const {gradientFade} = useMemoOne(
-    () => ({
-      gradientFade: new Value(1),
-    }),
-    [],
-  );
-  const gradientFadeConfig = {
-    duration: 400,
-    toValue: 0,
-    easing: Easing.inOut(Easing.ease),
-  };
-  const gradientFadeAnim = timing(gradientFade, gradientFadeConfig);
+  // Refs
+  const buttonRef = React.useRef('buttonRef');
 
   // Creating Animatable components
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-  // Content for the switch selector
-  const switchOptions = [
-    {
-      label: 'General',
-      value: '0',
-      customIcon: (
-        <Image
-          source={require('../assets/icons/excited_icon.png')}
-          style={{height: wp(5), width: wp(5), marginRight: wp(1)}}
-          ref={excitedIcon}
-          tintColor="#FFFFFF" //Set to white at first since this is default
-        />
-      ),
-    },
-    {
-      label: 'Workout',
-      value: '1',
-      customIcon: (
-        <Image
-          source={require('../assets/icons/lift_icon.png')}
-          style={{height: wp(5), width: wp(5), marginRight: wp(1)}}
-          ref={liftIcon}
-        />
-      ),
-    },
-  ];
-  // Used to change the color of each icon between black & white in SwitchSelector. Not using setState since that would cause entire screen to rerender, reducing performance
-  const setImageColors = selectedNum => {
-    switch (parseInt(selectedNum, 10)) {
-      case 0:
-        excitedIcon.current.setNativeProps({tintColor: '#FFFFFF'});
-        liftIcon.current.setNativeProps({tintColor: '#000000'});
-        // sweepIcon.current.setNativeProps({tintColor: '#000000'});
-        break;
-      case 1:
-        liftIcon.current.setNativeProps({tintColor: '#FFFFFF'});
-        excitedIcon.current.setNativeProps({tintColor: '#000000'});
-        // sweepIcon.current.setNativeProps({tintColor: '#000000'});
-        break;
-      case 2:
-        // sweepIcon.current.setNativeProps({tintColor: '#FFFFFF'});
-        excitedIcon.current.setNativeProps({tintColor: '#000000'});
-        liftIcon.current.setNativeProps({tintColor: '#000000'});
-        break;
-    }
-  };
-
   // Ask for access to storage
   requestDownloadPermission(requestReadFilePermission);
 
-  React.useEffect(() => {
-    // Calculate amount of sessions left
-    const calcSessions = async () => {
-      try {
-        let sessions = await AsyncStorage.getItem('sessionInfo');
-        sessions = JSON.parse(sessions);
+  // Code needed for button bounce effect
+  const {bounce, headerSlideVal} = useMemoOne(
+    () => ({
+      bounce: new Value(0),
+      headerSlideVal: new Value(0),
+    }),
+    [headerSlideVal],
+  );
 
-        const today = sessions[date.format(new Date(), 'MMM DD YYYY')];
+  useCode(
+    () =>
+      set(
+        bounce,
+        loop({
+          clock: new Clock(),
+          duration: 1000,
+          easing: Easing.inOut(Easing.ease),
+          boomerang: true,
+          autoStart: true,
+        }),
+      ),
+    [bounce],
+  );
 
-        // if there are no logged sessions for today, set completed === 0
-        today ? setCompleted(today.length) : setCompleted(2); // TODO setCompleted(0)
-      } catch (error) {
-        console.error(error);
-      }
+  const flashAnim = () => {
+    const clock = new Clock();
+
+    const state = {
+      finished: new Value(0),
+      position: new Value(0),
+      time: new Value(0),
+      frameTime: new Value(0),
     };
-    calcSessions();
-  }, []);
 
-  //! The first linear gradient is the one that will be shown during a cheer session. When the session begins, the nested linear gradient will fade out
+    const config = {
+      duration: new Value(1000),
+      toValue: new Value(1),
+      easing: Easing.quad,
+    };
 
-  //!The first nested Animated.View will be the one shown during a cheer session
+    return block([
+      startClock(clock),
+      timing(clock, state, config),
+
+      cond(not(clockRunning(clock)), [
+        set(state.finished, 0),
+        set(state.time, 0),
+        set(state.frameTime, 0),
+      ]),
+
+      cond(state.finished, [
+        stopClock(clock),
+        call([], () => {
+          setLightningVisible(false);
+        }),
+      ]),
+
+      state.position,
+    ]);
+  };
+
+  // Bottom header animation
+  const runHeaderAnim = () => {
+    const clock = new Clock();
+
+    const state = {
+      finished: new Value(0),
+      position: new Value(0),
+      time: new Value(0),
+      frameTime: new Value(0),
+    };
+
+    const config = {
+      duration: new Value(8000),
+      toValue: new Value(1),
+      easing: Easing.inOut(Easing.linear),
+    };
+
+    return block([
+      startClock(clock),
+
+      timing(clock, state, config),
+
+      cond(state.finished, [
+        stopClock(clock),
+
+        set(state.finished, 0),
+
+        set(state.position, 0),
+
+        set(state.time, 0),
+        set(state.frameTime, 0),
+
+        startClock(clock),
+      ]),
+      state.position,
+    ]);
+  };
+
+  const headerPosition = runHeaderAnim();
+  const flashOpacity = flashAnim();
+
+  const headerSlideAnim = timing(headerSlideVal, {
+    duration: 200,
+    toValue: 1,
+    easing: Easing.linear,
+  });
+
+  // const light is sfs
+
   return (
-    <LinearGradient colors={['#8D2626', '#6E2E2E']} style={{flex: 1}}>
-      {/* WHAT THE USER SEES WHEN SESSION PLAYING */}
-      <Animated.View style={styles.periSessionAnimatedContainer}>
-        <Animated.Image
-          source={require('../assets/images/logo.png')}
+    <Animated.View style={[styles.preSessionAnimatedContainer]}>
+      {lightningVisible ? (
+        <Animated.View
           style={[
-            styles.centerLogo,
+            styles.whiteFlash,
+            {
+              opacity: interpolate(flashOpacity, {
+                inputRange: [0, 1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6, 1],
+                outputRange: [0, 0.8, 0, 0.8, 0, 0.8, 0],
+              }),
+            },
+          ]}
+        />
+      ) : null}
+      <LinearGradient
+        colors={['#F59C75', '#E26452']}
+        end={{x: 0.5, y: 0.7}}
+        style={[styles.preSessionGradientContainer]}>
+        {lightningVisible ? (
+          <LottieView
+            source={require('../assets/animations/lightning.json')}
+            loop
+            autoPlay
+            speed={1.5}
+            style={{}}
+          />
+        ) : null}
+        <Animated.View
+          style={[
+            styles.bigButtonContainer,
             {
               transform: [
                 {
-                  scale: gradientFade.interpolate({
+                  scale: bounce.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1.5, 1],
+                    outputRange: [1, 1.1],
                   }),
                 },
               ],
             },
-          ]}
-        />
-        <Pressable style={styles.playPauseButton}>
-          {!sessState.sessionPlaying ? (
-            <Entypo name="controller-play" style={styles.playIcon} />
-          ) : (
-            <MaterialIcons name="pause" style={styles.playIcon} />
-          )}
-        </Pressable>
-      </Animated.View>
+          ]}>
+          <Pressable
+            onPress={() => {
+              setLightningVisible(lightningVisible ? false : true);
+              headerSlideAnim.start();
+            }}
+            style={[styles.bigButton]}>
+            <Image
+              source={require('../assets/images/white-logo.png')}
+              style={styles.logo}
+            />
+          </Pressable>
+        </Animated.View>
 
-      {/* FIRST THING THE USER SEES */}
-      <Animated.View
-        style={[
-          styles.preSessionAnimatedContainer,
-          {
-            opacity: gradientFade,
-
-            transform: [
-              {
-                translateY: gradientFade.interpolate({
-                  inputRange: [0, 0.001, 1],
-                  outputRange: [hp(100), hp(0), hp(0)],
-                }),
-              },
-            ],
-          },
-        ]}>
-        <LinearGradient
-          colors={['rgb(245, 156, 117)', 'rgb(226, 77, 55)']}
-          end={{x: 0.5, y: 0.7}}
-          style={styles.preSessionGradientContainer}>
-          <Animated.View
+        <Animated.View
+          style={[
+            styles.headerContainer,
+            {
+              opacity: interpolate(headerSlideVal, {
+                inputRange: [0, 0.4, 1],
+                outputRange: [1, 0, 0],
+              }),
+              transform: [
+                {
+                  translateY: interpolate(headerSlideVal, {
+                    inputRange: [0, 0.4, 1],
+                    outputRange: [0, hp(5), hp(5)],
+                  }),
+                },
+              ],
+            },
+          ]}>
+          <Animated.Text
             style={[
-              styles.topRow,
+              styles.header,
               {
-                opacity: bottomViewY.interpolate({
-                  inputRange: [0, hp(35), hp(70)],
-                  outputRange: [1, 1, 0],
-                }),
                 transform: [
                   {
-                    translateY: bottomViewY.interpolate({
-                      inputRange: [0, hp(35), hp(69), hp(70)],
-                      outputRange: [0, 0, hp(20), hp(100)],
+                    translateY: interpolate(headerPosition, {
+                      inputRange: [0, 0.48, 0.49, 0.5, 0.98, 0.99, 1],
+                      outputRange: [0, 0, hp(-3), hp(-5), hp(-5), hp(-2), 0],
                     }),
                   },
                 ],
               },
             ]}>
-            {/* Background Circle */}
-            {completed !== -1 ? (
-              <SessionsLeftCircle
-                svgSide={wp(40)}
-                radius={wp(12)}
-                completed={completed}
-                style={[styles.sessionsLeftCircle]}
-              />
-            ) : null}
-          </Animated.View>
-
-          <Animated.View
+            Tap to start Cheer Session!
+          </Animated.Text>
+          <Animated.Text
             style={[
-              styles.bottomView,
+              styles.header,
               {
-                transform: [{translateY: bottomViewY}],
-                opacity: bottomViewY.interpolate({
-                  inputRange: [0, hp(70)],
-                  outputRange: [1, 0],
-                }),
+                transform: [
+                  {
+                    translateY: interpolate(headerPosition, {
+                      inputRange: [0, 0.48, 0.49, 0.5, 0.98, 0.99, 1],
+                      outputRange: [0, 0, hp(-3), hp(-5), hp(-5), hp(-2), 0],
+                    }),
+                  },
+                ],
               },
             ]}>
-            <ScrollView
-              contentpreSessionGradientContainerStyle={
-                styles.contentpreSessionGradientContainerStyle
-              }
-              style={{paddingBottom: hp(6)}}>
-              <Text style={styles.bottomViewHeader}>Start a new session!</Text>
-              <View style={styles.category}>
-                <Text style={styles.categoryHeader}>Category</Text>
-
-                <SwitchSelector
-                  options={switchOptions}
-                  initial={0}
-                  onPress={value => {
-                    // Changes text below and sets selected icon image to white
-                    setDescriptionText(value);
-                    setImageColors(value);
-                  }}
-                  buttonColor="#D15621"
-                  selectedTextStyle={styles.switchSelectedText}
-                  textStyle={styles.switchText}
-                  style={styles.switchpreSessionGradientContainer}
-                  ref={switchRef}
-                />
-
-                <View style={styles.descriptionBox}>
-                  {parseInt(descriptionText, 10) === 0 ? (
-                    <Text style={styles.descriptionText}>
-                      For those random times you need a dose of motivation.
-                    </Text>
-                  ) : (
-                    <Text style={styles.descriptionText}>
-                      When getting hyped at the gym is a requirement.
-                    </Text>
-                  )}
-                </View>
-              </View>
-
-              <View style={styles.duration}>
-                <Text style={styles.durationHeader}>Duration</Text>
-
-                <Slider
-                  style={styles.slider}
-                  minimumValue={1}
-                  maximumValue={5}
-                  value={duration}
-                  minimumTrackTintColor="#0A3641"
-                  maximumTrackTintColor="#484D4E"
-                  step={0.5}
-                  thumbTintColor="#0A3641"
-                  onSlidingComplete={setDuration}
-                />
-                <Text style={styles.durationNumber}>{decToMin(duration)}</Text>
-              </View>
-            </ScrollView>
-            {/* Blue button at the botto */}
-            <AnimatedPressable
-              style={[
-                styles.beginButton,
-                {borderColor: '#CA2121', borderWidth: buttonBorder},
-              ]}
-              onPress={() => {
-                console.log(switchRef.current.state.selected);
-                buttonAnim.start(data => {
-                  if (data.finished) {
-                    bottomViewAnim.start(data => {
-                      if (data.finished) {
-                        gradientFadeAnim.start();
-                      }
-                    });
-                  }
-                });
-              }}>
-              <Text style={styles.beginButtonText}>BEGIN</Text>
-            </AnimatedPressable>
-          </Animated.View>
-        </LinearGradient>
-      </Animated.View>
-    </LinearGradient>
+            3 sessions left
+          </Animated.Text>
+        </Animated.View>
+      </LinearGradient>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   preSessionAnimatedContainer: {
     position: 'absolute',
+    width: wp(100),
   },
   preSessionGradientContainer: {
     height: hp(100),
-    backgroundColor: '#F47F4D',
-    // backgroundColor: '#E7803D',
   },
-  bottomView: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: hp(7),
-    borderTopRightRadius: hp(7),
-    height: hp(70),
-    width: wp(100),
-    marginTop: 'auto',
-    elevation: 10,
-  },
-  topRow: {
-    marginTop: hp(1),
-  },
-  contentpreSessionGradientContainerStyle: {
-    flexGrow: 1,
-    flexDirection: 'column',
-  },
-  beginButton: {
-    width: wp(90),
-    backgroundColor: '#27C2C6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: hp(5),
-    borderRadius: hp(2.5),
+  logo: {
+    height: wp(49),
+    width: wp(42),
     alignSelf: 'center',
+  },
+  headerContainer: {
     position: 'absolute',
-    bottom: hp(14),
-    elevation: 5,
-    // borderWidth: hp(2.5),
-    // borderColor: '#CA2121',
-  },
-  beginButtonText: {
-    fontFamily: 'NunitoSans-Bold',
-    fontSize: wp(6),
-    color: '#FFFFFF',
-  },
-  sessionsLeftCircle: {
-    marginRight: wp(9),
-  },
-  bottomViewHeader: {
-    fontFamily: 'Lato-Bold',
-    fontSize: wp(6),
-    marginTop: hp(3.5),
-    marginLeft: wp(10),
-    // color: '#CA2121',
-  },
-  category: {
-    marginTop: hp(4),
-  },
-  categoryHeader: {
-    fontFamily: 'Lato-Bold',
-    fontSize: wp(5),
-    marginLeft: wp(10),
-    marginBottom: hp(1),
-    color: '#D15621',
-  },
-  switchpreSessionGradientContainer: {
-    width: wp(82),
-    alignSelf: 'center',
-  },
-  switchSelectedText: {fontFamily: 'NunitoSans-Bold', fontSize: wp(4.5)},
-  switchText: {
-    fontFamily: 'NunitoSans-SemiBold',
-    fontSize: wp(4.3),
-  },
-  descriptionBox: {
-    width: wp(82),
-    alignSelf: 'center',
-    marginTop: hp(1),
-  },
-  descriptionText: {
-    alignSelf: 'center',
-    fontFamily: 'NunitoSans-SemiBold',
-    fontSize: wp(4.5),
-  },
-  duration: {
-    marginTop: hp(6),
-  },
-  durationHeader: {
-    fontFamily: 'Lato-Bold',
-    fontSize: wp(5),
-    marginLeft: wp(10),
-    marginBottom: hp(1),
-    color: '#D15621',
-  },
-  slider: {
-    width: wp(82),
-    alignSelf: 'center',
-    marginTop: hp(1),
-  },
-  durationNumber: {
-    fontFamily: 'NunitoSans-Bold',
-    alignSelf: 'flex-end',
-    marginRight: wp(13),
-    fontSize: wp(5.5),
-  },
-  periSessionAnimatedContainer: {
+    bottom: hp(20),
     alignItems: 'center',
+    alignSelf: 'center',
+    // borderWidth: 2,
+    height: hp(5),
+    // paddingBottom: hp(10),
+    overflow: 'hidden',
+  },
+  header: {
+    fontSize: wp(7),
+    fontFamily: 'NunitoSans-Bold',
+    color: 'white',
+  },
+  bigButtonContainer: {
+    backgroundColor: '#DE5642',
+    height: wp(65),
+    width: wp(65),
+    borderRadius: wp(32.5),
+    elevation: 9,
+    position: 'absolute',
+    top: hp(25),
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  bigButton: {
+    borderRadius: wp(32.5),
     justifyContent: 'center',
     flex: 1,
   },
-  centerLogo: {
+  whiteFlash: {
+    backgroundColor: 'white',
+    height: 1000,
+    width: wp(100),
     position: 'absolute',
-    top: hp(30),
-    width: wp(30),
-    height: wp(35.1),
+    zIndex: 1000,
+    elevation: 10,
   },
-  playPauseButton: {
+  periSessionAnimatedContainer: {
     position: 'absolute',
-    bottom: hp(15),
-  },
-  playIcon: {
-    fontSize: wp(28),
-    color: '#FFFFFF',
+    zIndex: 3,
+    width: wp(100),
   },
 });
 

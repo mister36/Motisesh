@@ -35,16 +35,21 @@ const HomeScreen = ({navigation}) => {
   } = React.useContext(SessionContext);
 
   const [quoteInfo, setQuoteInfo] = React.useState([]);
+  const [screenGreeting, setScreenGreeting] = React.useState('');
 
   React.useEffect(() => {
     setQuoteInfo(generateQuote());
+  }, []);
+
+  React.useEffect(() => {
+    setScreenGreeting(greeting(state.name));
   }, []);
 
   return (
     <View style={styles.container}>
       <BackgroundImg />
       <Header navigation={navigation} />
-      <Text style={styles.mainHeader}>{greeting(state.name)}</Text>
+      <Text style={styles.mainHeader}>{screenGreeting}</Text>
       {quoteInfo.length > 0 ? (
         <QuoteCard
           quoteText={quoteInfo[0].quote}
@@ -54,7 +59,7 @@ const HomeScreen = ({navigation}) => {
       ) : null}
       <NewSession navigation={navigation} />
 
-      <Button
+      {/* <Button
         title="Start"
         onPress={() => {
           if (sessState.sessionPlaying) {
@@ -89,7 +94,7 @@ const HomeScreen = ({navigation}) => {
           //   });
           // }}
         }}
-      />
+      /> */}
     </View>
   );
 };

@@ -1,11 +1,16 @@
 import * as React from 'react';
 import {View} from 'react-native';
 import Video from 'react-native-video';
-import MusicControl from 'react-native-music-control';
 import VIForegroundService from '@voximplant/react-native-foreground-service';
 
+import AuthContext from './src/context/AuthContext';
+
 const PlayMusic = () => {
-  // const [paused, setPaused] = React.useState(false);
+  const {
+    state: {name},
+  } = React.useContext(AuthContext);
+  const videoRef = React.useRef('videoRef');
+  const [paused, setPaused] = React.useState(true);
 
   React.useEffect(() => {
     const channelConfig = {
@@ -23,7 +28,7 @@ const PlayMusic = () => {
       const notificationConfig = {
         channelId: 'channelId',
         id: 3456,
-        title: 'TopCheer YahYah',
+        title: 'TestingCheer',
         text: 'Wrestling is back',
         icon: 'ic_icon',
         priority: 1,
@@ -42,17 +47,38 @@ const PlayMusic = () => {
     <View>
       <Video
         source={{
-          uri: 'https://familycouncil.org/podcasts/MLKDreamSpeech.mp3',
-          // uri: 'http://192.168.1.73:4000/api/v1/audio/mj',
+          // uri: 'https://familycouncil.org/podcasts/MLKDreamSpeech.mp3',
+          uri: 'http://192.168.1.73:4000/api/v1/audio/background?duration=60',
+        }}
+        ref={videoRef}
+        audioOnly={true}
+        playInBackground={true}
+        playWhenInactive={true}
+        progressUpdateInterval={1000}
+        onLoad={data => {
+          console.log('loadeed');
+        }}
+        onProgress={data => {
+          console.log(data);
+          // if (data.currentTime > 10) {
+          //   videoRef.current.setNativeProps({paused: true});
+          // }
+        }}
+        paused={paused}
+      />
+
+      <Video
+        source={{
+          uri: `http://192.168.1.73:4000/api/v1/audio/voice?name=${name}`,
         }}
         audioOnly={true}
         playInBackground={true}
         playWhenInactive={true}
+        progressUpdateInterval={1000}
         onLoad={data => {
-          console.log('loadeed');
+          console.log('voice loadeed');
         }}
-        onProgress={data => console.log(data)}
-        // paused={paused}
+        onEnd={() => setPaused(false)}
       />
     </View>
   );

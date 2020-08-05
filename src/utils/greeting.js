@@ -10,7 +10,7 @@ export default name => {
   // Either must be greater than/equal to 6, or greater than/equal to 10, but can't be 12
   if (
     (currentTime.substring(0, 2) !== '12' &&
-      parseInt(currentTime.split('')[0], 10) >= 6) ||
+      parseInt(currentTime.split('')[1], 10) >= 6) ||
     (currentTime.substring(0, 2) !== '12' &&
       parseInt(currentTime.substring(0, 2), 10) >= 10)
   ) {
