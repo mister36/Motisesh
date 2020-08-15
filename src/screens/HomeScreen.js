@@ -11,7 +11,8 @@ import NewSession from '../components/NewSession';
 import AuthContext from '../context/AuthContext';
 import SessionContext from '../context/SessionContext';
 
-// Motion
+// Storage
+import RNFetchBlob from 'rn-fetch-blob';
 
 // Styling
 import {
@@ -58,43 +59,17 @@ const HomeScreen = ({navigation}) => {
         />
       ) : null}
       <NewSession navigation={navigation} />
-
-      {/* <Button
-        title="Start"
+      <Button
+        title="download"
         onPress={() => {
-          if (sessState.sessionPlaying) {
-            console.log('turning off');
-            VIForegroundService.stopService();
-            sessionPlaying(false);
-          } else {
-            sessionPlaying(true);
-          }
-
-          //   MusicControl.enableBackgroundMode(true);
-
-          //   MusicControl.enableControl('play', true);
-          //   MusicControl.enableControl('pause', true);
-
-          //   MusicControl.setNowPlaying({
-          //     title: 'Testing music',
-          //     artist: 'TopCheer DJ',
-          //     artwork: 'https://i.imgur.com/e1cpwdo.png',
-          //   });
-          //   MusicControl.updatePlayback({
-          //     state: MusicControl.STATE_PLAYING,
-          //   });
-
-          //   MusicControl.on('closeNotification', val => {
-          //     console.log('MUSIC PLAYER CLOSE');
-          //     console.log(val);
-          //   });
-          //   MusicControl.on('stop', val => {
-          //     console.log('MUSIC PLAYER STOPPED');
-          //     console.log(val);
-          //   });
-          // }}
+          console.log('downloading');
+          RNFetchBlob.config({
+            path: `${RNFetchBlob.fs.dirs.DocumentDir}/tunnel.mp4`,
+          })
+            .fetch('GET', `http://192.168.1.73:4000/api/v1/audio/test-video`)
+            .then(res => console.log('File saved to ' + res.path()));
         }}
-      /> */}
+      />
     </View>
   );
 };

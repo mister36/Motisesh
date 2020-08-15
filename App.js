@@ -16,8 +16,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 // Date and time
 import date from 'date-and-time';
 
-// App setup (saving videos)
-// import RNFetchBlob from 'rn-fetch-blob';
+// Native screen support
+import {enableScreens} from 'react-native-screens';
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -40,7 +40,10 @@ import SplashScreen from 'react-native-splash-screen';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
+// Error tracking
 import * as Sentry from '@sentry/react-native';
+
+enableScreens();
 
 Sentry.init({
   dsn:
@@ -51,7 +54,7 @@ Sentry.init({
 // Navigators
 const MainTabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
-const SessionStack = createStackNavigator();
+// const SessionStack = createStackNavigator();
 
 // Building App Navigation
 const BottomTabNav = () => {
@@ -115,37 +118,37 @@ const BottomTabNav = () => {
 };
 
 // Needed for animation between tabs and music player
-const MusicStackNav = () => {
-  return (
-    <SessionStack.Navigator
-      initialRouteName="Main Tabs"
-      screenOptions={{mode: 'modal', headerShown: false}}>
-      <SessionStack.Screen name="Main Tabs" component={BottomTabNav} />
-      <SessionStack.Screen
-        name="Music"
-        component={SessionPlayingScreen}
-        options={{
-          gestureEnabled: true,
-          gestureDirection: 'vertical',
-          transitionSpec: {
-            open: {
-              animation: 'timing',
-              config: {
-                duration: 200,
-              },
-            },
-            close: {animation: 'timing', config: {duration: 200}},
-          },
-        }}
-      />
-    </SessionStack.Navigator>
-  );
-};
+// const MusicStackNav = () => {
+//   return (
+//     <SessionStack.Navigator
+//       initialRouteName="Main Tabs"
+//       screenOptions={{mode: 'modal', headerShown: false}}>
+//       <SessionStack.Screen name="Main Tabs" component={BottomTabNav} />
+//       <SessionStack.Screen
+//         name="Music"
+//         component={SessionPlayingScreen}
+//         options={{
+//           gestureEnabled: true,
+//           gestureDirection: 'vertical',
+//           transitionSpec: {
+//             open: {
+//               animation: 'timing',
+//               config: {
+//                 duration: 200,
+//               },
+//             },
+//             close: {animation: 'timing', config: {duration: 200}},
+//           },
+//         }}
+//       />
+//     </SessionStack.Navigator>
+//   );
+// };
 
 const DrawerNav = () => {
   return (
     <Drawer.Navigator>
-      <Drawer.Screen name="Home" component={MusicStackNav} />
+      <Drawer.Screen name="Home" component={BottomTabNav} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />
     </Drawer.Navigator>
   );

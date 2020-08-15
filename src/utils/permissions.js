@@ -1,8 +1,9 @@
 import {PermissionsAndroid} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
-export const requestDownloadPermission = async callback => {
+export const requestStoragePermission = async () => {
   try {
-    const granted = await PermissionsAndroid.request(
+    await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       {
         title: 'TopCheer Storage Permission',
@@ -14,20 +15,7 @@ export const requestDownloadPermission = async callback => {
       },
     );
 
-    // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-    //   console.log('Can write to external storage');
-    // } else {
-    //   console.log('Access to external storage denied');
-    // }
-    callback();
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const requestReadFilePermission = async () => {
-  try {
-    const granted = await PermissionsAndroid.request(
+    await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
       {
         title: 'TopCheer Storage Permission',
@@ -39,11 +27,8 @@ export const requestReadFilePermission = async () => {
       },
     );
 
-    // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-    //   console.log('Can read external storage');
-    // } else {
-    //   console.log('Access to external storage denied');
-    // }
+    // puts granted status into storage
+    await AsyncStorage.setItem('external_storage_permission', 'true');
   } catch (error) {
     console.log(error);
   }
