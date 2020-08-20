@@ -7,7 +7,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import AuthContext from '../context/AuthContext';
+
+// storage
+import AsyncStorage from '@react-native-community/async-storage';
+
+// Store
+import {useAuthStore} from '../zustand/store';
+
 import BackgroundImg from '../components/BackgroundImg';
 import {HeaderStyle, TextInputStyle, ButtonStyle} from '../styles';
 import {
@@ -16,7 +22,18 @@ import {
 } from 'react-native-responsive-screen';
 
 const AskNameScreen = ({navigation}) => {
-  const {setName} = React.useContext(AuthContext);
+  const setSetUpComplete = useAuthStore(state => state.setSetUpComplete);
+  // Sets name, rerenders app
+  const setName = async name => {
+    try {
+      await AsyncStorage.setItem('name', name);
+      setSetUpComplete();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // State
   const [nameGiven, setNameGiven] = React.useState('');
   const [isAnimating, setIsAnimating] = React.useState(false);
   return (
@@ -39,7 +56,7 @@ const AskNameScreen = ({navigation}) => {
         onPress={() => {
           setIsAnimating(true);
           nameGiven.length > 0 && nameGiven.length < 13
-            ? setName(nameGiven, true)
+            ? setName(nameGiven)
             : setIsAnimating(false);
         }}>
         <Text style={styles.buttonText}>Continue</Text>

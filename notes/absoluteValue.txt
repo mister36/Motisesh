@@ -1,0 +1,6 @@
+zIndexes:
+    bigbuttoncontainer: 10
+    dancingFlame: 13
+    centerContentContainer (holds button and underlying image): 8.5
+    SessionAnimation component: 11
+    tabbar container: 100 (should stay the highest unless good reason)

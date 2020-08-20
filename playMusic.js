@@ -1,59 +1,45 @@
 import * as React from 'react';
-import {View} from 'react-native';
 import Video from 'react-native-video';
-import VIForegroundService from '@voximplant/react-native-foreground-service';
-// import timer from 'react-native-timer';
 
-import AuthContext from './src/context/AuthContext';
+// Storage
+import AsyncStorage from '@react-native-community/async-storage';
+
+// Store
+import {useSessionStore} from './src/zustand/store';
 
 const PlayMusic = () => {
-  const {
-    state: {name},
-  } = React.useContext(AuthContext);
+  // Store state
+  const [sessionPaused, shouldVoicePlay] = useSessionStore(state => [
+    state.sessionPaused,
+    state.shouldVoicePlay,
+  ]);
 
   // Refs
   const backgroundMusicRef = React.useRef('backgroundMusicRef');
   const voiceRef = React.useRef('voiceRef');
 
   // State
-  const [backgroundMusicPaused, setBackgroundMusicPaused] = React.useState(
-    true,
+  const [googleVoiceShouldPlay, setGoogleVoiceShouldPlay] = React.useState(
+    false,
   );
-  const [googleVoice, setGoogleVoice] = React.useState(false);
+  const [name, setName] = React.useState('');
+  const [shouldFirstVoice, setShouldFirstVoice] = React.useState(true);
 
+  // Sets name for HTTP request
   React.useEffect(() => {
-    const channelConfig = {
-      id: 'channelId',
-      name: 'Channel name',
-      description: 'Channel description',
-      enableVibration: false,
-      importance: 4,
-    };
-    VIForegroundService.createNotificationChannel(channelConfig);
-  }, []);
-
-  React.useEffect(() => {
-    const startForegroundService = async () => {
-      const notificationConfig = {
-        channelId: 'channelId',
-        id: 3456,
-        title: 'Cheer Session',
-        text: 'Currently playing a session',
-        icon: 'ic_icon',
-        priority: 1,
-      };
-
+    const getName = async () => {
       try {
-        await VIForegroundService.startService(notificationConfig);
+        const nameInStorage = await AsyncStorage.getItem('name');
+        setName(nameInStorage);
       } catch (error) {
         console.error(error);
       }
     };
-    startForegroundService();
+    getName();
   }, []);
 
   return (
-    <View>
+    <>
       <Video
         source={{
           uri: 'http://192.168.1.73:4000/api/v1/audio/background',
@@ -68,31 +54,35 @@ const PlayMusic = () => {
           console.log('loadeed');
         }}
         onProgress={data => {
-          setGoogleVoice(true);
+          setGoogleVoiceShouldPlay(true);
         }}
-        paused={backgroundMusicPaused}
+        // Paused if the session is paused or the starting google voice is playing
+        paused={sessionPaused || shouldFirstVoice ? true : false}
       />
 
-      {googleVoice ? (
+      {googleVoiceShouldPlay ? (
         <Video
           source={{
             uri: `http://192.168.1.73:4000/api/v1/audio/voice?name=${name}`,
           }}
           audioOnly
-          // ref={voiceRef}
+          ref={voiceRef}
           playInBackground={true}
           playWhenInactive={true}
           onLoad={() => {
+            shouldVoicePlay(true);
             backgroundMusicRef.current.setNativeProps({volume: 0.3});
           }}
           onEnd={() => {
-            setGoogleVoice(false);
+            shouldVoicePlay(false);
+            setGoogleVoiceShouldPlay(false);
             backgroundMusicRef.current.setNativeProps({volume: 0.6});
           }}
+          paused={sessionPaused}
         />
       ) : null}
 
-      {backgroundMusicPaused ? (
+      {name.length > 0 && shouldFirstVoice ? (
         <Video
           source={{
             uri: `http://192.168.1.73:4000/api/v1/audio/voice?name=${name}&firstVoice=true`,
@@ -100,14 +90,16 @@ const PlayMusic = () => {
           audioOnly={true}
           playInBackground={true}
           playWhenInactive={true}
-          progressUpdateInterval={1000}
           onLoad={data => {
             console.log('voice loadeed');
           }}
-          onEnd={() => setBackgroundMusicPaused(false)}
+          onEnd={() => {
+            setShouldFirstVoice(false);
+          }}
+          paused={sessionPaused}
         />
       ) : null}
-    </View>
+    </>
   );
 };
 

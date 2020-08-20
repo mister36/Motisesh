@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Image,
   Pressable,
-  ScrollView,
+  // ScrollView,
 } from 'react-native';
 
 // Permission
@@ -19,31 +19,31 @@ import Animated, {
   set,
   cond,
   startClock,
-  clockRunning,
+  // clockRunning,
   timing,
-  debug,
+  // debug,
   stopClock,
   block,
-  not,
-  spring,
-  divide,
-  diff,
-  greaterThan,
+  // not,
+  // spring,
+  // divide,
+  // diff,
+  // greaterThan,
   useCode,
-  sub,
-  add,
-  eq,
-  call,
+  // sub,
+  // add,
+  // eq,
+  // call,
   interpolate,
 } from 'react-native-reanimated';
 
-import VIForegroundService from '@voximplant/react-native-foreground-service';
-
 // Components
-import SessionsLeftCircle from '../components/SessionsLeftCircle';
+import SessionAnimation from '../components/SessionAnimation';
+import WaveForm from '../components/Waveform';
 
-// Context
-import SessionContext from '../context/SessionContext';
+// Store
+import shallow from 'zustand/shallow';
+import {useSessionStore} from '../zustand/store';
 
 // Checking storage
 import AsyncStorage from '@react-native-community/async-storage';
@@ -53,7 +53,10 @@ import date from 'date-and-time';
 import {useMemoOne} from 'use-memo-one';
 
 // Redash
-import {loop, delay, timing as timingDash} from 'react-native-redash';
+import {loop, delay, timing as timingDash, useValue} from 'react-native-redash';
+
+// Icons
+import Foundation from 'react-native-vector-icons/Foundation';
 
 // Styling
 import {
@@ -71,14 +74,32 @@ import Video from 'react-native-video';
 // Utils
 import {decToMin} from '../utils/getStats';
 
+const whooshSound = require('../assets/sound/whoosh.mp3');
+
 const SessionScreen = ({navigation}) => {
-  // Context
-  const {state: sessState, sessionPlaying} = React.useContext(SessionContext);
+  console.log('Session screen rendered');
+
+  // storage
+  const [
+    sessionPlaying,
+    sessionPaused,
+    shouldSessionRun,
+    shouldSessionPause,
+  ] = useSessionStore(
+    state => [
+      state.sessionPlaying,
+      state.sessionPaused,
+      state.shouldSessionRun,
+      state.shouldSessionPause,
+    ],
+    shallow,
+  );
+
   // State
   const [completed, setCompleted] = React.useState(-1);
   const [userTapped, setUserTapped] = React.useState(false);
 
-  // Ask for access to storage
+  // Ask for access to storage if user is new
   React.useEffect(() => {
     const checkIfNewUser = async () => {
       try {
@@ -129,7 +150,7 @@ const SessionScreen = ({navigation}) => {
           autoStart: true,
         }),
       ),
-    [pulse, sessState.sessionPlaying],
+    [pulse],
   );
 
   // Header slide animation
@@ -160,16 +181,18 @@ const SessionScreen = ({navigation}) => {
   );
 
   // Peri logo bounce effect
-  useCode(() =>
-    set(
-      periLogoBounceVal,
-      loop({
-        clock: new Clock(),
-        duration: 700,
-        easing: Easing.linear,
-        boomerang: true,
-      }),
-    ),
+  useCode(
+    () =>
+      set(
+        periLogoBounceVal,
+        loop({
+          clock: new Clock(),
+          duration: 700,
+          easing: Easing.linear,
+          boomerang: true,
+        }),
+      ),
+    [periLogoBounceVal],
   );
 
   // Bottom header flip animation
@@ -223,8 +246,9 @@ const SessionScreen = ({navigation}) => {
       {/* //!Linear gradient seen before session */}
 
       <LinearGradient
-        colors={['#F59C75', '#E26452']}
-        end={{x: 0.5, y: 0.7}}
+        // colors={['#CA6C42', '#E26452']}
+        colors={['#E26452', '#F59C75']}
+        end={{x: 0.5, y: 1}}
         style={[styles.preSessionGradientContainer]}>
         {/* //!Lightning */}
         {userTapped ? (
@@ -232,19 +256,13 @@ const SessionScreen = ({navigation}) => {
             source={require('../assets/animations/dancing_flame.json')}
             autoPlay
             loop={false}
-            duration={800}
-            style={{
-              zIndex: 13,
-              height: hp(30),
-              position: 'absolute',
-              top: hp(13),
-              alignSelf: 'center',
-            }}
+            duration={1000}
+            style={styles.dancingFlame}
             onAnimationFinish={() => {
               setUserTapped(false);
               buttonShrinkAnim.start(data => {
                 if (data.finished) {
-                  sessionPlaying(true);
+                  shouldSessionRun();
                   periLogoScaleAnim.start();
                 }
               });
@@ -252,23 +270,14 @@ const SessionScreen = ({navigation}) => {
           />
         ) : null}
         {userTapped ? (
-          <Video
-            source={require('../assets/sound/whoosh.wav')}
-            audioOnly
-            rate={2}
-          />
+          <Video source={whooshSound} audioOnly rate={1.5} />
         ) : null}
-        {/* <LottieView
-          source={require('../assets/animations/dancing_flame.json')}
-          loop
-          autoPlay
-          speed={1.5}
-          style={{transform: [{scale: 1}], zIndex: 90}}
-        /> */}
+
+        {/* <SessionAnimation /> */}
 
         {/* //! View that contains button and image hiding underneath */}
         <Animated.View style={styles.centerContentContainer}>
-          {!sessState.sessionPlaying ? (
+          {!sessionPlaying ? (
             // Big Button
             <Animated.View
               style={[
@@ -294,17 +303,6 @@ const SessionScreen = ({navigation}) => {
                 onPress={() => {
                   setUserTapped(true);
                   headerSlideAnim.start();
-                  // data => {
-                  //   data.finished
-                  //     ? buttonShrinkAnim.start(buttonData => {
-                  //         if (buttonData.finished) {
-                  //           periLogoScaleAnim.start(() => {
-                  //             sessionPlaying(true);
-                  //           });
-                  //         }
-                  //       })
-                  //     : null;
-                  // });
                 }}
                 style={[styles.bigButton]}>
                 <Image
@@ -338,7 +336,12 @@ const SessionScreen = ({navigation}) => {
           />
         </Animated.View>
 
-        {!sessState.sessionPlaying ? (
+        {sessionPlaying ? (
+          <WaveForm style={{position: 'absolute', top: hp(50)}} />
+        ) : null}
+
+        {/* // !Header on the bottom */}
+        {!sessionPlaying ? (
           <Animated.View
             style={[
               styles.headerContainer,
@@ -392,11 +395,32 @@ const SessionScreen = ({navigation}) => {
           </Animated.View>
         ) : null}
 
-        {sessState.sessionPlaying ? (
+        {/* //! Pause and play button */}
+        {sessionPlaying && !sessionPaused ? (
+          <Foundation
+            name="pause"
+            style={styles.playPauseIcon}
+            onPress={() => {
+              shouldSessionPause(true);
+            }}
+          />
+        ) : null}
+
+        {sessionPlaying && sessionPaused ? (
+          <Foundation
+            name="play"
+            style={styles.playPauseIcon}
+            onPress={() => {
+              shouldSessionPause(false);
+            }}
+          />
+        ) : null}
+
+        {/* //! Stop session button */}
+        {sessionPlaying ? (
           <Pressable
             onPress={() => {
-              sessionPlaying(false);
-              VIForegroundService.stopService();
+              shouldSessionRun(false);
             }}>
             <Text style={{fontSize: 30}}>Stop music</Text>
           </Pressable>
@@ -435,7 +459,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: hp(25),
     zIndex: 8.5,
-    // borderWidth: 2,
     alignSelf: 'center',
     height: wp(65),
     width: wp(65),
@@ -457,16 +480,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
-  periSessionAnimatedContainer: {
-    position: 'absolute',
-    zIndex: 3,
-    width: wp(100),
-  },
   periLogo: {
     // position: 'absolute',
     // top: hp(33),
     // zIndex: 8.4,
     // transform: [{scale: 0.9}],
+  },
+  dancingFlame: {
+    zIndex: 13,
+    height: hp(50),
+    position: 'absolute',
+    top: hp(10),
+    alignSelf: 'center',
+  },
+  playPauseIcon: {
+    position: 'absolute',
+    bottom: hp(15),
+    fontSize: wp(25),
+    alignSelf: 'center',
+    color: '#FFFFFF',
   },
 });
 
