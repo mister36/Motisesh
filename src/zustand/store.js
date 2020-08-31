@@ -1,4 +1,5 @@
 import create from 'zustand';
+import {devtools} from 'zustand/middleware';
 import VIForegroundService from '@voximplant/react-native-foreground-service';
 import Wakeful from 'react-native-wakeful';
 
@@ -14,55 +15,78 @@ const useSessionStore = create((set, get) => ({
     if (bool) {
       wakeful.acquire();
       await startForeground();
-      set(state => ({sessionPlaying: true}));
+      set(
+        state => ({sessionPlaying: true}),
+        // 'shouldSessionRun'
+      );
     } else {
       VIForegroundService.stopService();
       wakeful.release();
-      set(state => ({
-        sessionPlaying: false,
-        sessionPaused: false,
-      }));
+      set(
+        state => ({
+          sessionPlaying: false,
+          sessionPaused: false,
+        }),
+        // 'shouldSessionRun',
+      );
     }
   },
   shouldSessionPause: bool => {
     // if session should pause and voice is playing, pause session, pause voice, tell store to set voice playing next time
     if (bool && get().voicePlaying) {
-      set(state => ({
-        sessionPaused: true,
-        voicePlaying: false,
-        setVoicePlayingOnSessionPlaying: true,
-      }));
-      // if session should pause, pause it
+      set(
+        state => ({
+          sessionPaused: true,
+          voicePlaying: false,
+          setVoicePlayingOnSessionPlaying: true,
+        }),
+        // 'shouldSessionPause',
+      );
+      // if session should pause, pause it and the voice
     } else if (bool && !get().voicePlaying) {
-      set(state => ({sessionPaused: true}));
+      set(
+        state => ({sessionPaused: true, voicePlaying: false}),
+        // 'shouldSessionPause',
+      );
       // if session should play and voice was playing when paused, play session and voice, take off setVoicePlayingOnSessionPlaying flag
     } else if (!bool && get().setVoicePlayingOnSessionPlaying) {
-      set(state => ({
-        sessionPaused: false,
-        voicePlaying: true,
-        setVoicePlayingOnSessionPlaying: false,
-      }));
+      set(
+        state => ({
+          sessionPaused: false,
+          voicePlaying: true,
+          setVoicePlayingOnSessionPlaying: false,
+        }),
+        // 'shouldSessionPause',
+      );
       // if session should play, play it
     } else if (!bool && !get().setVoicePlayingOnSessionPlaying) {
-      set(state => ({sessionPaused: false}));
+      set(
+        state => ({sessionPaused: false}),
+        // 'shouldSessionPause'
+      );
     }
   },
-  shouldVoicePlay: bool => set(state => ({voicePlaying: bool})),
+  shouldVoicePlay: bool => {
+    set(
+      state => ({voicePlaying: bool}),
+      // 'shouldVoicePlay'
+    );
+  },
 }));
 
 const startForeground = async () => {
+  //! IMPORTANT: channelConfig.id MUST EQUAL notificationConfig.channelId OR WILL CRASH
   const channelConfig = {
-    id: 'cheer192',
+    id: 'CheerSess',
     name: 'Cheer Session',
-    description: 'Channel description',
+    description: 'TopCheer foreground service',
     enableVibration: false,
     importance: 4,
   };
-  VIForegroundService.createNotificationChannel(channelConfig);
 
   const notificationConfig = {
-    channelId: 'channelId',
-    id: 3456,
+    channelId: 'CheerSess',
+    id: 19818,
     title: 'Cheer Session',
     text: 'Currently playing a session',
     icon: 'ic_icon',
@@ -70,6 +94,7 @@ const startForeground = async () => {
   };
 
   try {
+    await VIForegroundService.createNotificationChannel(channelConfig);
     await VIForegroundService.startService(notificationConfig);
   } catch (error) {
     console.error(error);

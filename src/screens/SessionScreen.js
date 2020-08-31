@@ -40,6 +40,7 @@ import Animated, {
 // Components
 import SessionAnimation from '../components/SessionAnimation';
 import WaveForm from '../components/Waveform';
+import StopSessionButton from '../components/StopSessionButton';
 
 // Store
 import shallow from 'zustand/shallow';
@@ -58,6 +59,9 @@ import {loop, delay, timing as timingDash, useValue} from 'react-native-redash';
 // Icons
 import Foundation from 'react-native-vector-icons/Foundation';
 
+// Components
+import SessionNav from '../components/SessionNav';
+
 // Styling
 import {
   heightPercentageToDP as hp,
@@ -74,11 +78,12 @@ import Video from 'react-native-video';
 // Utils
 import {decToMin} from '../utils/getStats';
 
+// Dancing flame animation
+const dancingFlame = require('../assets/animations/dancing_flame.json');
+
 const whooshSound = require('../assets/sound/whoosh.mp3');
 
 const SessionScreen = ({navigation}) => {
-  console.log('Session screen rendered');
-
   // storage
   const [
     sessionPlaying,
@@ -117,6 +122,9 @@ const SessionScreen = ({navigation}) => {
     checkIfNewUser();
   }, []);
 
+  // Animated background
+  const animatedBackground = require('../assets/animations/session_background.json');
+
   // pulse for button pulse, headerSlideVal for sliding header, linearSlideVal for disappearing linear gradient, periLogoScaleVal for the scale increase of logo during session
   const {
     pulse,
@@ -125,6 +133,7 @@ const SessionScreen = ({navigation}) => {
     periLogoScaleVal,
     periLogoOpacityVal,
     periLogoBounceVal,
+    animatedBackgroundOpacity,
   } = useMemoOne(
     () => ({
       pulse: new Value(0),
@@ -133,6 +142,7 @@ const SessionScreen = ({navigation}) => {
       periLogoScaleVal: new Value(1),
       periLogoOpacityVal: new Value(0.5),
       periLogoBounceVal: new Value(0),
+      animatedBackgroundOpacity: new Value(0),
     }),
     [],
   );
@@ -195,6 +205,30 @@ const SessionScreen = ({navigation}) => {
     [periLogoBounceVal],
   );
 
+  // Animated background fade in
+  const runAnimatedBackgroundFade = () => {
+    const clock = new Clock();
+
+    const state = {
+      finished: new Value(0),
+      position: animatedBackgroundOpacity,
+      time: new Value(0),
+      frameTime: new Value(0),
+    };
+
+    const config = {
+      duration: new Value(800),
+      toValue: new Value(1),
+      easing: Easing.inOut(Easing.linear),
+    };
+
+    return block([
+      startClock(clock),
+      timing(clock, state, config),
+      state.position,
+    ]);
+  };
+
   // Bottom header flip animation
   const runHeaderAnim = () => {
     const clock = new Clock();
@@ -243,17 +277,32 @@ const SessionScreen = ({navigation}) => {
 
   return (
     <Animated.View style={[styles.mainContainer]}>
-      {/* //!Linear gradient seen before session */}
+      {/* //!Animated background when session is playing */}
+      {sessionPlaying ? (
+        <Animated.View
+          style={[
+            styles.animatedBackground,
+            {opacity: runAnimatedBackgroundFade()},
+          ]}>
+          <LottieView
+            source={animatedBackground}
+            autoPlay
+            speed={2.5}
+            style={{height: hp(100)}}
+          />
+        </Animated.View>
+      ) : null}
 
+      {/* //! Linear Gradient background when session isn't playing */}
       <LinearGradient
-        // colors={['#CA6C42', '#E26452']}
         colors={['#E26452', '#F59C75']}
         end={{x: 0.5, y: 1}}
         style={[styles.preSessionGradientContainer]}>
-        {/* //!Lightning */}
+        <SessionNav navigation={navigation} />
+        {/* //!Dancing flame */}
         {userTapped ? (
           <LottieView
-            source={require('../assets/animations/dancing_flame.json')}
+            source={dancingFlame}
             autoPlay
             loop={false}
             duration={1000}
@@ -269,20 +318,24 @@ const SessionScreen = ({navigation}) => {
             }}
           />
         ) : null}
+        {/* //!Dancing flame sound */}
         {userTapped ? (
           <Video source={whooshSound} audioOnly rate={1.5} />
         ) : null}
 
-        {/* <SessionAnimation /> */}
-
         {/* //! View that contains button and image hiding underneath */}
-        <Animated.View style={styles.centerContentContainer}>
+        <Animated.View
+          onStartShouldSetResponder={() =>
+            console.log('center content presseds')
+          }
+          style={[styles.centerContentContainer]}>
           {!sessionPlaying ? (
-            // Big Button
+            // !Big Button
             <Animated.View
               style={[
                 styles.bigButtonContainer,
                 {
+                  // backgroundColor: 'green',
                   opacity: buttonShrinkVal.interpolate({
                     inputRange: [0.6, 1],
                     outputRange: [0, 1],
@@ -337,8 +390,13 @@ const SessionScreen = ({navigation}) => {
         </Animated.View>
 
         {sessionPlaying ? (
-          <WaveForm style={{position: 'absolute', top: hp(50)}} />
+          <>
+            <WaveForm style={{position: 'absolute', top: hp(20), zIndex: 7}} />
+          </>
         ) : null}
+
+        {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null}
+        {/* <SessionAnimation /> */}
 
         {/* // !Header on the bottom */}
         {!sessionPlaying ? (
@@ -418,12 +476,7 @@ const SessionScreen = ({navigation}) => {
 
         {/* //! Stop session button */}
         {sessionPlaying ? (
-          <Pressable
-            onPress={() => {
-              shouldSessionRun(false);
-            }}>
-            <Text style={{fontSize: 30}}>Stop music</Text>
-          </Pressable>
+          <StopSessionButton style={styles.stopSessionButton} />
         ) : null}
       </LinearGradient>
     </Animated.View>
@@ -449,6 +502,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: hp(5),
     overflow: 'hidden',
+    zIndex: 8.5,
   },
   header: {
     fontSize: wp(7),
@@ -456,34 +510,44 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   centerContentContainer: {
+    // borderWidth: 2,
     position: 'absolute',
     top: hp(25),
-    zIndex: 8.5,
+    zIndex: 7.1,
     alignSelf: 'center',
     height: wp(65),
     width: wp(65),
     justifyContent: 'center',
+    // backgroundColor: 'green',
   },
   bigButtonContainer: {
-    backgroundColor: '#DE5642',
+    // backgroundColor: '#DE5642',
     position: 'absolute',
-    height: wp(65),
-    width: wp(65),
+    zIndex: 12,
+    // height: wp(65),
+    // width: wp(65),
     borderRadius: wp(32.5),
     elevation: 9,
     alignSelf: 'center',
     justifyContent: 'center',
-    zIndex: 10,
+    // zIndex: 10,
   },
   bigButton: {
     borderRadius: wp(32.5),
     justifyContent: 'center',
-    flex: 1,
+    // zIndex: 12,
+    // elevation: 9,
+    height: wp(65),
+    width: wp(65),
+    backgroundColor: '#DE5642',
+    // borderWidth: 2,
+    // elevation: 9,
   },
   periLogo: {
     // position: 'absolute',
     // top: hp(33),
-    // zIndex: 8.4,
+    zIndex: 5,
+    // width: 300,
     // transform: [{scale: 0.9}],
   },
   dancingFlame: {
@@ -499,7 +563,16 @@ const styles = StyleSheet.create({
     fontSize: wp(25),
     alignSelf: 'center',
     color: '#FFFFFF',
+    zIndex: 12,
   },
+  stopSessionButton: {
+    position: 'absolute',
+    top: hp(18),
+    alignSelf: 'flex-end',
+    right: wp(5),
+    zIndex: 13,
+  },
+  animatedBackground: {position: 'absolute', zIndex: 7, height: hp(100)},
 });
 
 export default SessionScreen;

@@ -1,6 +1,11 @@
 zIndexes:
-    bigbuttoncontainer: 10
+    bigbuttoncontainer: 12
     dancingFlame: 13
-    centerContentContainer (holds button and underlying image): 8.5
+    headerContainer (bottom animated text): 8.5
+    centerContentContainer (holds button and underlying image): 7.1
+    playPauseIcon: 12
     SessionAnimation component: 11
+    stopSessionButton: 13
     tabbar container: 100 (should stay the highest unless good reason)
+    sessionNav: 100
+    sessionAnimatedBackground: 7

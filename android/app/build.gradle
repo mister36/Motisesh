@@ -78,7 +78,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
+    enableHermes: true,  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -202,8 +202,6 @@ dependencies {
     implementation project(path: ':react-native-interactable')
 
     implementation project(':lottie-react-native')
-
-    implementation project(':react-native-music-control')
 
     implementation 'io.sentry:sentry-android:{version}'
 

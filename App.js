@@ -4,7 +4,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {createStackNavigator} from '@react-navigation/stack';
 
 // Stores
 import {useSessionStore, useAuthStore} from './src/zustand/store';
@@ -39,10 +38,6 @@ import {
 // Splash Screen
 import SplashScreen from 'react-native-splash-screen';
 
-// Icons
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-
 // Error tracking
 import * as Sentry from '@sentry/react-native';
 
@@ -56,9 +51,6 @@ Sentry.init({
 
 // Navigators
 const MaterialTab = createMaterialTopTabNavigator();
-const MainTabs = createBottomTabNavigator();
-const Drawer = createDrawerNavigator();
-// const SessionStack = createStackNavigator();
 
 // Building App Navigation
 const MaterialTabNav = () => {

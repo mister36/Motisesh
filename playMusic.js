@@ -6,13 +6,14 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 // Store
 import {useSessionStore} from './src/zustand/store';
+import shallow from 'zustand/shallow';
 
 const PlayMusic = () => {
   // Store state
-  const [sessionPaused, shouldVoicePlay] = useSessionStore(state => [
-    state.sessionPaused,
-    state.shouldVoicePlay,
-  ]);
+  const [sessionPaused, shouldVoicePlay] = useSessionStore(
+    state => [state.sessionPaused, state.shouldVoicePlay],
+    shallow,
+  );
 
   // Refs
   const backgroundMusicRef = React.useRef('backgroundMusicRef');
@@ -24,6 +25,10 @@ const PlayMusic = () => {
   );
   const [name, setName] = React.useState('');
   const [shouldFirstVoice, setShouldFirstVoice] = React.useState(true);
+  // console.log(
+  //   'sessionPaused or shouldFirstVoice: ',
+  //   sessionPaused || shouldFirstVoice,
+  // );
 
   // Sets name for HTTP request
   React.useEffect(() => {
@@ -50,6 +55,7 @@ const PlayMusic = () => {
         playWhenInactive={true}
         progressUpdateInterval={10000}
         volume={0.6}
+        rate={1}
         onLoad={data => {
           console.log('loadeed');
         }}
@@ -91,9 +97,11 @@ const PlayMusic = () => {
           playInBackground={true}
           playWhenInactive={true}
           onLoad={data => {
+            shouldVoicePlay(true);
             console.log('voice loadeed');
           }}
           onEnd={() => {
+            shouldVoicePlay(false);
             setShouldFirstVoice(false);
           }}
           paused={sessionPaused}

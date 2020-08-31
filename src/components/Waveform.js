@@ -57,8 +57,9 @@ const Waveform = ({style}) => {
 
   React.useEffect(() => {
     // console.log('received voice state change');
-    useSessionStore.subscribe(
+    return useSessionStore.subscribe(
       voicePlaying => {
+        // console.log('state.voicePlayig: ', voicePlaying);
         if (voicePlaying === true) {
           setOpacityVal(runOpacityAnim(0, 1));
         } else {
@@ -72,7 +73,7 @@ const Waveform = ({style}) => {
   return (
     <Animated.View style={[{opacity: opacityVal}, style]}>
       <LottieView
-        source={require('../assets/animations/waveform.json')}
+        source={require('../assets/animations/pulse.json')}
         style={[{width: wp(100)}]}
         autoPlay={true}
       />

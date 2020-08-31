@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {View, StyleSheet, Animated as RAnimated} from 'react-native';
+import {View, StyleSheet} from 'react-native';
+import Video from 'react-native-video';
 
 // Animated
 import Animated, {
@@ -10,11 +11,11 @@ import Animated, {
   set,
 } from 'react-native-reanimated';
 
-// Caching animations
-import {useMemoOne} from 'use-memo-one';
+// Background timer
+import BackgroundTimer from 'react-native-background-timer';
 
-// Redash
-import {loop} from 'react-native-redash';
+// store
+import {useSessionStore} from '../zustand/store';
 
 // Styling
 import {
@@ -24,57 +25,138 @@ import {
 
 import LottieView from 'lottie-react-native';
 
-const SessionAnimation = () => {
-  // Saves animation value
-  const {lightningVal} = useMemoOne(() => ({
-    lightningVal: new Value(0),
-  }));
+const randomIntFromInterval = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
 
-  // Loops lightning
-  useCode(() =>
-    set(
-      lightningVal,
-      loop({
-        clock: new Clock(),
-        duration: 7000,
-        easing: Easing.linear,
-        boomerang: true,
-        autoStart: true,
-      }),
-    ),
-  );
+const SessionAnimation = () => {
+  // State
+  const [lightningVisible, setLightningVisible] = React.useState(false);
+  const [explodeVisible, setExplodeVisible] = React.useState(false);
+  const [playChant, setPlayChant] = React.useState(false);
+
+  // Ref
+  const chantRef = React.useRef('chantRef');
+
+  React.useEffect(() => {
+    // console.log('received voice state change');
+    return useSessionStore.subscribe(
+      voicePlaying => {
+        // console.log('state.voicePlayig: ', voicePlaying);
+        if (voicePlaying === true) {
+          chantRef.current.setNativeProps({muted: true});
+        }
+      },
+      state => state.voicePlaying,
+    );
+  }, []);
+
+  React.useEffect(() => {
+    const lightningTimer = BackgroundTimer.setInterval(() => {
+      setLightningVisible(true);
+    }, 10000);
+
+    return () => BackgroundTimer.clearInterval(lightningTimer);
+  }, [lightningVisible]);
+
+  React.useEffect(() => {
+    const explodeTimer = BackgroundTimer.setInterval(() => {
+      setExplodeVisible(true);
+    }, 15000);
+
+    return () => BackgroundTimer.clearInterval(explodeTimer);
+  }, [explodeVisible]);
+
+  React.useEffect(() => {
+    const chantTimer = BackgroundTimer.setInterval(() => {
+      setPlayChant(true);
+    }, 40000);
+
+    return () => BackgroundTimer.clearInterval(chantTimer);
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Animated.View
-        style={{
-          opacity: lightningVal.interpolate({
-            inputRange: [0, 0.8, 1],
-            outputRange: [0, 0, 1],
-          }),
-        }}>
-        <LottieView
-          source={require('../assets/animations/lightning.json')}
-          // loop={false}
-          autoPlay
-          // progress={lightningVal}
-          // speed={1.5}
-          style={styles.lightning}
+    <Animated.View style={[styles.container]}>
+      {lightningVisible ? (
+        <>
+          <LottieView
+            source={require('../assets/animations/lightning.json')}
+            autoPlay
+            loop={false}
+            // progress={lightningVal}
+            speed={1.5}
+            onAnimationFinish={() => setLightningVisible(false)}
+            style={[
+              styles.lightning,
+              {
+                top: hp(randomIntFromInterval(-11, 13)),
+              },
+            ]}
+          />
+          <Video
+            source={require('../assets/sound/thunder.mp3')}
+            volume={0.5}
+            rate={1.3}
+            playInBackground
+            playWhenInactive
+          />
+        </>
+      ) : null}
+
+      {explodeVisible ? (
+        <>
+          <LottieView
+            source={require('../assets/animations/smoke.json')}
+            // speed={0.7}
+            // duration={2.39}
+            loop={false}
+            onAnimationFinish={() => setExplodeVisible(false)}
+            autoPlay
+            style={{
+              width: wp(100),
+              top: hp(randomIntFromInterval(0, 28)),
+              left: wp(randomIntFromInterval(-14, 14)),
+            }}
+          />
+          <Video
+            source={require('../assets/sound/smoke_sound.mp3')}
+            playInBackground
+            playWhenInactive
+            // rate={2.9}
+            // volume={0}
+          />
+        </>
+      ) : null}
+
+      {playChant ? (
+        <Video
+          source={require('../assets/sound/war_chant.mp3')}
+          playInBackground
+          playWhenInactive
+          onEnd={() => setPlayChant(false)}
+          ref={chantRef}
+          // rate={2.9}
+          volume={0.6}
         />
-      </Animated.View>
-    </View>
+      ) : null}
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     zIndex: 11,
-    borderWidth: 2,
-    height: hp(70),
+    height: hp(80),
+    // borderWidth: 2,
   },
   lightning: {
-    height: hp(70),
+    height: hp(60),
     alignSelf: 'center',
+    position: 'absolute',
+  },
+  blast: {
+    position: 'absolute',
+    height: hp(20),
   },
 });
 
