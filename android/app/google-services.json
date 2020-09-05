@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1070194816955",
+    "firebase_url": "https://motisesh-noti.firebaseio.com",
+    "project_id": "motisesh-noti",
+    "storage_bucket": "motisesh-noti.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070194816955:android:86ee72bf8fc09ed9a8769e",
+        "android_client_info": {
+          "package_name": "com.motisesh.motisesh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1070194816955-2rvka0th013r1nl9ieq2ps5f6soh0u21.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAf99ny1Hm_CB_3dwY81NuqkGOEzmY520E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1070194816955-2rvka0th013r1nl9ieq2ps5f6soh0u21.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

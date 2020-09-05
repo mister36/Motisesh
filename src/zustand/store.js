@@ -78,8 +78,8 @@ const startForeground = async () => {
   //! IMPORTANT: channelConfig.id MUST EQUAL notificationConfig.channelId OR WILL CRASH
   const channelConfig = {
     id: 'CheerSess',
-    name: 'Cheer Session',
-    description: 'TopCheer foreground service',
+    name: 'Moti Session',
+    description: 'Motisesh foreground service',
     enableVibration: false,
     importance: 4,
   };
@@ -87,7 +87,7 @@ const startForeground = async () => {
   const notificationConfig = {
     channelId: 'CheerSess',
     id: 19818,
-    title: 'Cheer Session',
+    title: 'Moti Session',
     text: 'Currently playing a session',
     icon: 'ic_icon',
     priority: 1,

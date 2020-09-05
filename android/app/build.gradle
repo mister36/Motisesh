@@ -1,5 +1,7 @@
 apply plugin: "com.android.application"
 
+apply plugin: 'com.google.gms.google-services'
+
 import com.android.build.OutputFile
 
 /**
@@ -134,7 +136,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.topcheerproj"
+        applicationId "com.motisesh.motisesh"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -199,13 +201,17 @@ dependencies {
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
-    implementation project(path: ':react-native-interactable')
-
     implementation project(':lottie-react-native')
 
     implementation 'io.sentry:sentry-android:{version}'
 
     implementation project(':@voximplant_react-native-foreground-service')
+
+    implementation project(':react-native-notifications')
+
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+
+    implementation 'com.google.firebase:firebase-messaging:20.2.4'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

@@ -3,7 +3,8 @@
 buildscript {
     ext {
         buildToolsVersion = "29.0.2"
-        minSdkVersion = 16
+        minSdkVersion = 21 // originally 16
+        kotlinVersion = "1.3.72" // added this line
         compileSdkVersion = 29
         targetSdkVersion = 29
     }
@@ -13,6 +14,9 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:3.5.3")
+        classpath 'com.google.gms:google-services:4.3.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion" // added this line 
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

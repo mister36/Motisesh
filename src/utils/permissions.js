@@ -6,9 +6,9 @@ export const requestStoragePermission = async () => {
     await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       {
-        title: 'TopCheer Storage Permission',
+        title: 'Motisesh Storage Permission',
         message:
-          'TopCheer needs access to external storage so you have access to Cheer Sessions',
+          'Motisesh needs access to external storage so you have access to Moti Sessions',
         buttonNeutral: 'Ask me later',
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',
@@ -18,9 +18,9 @@ export const requestStoragePermission = async () => {
     await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
       {
-        title: 'TopCheer Storage Permission',
+        title: 'Motisesh Storage Permission',
         message:
-          'TopCheer needs access to external storage so you have access to Cheer Sessions',
+          'Motisesh needs access to external storage so you have access to Moti Sessions',
         buttonNeutral: 'Ask me later',
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',

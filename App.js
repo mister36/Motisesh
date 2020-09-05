@@ -2,11 +2,12 @@ import * as React from 'react';
 // Importing Navigation
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createDrawerNavigator} from '@react-navigation/drawer';
 
 // Stores
 import {useSessionStore, useAuthStore} from './src/zustand/store';
+
+// Notifications
+import {Notifications} from 'react-native-notifications';
 
 // Music playback
 import PlayMusic from './playMusic';
@@ -76,6 +77,24 @@ const App = () => {
     null,
   ]);
 
+  // Sets up notifications
+  const registerDevice = () => {
+    Notifications.events().registerRemoteNotificationsRegistered(event => {
+      console.log('Token received', event.deviceToken);
+    });
+    Notifications.events().registerRemoteNotificationsRegistrationFailed(
+      event => {
+        console.error(event);
+      },
+    );
+
+    Notifications.registerRemoteNotifications();
+  };
+
+  React.useEffect(() => {
+    registerDevice();
+  }, []);
+
   // checks for name in storage to know whether to render Home or not
   React.useEffect(() => {
     const checkForName = async () => {
@@ -109,6 +128,7 @@ const App = () => {
         </NavigationContainer>
       );
     } finally {
+      console.log('done');
       SplashScreen.hide();
     }
   } else if (

@@ -5,6 +5,8 @@ import {
   StyleSheet,
   Image,
   Pressable,
+  Platform,
+  StatusBar,
   // ScrollView,
 } from 'react-native';
 
@@ -58,6 +60,7 @@ import {loop, delay, timing as timingDash, useValue} from 'react-native-redash';
 
 // Icons
 import Foundation from 'react-native-vector-icons/Foundation';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 // Components
 import SessionNav from '../components/SessionNav';
@@ -277,6 +280,7 @@ const SessionScreen = ({navigation}) => {
 
   return (
     <Animated.View style={[styles.mainContainer]}>
+      <StatusBar backgroundColor="black" />
       {/* //!Animated background when session is playing */}
       {sessionPlaying ? (
         <Animated.View
@@ -398,60 +402,12 @@ const SessionScreen = ({navigation}) => {
         {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null}
         {/* <SessionAnimation /> */}
 
-        {/* // !Header on the bottom */}
-        {!sessionPlaying ? (
-          <Animated.View
-            style={[
-              styles.headerContainer,
-              {
-                opacity: interpolate(headerSlideVal, {
-                  inputRange: [0, 0.4, 1],
-                  outputRange: [1, 0, 0],
-                }),
-                transform: [
-                  {
-                    translateY: interpolate(headerSlideVal, {
-                      inputRange: [0, 0.4, 1],
-                      outputRange: [0, hp(5), hp(5)],
-                    }),
-                  },
-                ],
-              },
-            ]}>
-            <Animated.Text
-              style={[
-                styles.header,
-                {
-                  transform: [
-                    {
-                      translateY: interpolate(headerPosition, {
-                        inputRange: [0, 0.48, 0.49, 0.5, 0.98, 0.99, 1],
-                        outputRange: [0, 0, hp(-3), hp(-5), hp(-5), hp(-2), 0],
-                      }),
-                    },
-                  ],
-                },
-              ]}>
-              Tap to start Cheer Session!
-            </Animated.Text>
-            <Animated.Text
-              style={[
-                styles.header,
-                {
-                  transform: [
-                    {
-                      translateY: interpolate(headerPosition, {
-                        inputRange: [0, 0.48, 0.49, 0.5, 0.98, 0.99, 1],
-                        outputRange: [0, 0, hp(-3), hp(-5), hp(-5), hp(-2), 0],
-                      }),
-                    },
-                  ],
-                },
-              ]}>
-              3 sessions left
-            </Animated.Text>
+        <Animated.View style={styles.selectorContainer}>
+          <Animated.View style={styles.selectionBox}>
+            <Text style={styles.askToSelectText}>Choose a Moti Session!</Text>
+            <SimpleLineIcons name="arrow-down" style={styles.downIcon} />
           </Animated.View>
-        ) : null}
+        </Animated.View>
 
         {/* //! Pause and play button */}
         {sessionPlaying && !sessionPaused ? (
@@ -491,8 +447,8 @@ const styles = StyleSheet.create({
     height: hp(100),
   },
   logo: {
-    height: wp(49),
-    width: wp(42),
+    height: wp(44.545), // w:h = 6:7
+    width: wp(38.182),
     alignSelf: 'center',
   },
   headerContainer: {
@@ -512,7 +468,7 @@ const styles = StyleSheet.create({
   centerContentContainer: {
     // borderWidth: 2,
     position: 'absolute',
-    top: hp(25),
+    top: hp(28),
     zIndex: 7.1,
     alignSelf: 'center',
     height: wp(65),
@@ -533,12 +489,12 @@ const styles = StyleSheet.create({
     // zIndex: 10,
   },
   bigButton: {
-    borderRadius: wp(32.5),
+    borderRadius: wp(30),
     justifyContent: 'center',
     // zIndex: 12,
     // elevation: 9,
-    height: wp(65),
-    width: wp(65),
+    height: wp(60),
+    width: wp(60),
     backgroundColor: '#DE5642',
     // borderWidth: 2,
     // elevation: 9,
@@ -549,6 +505,34 @@ const styles = StyleSheet.create({
     zIndex: 5,
     // width: 300,
     // transform: [{scale: 0.9}],
+  },
+  selectorContainer: {
+    height: hp(10),
+    width: wp(80),
+    // borderWidth: 1,
+    position: 'absolute',
+    bottom: hp(25),
+    alignSelf: 'center',
+  },
+  selectionBox: {
+    borderColor: '#FFFFFF',
+    borderRadius: 5,
+    // borderWidth: 2,
+    width: wp(80),
+    backgroundColor: 'rgba(255, 255, 255, .1)',
+  },
+  askToSelectText: {
+    fontFamily: 'Lato-Black',
+    fontSize: wp(6.5),
+    marginTop: hp(1),
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  downIcon: {
+    fontSize: wp(9),
+    alignSelf: 'center',
+    marginTop: hp(1),
+    color: '#FFFFFF',
   },
   dancingFlame: {
     zIndex: 13,
