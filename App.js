@@ -128,7 +128,6 @@ const App = () => {
         </NavigationContainer>
       );
     } finally {
-      console.log('done');
       SplashScreen.hide();
     }
   } else if (

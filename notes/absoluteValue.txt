@@ -7,5 +7,6 @@ zIndexes:
     SessionAnimation component: 11
     stopSessionButton: 13
     tabbar container: 100 (should stay the highest unless good reason)
+    sessionOptions: 101 (will be quick)
     sessionNav: 100
     sessionAnimatedBackground: 7

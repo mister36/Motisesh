@@ -7,6 +7,7 @@ import {
   Pressable,
   Platform,
   StatusBar,
+  FlatList,
   // ScrollView,
 } from 'react-native';
 
@@ -43,6 +44,10 @@ import Animated, {
 import SessionAnimation from '../components/SessionAnimation';
 import WaveForm from '../components/Waveform';
 import StopSessionButton from '../components/StopSessionButton';
+import SessionSlider from '../components/SessionSlider';
+import SessionWheelPicker from '../components/SessionWheelPicker';
+import TimeLeftCircle from '../components/TimeLeftCircle';
+import SessionNav from '../components/SessionNav';
 
 // Store
 import shallow from 'zustand/shallow';
@@ -62,8 +67,12 @@ import {loop, delay, timing as timingDash, useValue} from 'react-native-redash';
 import Foundation from 'react-native-vector-icons/Foundation';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
-// Components
-import SessionNav from '../components/SessionNav';
+// import {Picker, PickerIOS} from '@react-native-community/picker';
+
+// console.log('picker; ', PickerIOS);
+
+// Circle list
+import CircleList from 'react-native-circle-list';
 
 // Styling
 import {
@@ -80,14 +89,22 @@ import Video from 'react-native-video';
 
 // Utils
 import {decToMin} from '../utils/getStats';
+import SongButton from '../components/SongButton';
 
 // Dancing flame animation
 const dancingFlame = require('../assets/animations/dancing_flame.json');
 
 const whooshSound = require('../assets/sound/whoosh.mp3');
 
+const changeScaleAnim = (node, endScale, duration) =>
+  timing(node, {
+    duration,
+    toValue: endScale,
+    easing: Easing.linear,
+  });
+
 const SessionScreen = ({navigation}) => {
-  // storage
+  // store
   const [
     sessionPlaying,
     sessionPaused,
@@ -103,9 +120,31 @@ const SessionScreen = ({navigation}) => {
     shallow,
   );
 
+  // categories
+  const categories = ['Be The Hero', 'Conquer The World', 'I Can Do This'];
+  const categoriesShort = ['Hero', 'Conquer', 'I Can'];
+
   // State
   const [completed, setCompleted] = React.useState(-1);
   const [userTapped, setUserTapped] = React.useState(false);
+  const [buttonVisible, setButtonVisible] = React.useState(true);
+  const [
+    animateSliderAndPickerAway,
+    setAnimateSliderAndPickerAway,
+  ] = React.useState(false);
+
+  const [sessionSliderShowing, setSessionSliderShowing] = React.useState(false);
+  const [sliderSessionType, setSliderSessionType] = React.useState('Hero');
+
+  // Refs
+  const shineRef = React.useRef('shineRef'); // shine animation
+
+  // Timer function
+  // const callAfterXMs = (callback, timeout) => {
+  //   setTimeout(() => {
+  //     callback()
+  //   }, timeout)
+  // }
 
   // Ask for access to storage if user is new
   React.useEffect(() => {
@@ -133,6 +172,8 @@ const SessionScreen = ({navigation}) => {
     pulse,
     headerSlideVal,
     buttonShrinkVal,
+    buttonScaleVal,
+    buttonOpacityVal,
     periLogoScaleVal,
     periLogoOpacityVal,
     periLogoBounceVal,
@@ -142,6 +183,8 @@ const SessionScreen = ({navigation}) => {
       pulse: new Value(0),
       headerSlideVal: new Value(0),
       buttonShrinkVal: new Value(1),
+      buttonScaleVal: new Value(1),
+      buttonOpacityVal: new Value(1),
       periLogoScaleVal: new Value(1),
       periLogoOpacityVal: new Value(0.5),
       periLogoBounceVal: new Value(0),
@@ -180,18 +223,12 @@ const SessionScreen = ({navigation}) => {
     easing: Easing.linear,
   });
 
-  // PeriLogo glow effect
-  useCode(() =>
-    set(
-      periLogoOpacityVal,
-      loop({
-        clock: new Clock(),
-        duration: 1000,
-        easing: Easing.linear,
-        boomerang: true,
-      }),
-    ),
-  );
+  // Main button fade out animation
+  const buttonFadeOutAnim = timing(buttonOpacityVal, {
+    duration: 400,
+    toValue: 0,
+    easing: Easing.linear,
+  });
 
   // Peri logo bounce effect
   useCode(
@@ -282,7 +319,7 @@ const SessionScreen = ({navigation}) => {
     <Animated.View style={[styles.mainContainer]}>
       <StatusBar backgroundColor="black" />
       {/* //!Animated background when session is playing */}
-      {sessionPlaying ? (
+      {/* {sessionPlaying ? (
         <Animated.View
           style={[
             styles.animatedBackground,
@@ -295,7 +332,7 @@ const SessionScreen = ({navigation}) => {
             style={{height: hp(100)}}
           />
         </Animated.View>
-      ) : null}
+      ) : null} */}
 
       {/* //! Linear Gradient background when session isn't playing */}
       <LinearGradient
@@ -327,39 +364,74 @@ const SessionScreen = ({navigation}) => {
           <Video source={whooshSound} audioOnly rate={1.5} />
         ) : null}
 
+        {sessionSliderShowing ? (
+          <>
+            {/* <SessionWheelPicker
+              data={categories}
+              fadeOut={animateSliderAndPickerAway}
+              onItemSelected={selectedInd => {
+                setSliderSessionType(categoriesShort[selectedInd]);
+              }}
+              style={[styles.wheelPickerContainer, {}]}
+            /> */}
+
+            <SessionSlider
+              animateDown={animateSliderAndPickerAway}
+              sessionType={sliderSessionType}
+              numItems={4}
+            />
+          </>
+        ) : null}
+
         {/* //! View that contains button and image hiding underneath */}
-        <Animated.View
-          onStartShouldSetResponder={() =>
-            console.log('center content presseds')
-          }
-          style={[styles.centerContentContainer]}>
-          {!sessionPlaying ? (
+        <Animated.View style={[styles.centerContentContainer]}>
+          {/* shine animation when button is clicked first time */}
+          <LottieView
+            source={require('../assets/animations/shine.json')}
+            loop={false}
+            ref={shineRef}
+            style={{
+              zIndex: 10,
+              elevation: 10,
+              width: wp(65),
+              position: 'absolute',
+            }}
+          />
+          {buttonVisible ? (
             // !Big Button
             <Animated.View
               style={[
                 styles.bigButtonContainer,
                 {
                   // backgroundColor: 'green',
-                  opacity: buttonShrinkVal.interpolate({
-                    inputRange: [0.6, 1],
-                    outputRange: [0, 1],
-                  }),
+                  opacity: buttonOpacityVal,
                   transform: [
                     {
-                      scale: !userTapped
-                        ? pulse.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [1, 1.1],
-                          })
-                        : buttonShrinkVal,
+                      scale: pulse.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [1, 1.1],
+                      }),
                     },
                   ],
                 },
               ]}>
               <Pressable
                 onPress={() => {
-                  setUserTapped(true);
-                  headerSlideAnim.start();
+                  if (!sessionSliderShowing) {
+                    shineRef.current.play();
+                    setSessionSliderShowing(true);
+                  } else if (sessionSliderShowing) {
+                    setAnimateSliderAndPickerAway(true);
+                    buttonFadeOutAnim.start(() => {
+                      setSessionSliderShowing(false);
+                      setButtonVisible(false);
+                      periLogoScaleAnim.start();
+                    });
+                    // setSessionSliderShowing(false);
+                  }
+
+                  // setUserTapped(true);
+                  // headerSlideAnim.start();
                 }}
                 style={[styles.bigButton]}>
                 <Image
@@ -391,6 +463,12 @@ const SessionScreen = ({navigation}) => {
               },
             ]}
           />
+
+          {!buttonVisible ? (
+            <TimeLeftCircle
+              style={{position: 'absolute', alignSelf: 'center', top: hp(-2)}}
+            />
+          ) : null}
         </Animated.View>
 
         {sessionPlaying ? (
@@ -401,13 +479,6 @@ const SessionScreen = ({navigation}) => {
 
         {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null}
         {/* <SessionAnimation /> */}
-
-        <Animated.View style={styles.selectorContainer}>
-          <Animated.View style={styles.selectionBox}>
-            <Text style={styles.askToSelectText}>Choose a Moti Session!</Text>
-            <SimpleLineIcons name="arrow-down" style={styles.downIcon} />
-          </Animated.View>
-        </Animated.View>
 
         {/* //! Pause and play button */}
         {sessionPlaying && !sessionPaused ? (
@@ -468,7 +539,7 @@ const styles = StyleSheet.create({
   centerContentContainer: {
     // borderWidth: 2,
     position: 'absolute',
-    top: hp(28),
+    top: hp(30),
     zIndex: 7.1,
     alignSelf: 'center',
     height: wp(65),
@@ -521,12 +592,21 @@ const styles = StyleSheet.create({
     width: wp(80),
     backgroundColor: 'rgba(255, 255, 255, .1)',
   },
+  sessionOptions: {
+    position: 'absolute',
+    top: hp(70),
+  },
   askToSelectText: {
     fontFamily: 'Lato-Black',
     fontSize: wp(6.5),
     marginTop: hp(1),
     color: '#FFFFFF',
     textAlign: 'center',
+  },
+  wheelPickerContainer: {
+    alignSelf: 'center',
+    position: 'absolute',
+    top: hp(10),
   },
   downIcon: {
     fontSize: wp(9),

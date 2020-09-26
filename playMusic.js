@@ -47,7 +47,7 @@ const PlayMusic = () => {
     <>
       <Video
         source={{
-          uri: 'http://192.168.1.73:4000/api/v1/audio/background',
+          uri: 'http://192.168.1.72:4000/api/v1/audio/background?genre=hero',
         }}
         ref={backgroundMusicRef}
         audioOnly={true}
@@ -69,7 +69,7 @@ const PlayMusic = () => {
       {googleVoiceShouldPlay ? (
         <Video
           source={{
-            uri: `http://192.168.1.73:4000/api/v1/audio/voice?name=${name}`,
+            uri: `http://192.168.1.72:4000/api/v1/audio/voice?name=${name}`,
           }}
           audioOnly
           ref={voiceRef}
@@ -91,11 +91,15 @@ const PlayMusic = () => {
       {name.length > 0 && shouldFirstVoice ? (
         <Video
           source={{
-            uri: `http://192.168.1.73:4000/api/v1/audio/voice?name=${name}&firstVoice=true`,
+            uri: `http://192.168.1.72:4000/api/v1/audio/voice?name=${name}&firstVoice=true`,
+            // uri: 'http://192.168.1.72:4000/api/v1/audio/background?genre=cars'
           }}
           audioOnly={true}
           playInBackground={true}
           playWhenInactive={true}
+          onError={(error) => {
+            console.log('error', error)
+          }}
           onLoad={data => {
             shouldVoicePlay(true);
             console.log('voice loadeed');
