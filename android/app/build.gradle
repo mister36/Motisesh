@@ -207,6 +207,8 @@ dependencies {
 
     implementation 'io.sentry:sentry-android:{version}'
 
+    implementation project(':react-native-svg')
+
     implementation project(':@voximplant_react-native-foreground-service')
 
     implementation project(':react-native-notifications')

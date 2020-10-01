@@ -1,76 +1,84 @@
 import * as React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Image,
+  InteractionManager,
+} from 'react-native';
+
+import LinearGradient from 'react-native-linear-gradient';
+
+import Foundation from 'react-native-vector-icons/Foundation';
+
+// store
+import {useSessionStore} from '../zustand/store';
+
+// Dimensions
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-// Icons
-import Foundation from 'react-native-vector-icons/Foundation';
+const SongButton = ({length, type, sessionTitle}) => {
+  // store
+  const [
+    shouldSessionRun,
+    testSessionAnimation,
+    sendSessionName,
+  ] = useSessionStore(state => [
+    state.shouldSessionRun,
+    state.testSessionAnimation,
+    state.sendSessionName,
+  ]);
 
-// Notification
-
-// import {useSessionStore} from '../zustand/store';
-
-const SongButton = ({type, title, style}) => {
-  // const info = useSessionStore(state => state.sessionPaused);
-  // console.log(info);
   let uri;
-  let backgroundColor;
-  let tintColor;
-  switch (type) {
-    case 'Hero':
-      uri = 'knight';
-      backgroundColor = 'purple';
-      tintColor = '#E82F2F';
-      // imgPath = require('../assets/images/warrior.jpeg');
-      break;
-    case 'Conquer':
-      uri = 'dragon';
-      backgroundColor = '#37B946';
-      tintColor = '#3752D0';
-      break;
-    case 'I Can':
-      uri = 'flexing';
-      backgroundColor = '#E86A2F';
-      tintColor = '#E8DA2F';
-      break;
-    default:
-      console.log('inputted invalid type');
+  if (type === 'hero') {
+    uri = 'battlefield';
+  } else if (type === 'rise') {
+    uri = 'blue_sword';
   }
-
   return (
-    <View style={[styles.container, {backgroundColor}, style]}>
+    <Pressable
+      onPress={() => {
+        testSessionAnimation();
+        sendSessionName(sessionTitle);
+        // shouldSessionRun(sessionTitle);
+      }}
+      style={[
+        styles.container,
+        {height: length, width: length, borderRadius: length / 2},
+      ]}>
       <Image
-        tintColor={tintColor}
-        source={{uri}} // android asset folder
-        style={styles.backgroundImg}
+        source={{uri}}
+        style={[
+          {height: length, width: length, borderRadius: length / 2},
+          styles.image,
+        ]}
       />
+      {/* <Text>Hero session</Text> */}
       <Foundation name="play" style={styles.playIcon} />
-    </View>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: wp(24),
-    width: wp(24),
-    borderRadius: wp(12),
-    backgroundColor: 'purple',
+    // height: wp(27),
+    // width: wp(27),
+    // backgroundColor: 'rgba(255, 255, 255, .5)',
+    // borderRadius: wp(13.5),
     justifyContent: 'center',
-    position: 'relative',
-    // TODO: remove this
-    // marginLeft: wp(20),
+    // TODO: remove this margin
+    // marginLeft: wp(5),
   },
   playIcon: {
     color: '#ffffff',
     fontSize: wp(13),
     alignSelf: 'center',
   },
-  backgroundImg: {
-    height: wp(24),
-    width: wp(24),
-    borderRadius: wp(12),
+  image: {
     position: 'absolute',
   },
 });

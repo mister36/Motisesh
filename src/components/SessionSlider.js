@@ -17,7 +17,7 @@ import LottieView from 'lottie-react-native';
 
 import {useMemoOne} from 'use-memo-one';
 
-import SongButton from './SongButton';
+import SongTypeButton from './SongTypeButton';
 
 import {
   heightPercentageToDP as hp,
@@ -41,7 +41,7 @@ const labelFadeIn = animatedValue =>
     easing: Easing.linear,
   });
 
-const SessionSlider = ({sessionType, numItems, animateDown = false, ref}) => {
+const SessionSlider = ({animateDown = false, style, setOptionsShown}) => {
   // state
   const [buttonLabelIndex, setButtonLabelIndex] = React.useState('1');
 
@@ -76,23 +76,29 @@ const SessionSlider = ({sessionType, numItems, animateDown = false, ref}) => {
 
   return (
     <Animated.View
-      style={{
-        position: 'absolute',
-        top: yPositionVal,
-        width: wp(100),
-        height: hp(16),
-        // borderWidth: 1,
-      }}>
+      style={
+        ([
+          {
+            // position: 'absolute',
+            // top: yPositionVal,
+            width: wp(100),
+            height: hp(16),
+            // borderWidth: 2,
+          },
+        ],
+        style)
+      }>
       <Carousel
         containerCustomStyle={{zIndex: 10}}
-        data={[{type: 'hero'}, {type: 'hero'}, {type: 'hero'}, {type: 'hero'}]}
+        data={[{type: 'hero'}, {type: 'rise'}]}
         inactiveSlideScale={0.7}
         renderItem={({item, index}) => {
-          return <SongButton type={sessionType} />;
+          return <SongTypeButton type={item.type} />;
         }}
-        itemWidth={wp(24)}
+        itemWidth={wp(28)}
         sliderWidth={wp(100)}
         onSnapToItem={slideIndex => {
+          setOptionsShown(slideIndex === 0 ? 'hero' : 'rise');
           labelFadeOut(buttonLabelOpacityVal).start(({finished}) => {
             if (finished) {
               setButtonLabelIndex(`${slideIndex + 1}`);
@@ -102,25 +108,25 @@ const SessionSlider = ({sessionType, numItems, animateDown = false, ref}) => {
         }}
       />
 
-      <Animated.Text
+      {/* <Animated.Text
         style={{
           opacity: buttonLabelOpacityVal,
           alignSelf: 'center',
           fontFamily: 'Lato-Bold',
           fontSize: wp(5.2),
           color: '#25919E',
-        }}>
-        {sessionType} {buttonLabelIndex}
-        {/* {buttonLabel} */}
-      </Animated.Text>
+        }}> */}
+      {/* {sessionType} {buttonLabelIndex} */}
+      {/* {buttonLabel} */}
+      {/* </Animated.Text> */}
 
       <LottieView
         style={{
-          width: wp(52),
+          width: wp(62),
           position: 'absolute',
           zIndex: 7,
-          left: wp(11.5),
-          top: hp(-3.5),
+          left: wp(9),
+          top: hp(-4),
         }}
         autoPlay
         loop

@@ -59,6 +59,7 @@ const MaterialTabNav = () => {
     <MaterialTab.Navigator
       initialRouteName="Session"
       initialLayout={{width: wp(100), height: hp(100)}}
+      sceneContainerStyle={{backgroundColor: '#ffffff'}}
       tabBar={props => <TabBar {...props} />}>
       <MaterialTab.Screen name="Settings" component={SettingsScreen} />
       <MaterialTab.Screen name="Session" component={SessionScreen} />

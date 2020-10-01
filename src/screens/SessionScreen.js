@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {Suspense} from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Platform,
   StatusBar,
   FlatList,
+  InteractionManager,
   // ScrollView,
 } from 'react-native';
 
@@ -48,6 +49,7 @@ import SessionSlider from '../components/SessionSlider';
 import SessionWheelPicker from '../components/SessionWheelPicker';
 import TimeLeftCircle from '../components/TimeLeftCircle';
 import SessionNav from '../components/SessionNav';
+import PeriLogo from '../components/PeriLogo';
 
 // Store
 import shallow from 'zustand/shallow';
@@ -89,33 +91,41 @@ import Video from 'react-native-video';
 
 // Utils
 import {decToMin} from '../utils/getStats';
-import SongButton from '../components/SongButton';
+import SongTypeButton from '../components/SongTypeButton';
+// import SongContainer from '../components/SongContainer';
 
 // Dancing flame animation
 const dancingFlame = require('../assets/animations/dancing_flame.json');
 
 const whooshSound = require('../assets/sound/whoosh.mp3');
 
-const changeScaleAnim = (node, endScale, duration) =>
+// used for any simple animations
+const animConstructorFunc = (node, endVal, duration, easing = Easing.linear) =>
   timing(node, {
     duration,
-    toValue: endScale,
-    easing: Easing.linear,
+    toValue: endVal,
+    easing,
   });
 
+// Rendering SongContainer lazily
+const SongContainer = React.lazy(() => import('../components/SongContainer'));
+
 const SessionScreen = ({navigation}) => {
+  console.log('SESSION SCREEN RENDERED');
   // store
   const [
     sessionPlaying,
     sessionPaused,
     shouldSessionRun,
     shouldSessionPause,
+    // getReadyForSessionUI,
   ] = useSessionStore(
     state => [
       state.sessionPlaying,
       state.sessionPaused,
       state.shouldSessionRun,
       state.shouldSessionPause,
+      // state.getReadyForSessionUI,
     ],
     shallow,
   );
@@ -132,19 +142,21 @@ const SessionScreen = ({navigation}) => {
     animateSliderAndPickerAway,
     setAnimateSliderAndPickerAway,
   ] = React.useState(false);
+  const [animateSongContainerUp, setAnimateSongContainerUp] = React.useState(
+    false,
+  );
 
   const [sessionSliderShowing, setSessionSliderShowing] = React.useState(false);
-  const [sliderSessionType, setSliderSessionType] = React.useState('Hero');
 
   // Refs
   const shineRef = React.useRef('shineRef'); // shine animation
 
   // Timer function
-  // const callAfterXMs = (callback, timeout) => {
-  //   setTimeout(() => {
-  //     callback()
-  //   }, timeout)
-  // }
+  const callAfterXMs = (callback, timeout) => {
+    setTimeout(() => {
+      callback();
+    }, timeout);
+  };
 
   // Ask for access to storage if user is new
   React.useEffect(() => {
@@ -164,6 +176,26 @@ const SessionScreen = ({navigation}) => {
     checkIfNewUser();
   }, []);
 
+  // Checks to see whether the screen should remove all pre-session objects
+  // REMEMBER: BUTTON STILL BEING SHOWN, FIX THIS
+  React.useEffect(
+    () =>
+      useSessionStore.subscribe(
+        getReadyForSessionUI => {
+          if (getReadyForSessionUI) {
+            setAnimateSongContainerUp(true);
+            animConstructorFunc(buttonTranslateXVal, 1, 400).start(() => {
+              setSessionSliderShowing(false);
+              setButtonVisible(false);
+              shouldSessionRun(true);
+            });
+          }
+        },
+        state => state.getReadyForSessionUI,
+      ),
+    [],
+  );
+
   // Animated background
   const animatedBackground = require('../assets/animations/session_background.json');
 
@@ -171,6 +203,8 @@ const SessionScreen = ({navigation}) => {
   const {
     pulse,
     headerSlideVal,
+    buttonTranslateYVal,
+    buttonTranslateXVal,
     buttonShrinkVal,
     buttonScaleVal,
     buttonOpacityVal,
@@ -182,6 +216,8 @@ const SessionScreen = ({navigation}) => {
     () => ({
       pulse: new Value(0),
       headerSlideVal: new Value(0),
+      buttonTranslateYVal: new Value(0),
+      buttonTranslateXVal: new Value(0),
       buttonShrinkVal: new Value(1),
       buttonScaleVal: new Value(1),
       buttonOpacityVal: new Value(1),
@@ -341,7 +377,7 @@ const SessionScreen = ({navigation}) => {
         style={[styles.preSessionGradientContainer]}>
         <SessionNav navigation={navigation} />
         {/* //!Dancing flame */}
-        {userTapped ? (
+        {/* {userTapped ? (
           <LottieView
             source={dancingFlame}
             autoPlay
@@ -358,34 +394,50 @@ const SessionScreen = ({navigation}) => {
               });
             }}
           />
-        ) : null}
+        ) : null} */}
         {/* //!Dancing flame sound */}
-        {userTapped ? (
+        {/* {userTapped ? (
           <Video source={whooshSound} audioOnly rate={1.5} />
-        ) : null}
+        ) : null} */}
 
         {sessionSliderShowing ? (
           <>
-            {/* <SessionWheelPicker
-              data={categories}
-              fadeOut={animateSliderAndPickerAway}
-              onItemSelected={selectedInd => {
-                setSliderSessionType(categoriesShort[selectedInd]);
-              }}
-              style={[styles.wheelPickerContainer, {}]}
-            /> */}
+            <Suspense fallback={<Text style={{fontSize: 30}} />}>
+              <SongContainer animateUp={animateSongContainerUp} />
 
-            <SessionSlider
+              {/* <SessionSlider
+              style={{position: 'absolute', bottom: hp(15)}}
               animateDown={animateSliderAndPickerAway}
-              sessionType={sliderSessionType}
-              numItems={4}
-            />
+            /> */}
+            </Suspense>
           </>
         ) : null}
 
+        {/* Image that shows during session */}
+        {sessionPlaying ? (
+          <PeriLogo style={{position: 'absolute', top: hp(28)}} />
+        ) : null}
+
         {/* //! View that contains button and image hiding underneath */}
-        <Animated.View style={[styles.centerContentContainer]}>
-          {/* shine animation when button is clicked first time */}
+        <Animated.View
+          style={[
+            styles.centerContentContainer,
+            {
+              transform: [
+                {
+                  translateY: buttonTranslateYVal.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, hp(28)],
+                  }),
+                  translateX: buttonTranslateXVal.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -wp(100)],
+                  }),
+                },
+              ],
+            },
+          ]}>
+          {/* shine animation when button is clicked every odd time */}
           <LottieView
             source={require('../assets/animations/shine.json')}
             loop={false}
@@ -419,19 +471,17 @@ const SessionScreen = ({navigation}) => {
                 onPress={() => {
                   if (!sessionSliderShowing) {
                     shineRef.current.play();
+                    animConstructorFunc(buttonTranslateYVal, 1, 300).start();
+                    setAnimateSongContainerUp(false);
                     setSessionSliderShowing(true);
                   } else if (sessionSliderShowing) {
-                    setAnimateSliderAndPickerAway(true);
-                    buttonFadeOutAnim.start(() => {
-                      setSessionSliderShowing(false);
-                      setButtonVisible(false);
-                      periLogoScaleAnim.start();
-                    });
-                    // setSessionSliderShowing(false);
-                  }
+                    animConstructorFunc(buttonTranslateYVal, 0, 300).start();
+                    setAnimateSongContainerUp(true);
 
-                  // setUserTapped(true);
-                  // headerSlideAnim.start();
+                    callAfterXMs(() => {
+                      setSessionSliderShowing(false);
+                    }, 600);
+                  }
                 }}
                 style={[styles.bigButton]}>
                 <Image
@@ -442,40 +492,18 @@ const SessionScreen = ({navigation}) => {
             </Animated.View>
           ) : null}
 
-          {/* //! Image under button, shown during session */}
-          <Animated.Image
-            source={require('../assets/images/white-logo.png')}
-            style={[
-              styles.logo,
-              styles.periLogo,
-              {
-                transform: [
-                  {
-                    scale: periLogoScaleVal,
-                  },
-                  {
-                    translateY: periLogoBounceVal.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, hp(3)],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          />
-
-          {!buttonVisible ? (
+          {sessionPlaying ? (
             <TimeLeftCircle
               style={{position: 'absolute', alignSelf: 'center', top: hp(-2)}}
             />
           ) : null}
         </Animated.View>
 
-        {sessionPlaying ? (
+        {/* {sessionPlaying ? (
           <>
             <WaveForm style={{position: 'absolute', top: hp(20), zIndex: 7}} />
           </>
-        ) : null}
+        ) : null} */}
 
         {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null}
         {/* <SessionAnimation /> */}
@@ -569,13 +597,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#DE5642',
     // borderWidth: 2,
     // elevation: 9,
-  },
-  periLogo: {
-    // position: 'absolute',
-    // top: hp(33),
-    zIndex: 5,
-    // width: 300,
-    // transform: [{scale: 0.9}],
   },
   selectorContainer: {
     height: hp(10),

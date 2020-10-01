@@ -10,10 +10,28 @@ import shallow from 'zustand/shallow';
 
 const PlayMusic = () => {
   // Store state
-  const [sessionPaused, shouldVoicePlay] = useSessionStore(
-    state => [state.sessionPaused, state.shouldVoicePlay],
+  const [
+    sessionPaused,
+    shouldVoicePlay,
+    currentSessionURL,
+    currentVoiceSessionURL,
+    durationOfSessionSetter,
+    currentSessionTimeSetter,
+  ] = useSessionStore(
+    state => [
+      state.sessionPaused,
+      state.shouldVoicePlay,
+      state.currentSessionURL,
+      state.currentVoiceSessionURL,
+      state.durationOfSessionSetter,
+      state.currentSessionTimeSetter,
+    ],
     shallow,
   );
+
+  // console.log('shouldVoicePlay: ', shouldVoicePlay);
+  // console.log('not shouldVoicePlay: ', sessionPaused);
+  // console.log('right after ', useSessionStore);
 
   // Refs
   const backgroundMusicRef = React.useRef('backgroundMusicRef');
@@ -23,43 +41,50 @@ const PlayMusic = () => {
   const [googleVoiceShouldPlay, setGoogleVoiceShouldPlay] = React.useState(
     false,
   );
-  const [name, setName] = React.useState('');
   const [shouldFirstVoice, setShouldFirstVoice] = React.useState(true);
+  const [name, setName] = React.useState('');
   // console.log(
   //   'sessionPaused or shouldFirstVoice: ',
   //   sessionPaused || shouldFirstVoice,
   // );
 
-  // Sets name for HTTP request
+  // sets users name for session
   React.useEffect(() => {
-    const getName = async () => {
+    const getFirstName = async () => {
       try {
-        const nameInStorage = await AsyncStorage.getItem('name');
-        setName(nameInStorage);
+        const firstName = await AsyncStorage.getItem('name');
+        // name = firstName;
+        setName(firstName);
       } catch (error) {
-        console.error(error);
+        console.log('FIRST NAME ERROR', error);
+        return 'Bob';
       }
     };
-    getName();
+    getFirstName();
   }, []);
 
   return (
     <>
       <Video
         source={{
-          uri: 'http://192.168.1.72:4000/api/v1/audio/background?genre=hero',
+          // uri:
+          // 'https://file-examples-com.github.io/uploads/2017/11/file_example_OOG_1MG.ogg',
+          uri: currentSessionURL,
         }}
         ref={backgroundMusicRef}
         audioOnly={true}
         playInBackground={true}
         playWhenInactive={true}
         progressUpdateInterval={10000}
-        volume={0.6}
+        volume={1}
         rate={1}
         onLoad={data => {
+          console.log('data from playMusc ', data);
+          durationOfSessionSetter(data.duration);
           console.log('loadeed');
         }}
         onProgress={data => {
+          currentSessionTimeSetter(data.currentTime);
           setGoogleVoiceShouldPlay(true);
         }}
         // Paused if the session is paused or the starting google voice is playing
@@ -69,20 +94,21 @@ const PlayMusic = () => {
       {googleVoiceShouldPlay ? (
         <Video
           source={{
-            uri: `http://192.168.1.72:4000/api/v1/audio/voice?name=${name}`,
+            // currentVoiceSessionURL = http://192.168.1.72:4000/api/v1/audio/voice?genre=hero&firstName=
+            uri: `${currentVoiceSessionURL}&firstName=${name}`,
           }}
           audioOnly
           ref={voiceRef}
           playInBackground={true}
           playWhenInactive={true}
           onLoad={() => {
-            shouldVoicePlay(true);
-            backgroundMusicRef.current.setNativeProps({volume: 0.3});
+            // shouldVoicePlay(true);
+            backgroundMusicRef.current.setNativeProps({volume: 0.4});
           }}
           onEnd={() => {
-            shouldVoicePlay(false);
+            // shouldVoicePlay(false);
             setGoogleVoiceShouldPlay(false);
-            backgroundMusicRef.current.setNativeProps({volume: 0.6});
+            backgroundMusicRef.current.setNativeProps({volume: 1});
           }}
           paused={sessionPaused}
         />
@@ -91,21 +117,20 @@ const PlayMusic = () => {
       {name.length > 0 && shouldFirstVoice ? (
         <Video
           source={{
-            uri: `http://192.168.1.72:4000/api/v1/audio/voice?name=${name}&firstVoice=true`,
-            // uri: 'http://192.168.1.72:4000/api/v1/audio/background?genre=cars'
+            uri: `${currentVoiceSessionURL}&firstName=${name}&firstVoice=true`,
           }}
           audioOnly={true}
           playInBackground={true}
           playWhenInactive={true}
-          onError={(error) => {
-            console.log('error', error)
+          onError={error => {
+            console.log('error', error);
           }}
           onLoad={data => {
-            shouldVoicePlay(true);
+            // shouldVoicePlay(true);
             console.log('voice loadeed');
           }}
           onEnd={() => {
-            shouldVoicePlay(false);
+            // shouldVoicePlay(false);
             setShouldFirstVoice(false);
           }}
           paused={sessionPaused}

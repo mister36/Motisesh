@@ -41,7 +41,7 @@ const StopSessionButton = ({style}) => {
 
           <View style={styles.modalButtonContainer}>
             <Pressable
-              onPress={() => shouldSessionRun(false)}
+              onPress={() => shouldSessionRun('', false)}
               style={[styles.modalButton, {backgroundColor: '#CA2121'}]}>
               <Text style={[styles.modalButtonText, {color: '#FFFFFF'}]}>
                 End Session
