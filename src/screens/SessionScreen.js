@@ -111,7 +111,7 @@ const animConstructorFunc = (node, endVal, duration, easing = Easing.linear) =>
 const SongContainer = React.lazy(() => import('../components/SongContainer'));
 
 const SessionScreen = ({navigation}) => {
-  console.log('SESSION SCREEN RENDERED');
+  // console.log('SESSION SCREEN RENDERED');
   // store
   const [
     sessionPlaying,
@@ -129,10 +129,6 @@ const SessionScreen = ({navigation}) => {
     ],
     shallow,
   );
-
-  // categories
-  const categories = ['Be The Hero', 'Conquer The World', 'I Can Do This'];
-  const categoriesShort = ['Hero', 'Conquer', 'I Can'];
 
   // State
   const [completed, setCompleted] = React.useState(-1);

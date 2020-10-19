@@ -32,7 +32,6 @@ const animConstructorFunc = (node, endVal, duration, easing = Easing.linear) =>
 
 const PeriLogo = ({style}) => {
   const durationOfSession = useSessionStore(state => state.durationOfSession);
-  console.log('duration: ', durationOfSession);
   // refs
   const progressRef = React.useRef('progressRef');
 
@@ -43,10 +42,6 @@ const PeriLogo = ({style}) => {
         currentSessionTime => {
           console.log(
             `currentSessionTime: ${currentSessionTime}, durationOfSession: ${durationOfSession}`,
-          );
-          console.log(
-            'fill should be ',
-            (currentSessionTime / durationOfSession) * 100,
           );
           progressRef.current.animate(
             (currentSessionTime / durationOfSession) * 100,

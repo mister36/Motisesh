@@ -54,7 +54,7 @@ const SessionAnimation = () => {
   React.useEffect(() => {
     const lightningTimer = BackgroundTimer.setInterval(() => {
       setLightningVisible(true);
-    }, 10000);
+    }, 12000);
 
     return () => BackgroundTimer.clearInterval(lightningTimer);
   }, [lightningVisible]);
@@ -67,13 +67,13 @@ const SessionAnimation = () => {
     return () => BackgroundTimer.clearInterval(explodeTimer);
   }, [explodeVisible]);
 
-  React.useEffect(() => {
-    const chantTimer = BackgroundTimer.setInterval(() => {
-      setPlayChant(true);
-    }, 40000);
+  // React.useEffect(() => {
+  //   const chantTimer = BackgroundTimer.setInterval(() => {
+  //     setPlayChant(true);
+  //   }, 40000);
 
-    return () => BackgroundTimer.clearInterval(chantTimer);
-  }, []);
+  //   return () => BackgroundTimer.clearInterval(chantTimer);
+  // }, []);
 
   return (
     <Animated.View style={[styles.container]}>
@@ -95,7 +95,7 @@ const SessionAnimation = () => {
           />
           <Video
             source={require('../assets/sound/thunder.mp3')}
-            volume={0.5}
+            volume={0.1}
             rate={1.3}
             playInBackground
             playWhenInactive
@@ -136,7 +136,7 @@ const SessionAnimation = () => {
           onEnd={() => setPlayChant(false)}
           ref={chantRef}
           // rate={2.9}
-          volume={0.6}
+          volume={0.5}
         />
       ) : null}
     </Animated.View>

@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 let wakeful = new Wakeful();
 
-const voiceUrlBase = 'http://192.168.1.72:4000/api/v1/audio/voice';
+const voiceUrlBase = 'http://192.168.1.72:4000/api/v1/audio/voice.opus';
 const sessionUrlBase = 'http://192.168.1.72:4000/api/v1/audio/background';
 
 /* currentSessionURL: url for session
