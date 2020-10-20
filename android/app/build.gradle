@@ -136,7 +136,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.motisesh.motisesh"
+        applicationId "com.motisesh"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
