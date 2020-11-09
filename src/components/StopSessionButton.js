@@ -13,7 +13,10 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 
 const StopSessionButton = ({style}) => {
-  const shouldSessionRun = useSessionStore(state => state.shouldSessionRun);
+  const [shouldSessionRun, shouldSessionEnd] = useSessionStore(state => [
+    state.shouldSessionRun,
+    state.shouldSessionEnd,
+  ]);
 
   const [modalVisible, setModalVisible] = React.useState(false);
   return (
@@ -41,7 +44,7 @@ const StopSessionButton = ({style}) => {
 
           <View style={styles.modalButtonContainer}>
             <Pressable
-              onPress={() => shouldSessionRun('', false)}
+              onPress={() => shouldSessionEnd()}
               style={[styles.modalButton, {backgroundColor: '#CA2121'}]}>
               <Text style={[styles.modalButtonText, {color: '#FFFFFF'}]}>
                 End Session

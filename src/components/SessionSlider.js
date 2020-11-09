@@ -108,30 +108,33 @@ const SessionSlider = ({animateDown = false, style, setOptionsShown}) => {
         }}
       />
 
-      {/* <Animated.Text
+      <View
         style={{
-          opacity: buttonLabelOpacityVal,
-          alignSelf: 'center',
-          fontFamily: 'Lato-Bold',
-          fontSize: wp(5.2),
-          color: '#25919E',
-        }}> */}
-      {/* {sessionType} {buttonLabelIndex} */}
-      {/* {buttonLabel} */}
-      {/* </Animated.Text> */}
-
-      <LottieView
-        style={{
-          width: wp(62),
+          // borderWidth: 2,
           position: 'absolute',
           zIndex: 7,
-          left: wp(9),
-          top: hp(-4),
-        }}
-        autoPlay
-        loop
-        source={require('../assets/animations/ring_fire.json')}
-      />
+          // alignSelf: 'center',
+          left: wp(17.5),
+          top: hp(-9.5),
+        }}>
+        <LottieView
+          style={{
+            // width: wp(45),
+            width: wp(63),
+            // height: wp(62),
+            // position: 'absolute',
+            // zIndex: 7,
+            // alignSelf: 'center',
+            // top: hp(-3),
+            // left: wp(9),
+            // top: hp(-4),
+          }}
+          autoPlay
+          loop
+          resizeMode="cover"
+          source={require('../assets/animations/ring_fire.json')}
+        />
+      </View>
     </Animated.View>
   );
 };

@@ -1,4 +1,5 @@
 import create from 'zustand';
+import {Platform} from 'react-native';
 import {devtools} from 'zustand/middleware';
 import VIForegroundService from '@voximplant/react-native-foreground-service';
 import Wakeful from 'react-native-wakeful';
@@ -17,6 +18,17 @@ sessionPaused: whether or not session is paused
 voicePlaying: whether or not the Google voice is playing
 getReadyForSessionUI: whether to animate away objects on SessionScreen; this changes to true when the session first starts
  */
+
+const getFirstName = async () => {
+  try {
+    const firstName = await AsyncStorage.getItem('name');
+    // name = firstName;
+    return firstName;
+  } catch (error) {
+    console.log('FIRST NAME ERROR', error);
+    return 'Bob';
+  }
+};
 
 let name;
 const setName = async () => {
@@ -40,6 +52,7 @@ const useSessionStore = create((set, get) => ({
   sessionPlaying: false,
   sessionPaused: false,
   voicePlaying: false,
+  sessionEnding: false,
   setVoicePlayingOnSessionPlaying: false,
   getReadyForSessionUI: false,
   durationOfSession: 0,
@@ -64,11 +77,16 @@ const useSessionStore = create((set, get) => ({
           }),
           // 'shouldSessionRun',
         );
-        wakeful.acquire();
-        await startForeground();
+
+        if (Platform.OS === 'android') {
+          wakeful.acquire();
+          await startForeground();
+        }
       } else {
-        VIForegroundService.stopService();
-        wakeful.release();
+        if (Platform.OS === 'android') {
+          await stopForeground();
+        }
+
         set(
           state => ({
             sessionPlaying: false,
@@ -116,13 +134,36 @@ const useSessionStore = create((set, get) => ({
       );
     }
   },
+  shouldSessionEnd: async () => {
+    try {
+      Platform.OS === 'android' ? await stopForeground() : null;
+      set(state => ({
+        sessionEnding: true,
+        sessionPlaying: false,
+        sessionPaused: false,
+        voicePlaying: false,
+        durationOfSession: 0,
+        currentSessionTime: 0,
+        currentSessionURL: '',
+        currentVoiceSessionURL: '',
+        sessionName: '',
+      }));
+    } catch (error) {
+      console.log(error);
+    }
+  },
   shouldVoicePlay: bool => {
     set(
       state => ({voicePlaying: bool}),
       // 'shouldVoicePlay'
     );
   },
-  // testng purposes only
+  resetSessionUI: () => {
+    set(state => ({getReadyForSessionUI: false}));
+  },
+  resetForNewSession: () => {
+    set(state => ({sessionEnding: false, getReadyForSessionUI: false}));
+  },
   testSessionAnimation: () => {
     set(state => ({getReadyForSessionUI: true}));
   },
@@ -164,14 +205,12 @@ const startForeground = async () => {
   }
 };
 
-const getFirstName = async () => {
+const stopForeground = async () => {
+  wakeful.release();
   try {
-    const firstName = await AsyncStorage.getItem('name');
-    // name = firstName;
-    return firstName;
+    await VIForegroundService.stopService();
   } catch (error) {
-    console.log('FIRST NAME ERROR', error);
-    return 'Bob';
+    console.log(error);
   }
 };
 

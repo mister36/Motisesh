@@ -9,6 +9,7 @@ import {
   StatusBar,
   FlatList,
   InteractionManager,
+  SafeAreaView,
   // ScrollView,
 } from 'react-native';
 
@@ -50,6 +51,7 @@ import SessionWheelPicker from '../components/SessionWheelPicker';
 import TimeLeftCircle from '../components/TimeLeftCircle';
 import SessionNav from '../components/SessionNav';
 import PeriLogo from '../components/PeriLogo';
+import EndSessionModal from '../components/EndSessionModal';
 
 // Store
 import shallow from 'zustand/shallow';
@@ -75,6 +77,12 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 // Circle list
 import CircleList from 'react-native-circle-list';
+
+// In app subscription
+import Iaphub from 'react-native-iaphub';
+
+// Device info
+import DeviceInfo from 'react-native-device-info';
 
 // Styling
 import {
@@ -118,14 +126,12 @@ const SessionScreen = ({navigation}) => {
     sessionPaused,
     shouldSessionRun,
     shouldSessionPause,
-    // getReadyForSessionUI,
   ] = useSessionStore(
     state => [
       state.sessionPlaying,
       state.sessionPaused,
       state.shouldSessionRun,
       state.shouldSessionPause,
-      // state.getReadyForSessionUI,
     ],
     shallow,
   );
@@ -141,8 +147,10 @@ const SessionScreen = ({navigation}) => {
   const [animateSongContainerUp, setAnimateSongContainerUp] = React.useState(
     false,
   );
-
   const [sessionSliderShowing, setSessionSliderShowing] = React.useState(false);
+  const [endSessionModalShowing, setEndSessionModalShowing] = React.useState(
+    false,
+  );
 
   // Refs
   const shineRef = React.useRef('shineRef'); // shine animation
@@ -162,7 +170,7 @@ const SessionScreen = ({navigation}) => {
           'external_storage_permission',
         );
 
-        if (!externalStoragePermission) {
+        if (!externalStoragePermission && Platform.OS === 'android') {
           await requestStoragePermission();
         }
       } catch (error) {
@@ -185,9 +193,31 @@ const SessionScreen = ({navigation}) => {
               setButtonVisible(false);
               shouldSessionRun(true);
             });
+          } else {
+            console.log('RESETTING SESSION UI');
+            setButtonVisible(true);
+            buttonTranslateXVal.setValue(0);
+            buttonTranslateYVal.setValue(0);
+            setEndSessionModalShowing(false);
           }
         },
         state => state.getReadyForSessionUI,
+      ),
+    [],
+  );
+
+  // When session ends, EndSessionModal pops up
+  React.useEffect(
+    () =>
+      useSessionStore.subscribe(
+        sessionEnding => {
+          if (sessionEnding) {
+            console.log('session ending');
+            setEndSessionModalShowing(true);
+            // console.log('session ending');
+          }
+        },
+        state => state.sessionEnding,
       ),
     [],
   );
@@ -225,6 +255,8 @@ const SessionScreen = ({navigation}) => {
     [],
   );
 
+  // const {buttonTranslateXVal} = useMemoOne(() => ({buttonTranslateXVal: new Value(0)}), [geee])
+
   // !Code needed for button pulse effect
   useCode(
     () =>
@@ -241,6 +273,32 @@ const SessionScreen = ({navigation}) => {
     [pulse],
   );
 
+  // Setting User Id for subscription
+  const setUserIdForSubscription = async () => {
+    const uniqueId = DeviceInfo.getUniqueId();
+    console.log('UNIQUE ID: ', uniqueId);
+    try {
+      await Iaphub.setUserId(uniqueId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // GETTING SUBSCRIPTION
+  const getSubDetails = async () => {
+    try {
+      await setUserIdForSubscription();
+      const products = await Iaphub.getProductsForSale();
+      console.log(products);
+    } catch (error) {
+      console.log('IAP error: ', error);
+    }
+  };
+
+  React.useEffect(() => {
+    getSubDetails();
+  }, []);
+
+  /////////////////////////
   // Header slide animation
   const headerSlideAnim = timing(headerSlideVal, {
     duration: 200,
@@ -348,189 +406,162 @@ const SessionScreen = ({navigation}) => {
   });
 
   return (
-    <Animated.View style={[styles.mainContainer]}>
-      <StatusBar backgroundColor="black" />
-      {/* //!Animated background when session is playing */}
-      {/* {sessionPlaying ? (
-        <Animated.View
-          style={[
-            styles.animatedBackground,
-            {opacity: runAnimatedBackgroundFade()},
-          ]}>
-          <LottieView
-            source={animatedBackground}
-            autoPlay
-            speed={2.5}
-            style={{height: hp(100)}}
-          />
-        </Animated.View>
-      ) : null} */}
-
-      {/* //! Linear Gradient background when session isn't playing */}
-      <LinearGradient
-        colors={['#E26452', '#F59C75']}
-        end={{x: 0.5, y: 1}}
-        style={[styles.preSessionGradientContainer]}>
-        <SessionNav navigation={navigation} />
-        {/* //!Dancing flame */}
-        {/* {userTapped ? (
-          <LottieView
-            source={dancingFlame}
-            autoPlay
-            loop={false}
-            duration={1000}
-            style={styles.dancingFlame}
-            onAnimationFinish={() => {
-              setUserTapped(false);
-              buttonShrinkAnim.start(data => {
-                if (data.finished) {
-                  shouldSessionRun();
-                  periLogoScaleAnim.start();
-                }
-              });
-            }}
-          />
-        ) : null} */}
-        {/* //!Dancing flame sound */}
-        {/* {userTapped ? (
-          <Video source={whooshSound} audioOnly rate={1.5} />
-        ) : null} */}
-
-        {sessionSliderShowing ? (
-          <>
-            <Suspense fallback={<Text style={{fontSize: 30}} />}>
-              <SongContainer animateUp={animateSongContainerUp} />
-
-              {/* <SessionSlider
-              style={{position: 'absolute', bottom: hp(15)}}
-              animateDown={animateSliderAndPickerAway}
-            /> */}
-            </Suspense>
-          </>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#E26452'}}>
+      <Animated.View style={[styles.mainContainer]}>
+        {Platform.OS === 'android' ? (
+          <StatusBar backgroundColor="black" />
         ) : null}
 
-        {/* Image that shows during session */}
-        {sessionPlaying ? (
-          <PeriLogo style={{position: 'absolute', top: hp(28)}} />
+        {/* Modal when session ends */}
+        {endSessionModalShowing ? (
+          <EndSessionModal shouldShowNow={true} />
         ) : null}
 
-        {/* //! View that contains button and image hiding underneath */}
-        <Animated.View
-          style={[
-            styles.centerContentContainer,
-            {
-              transform: [
-                {
-                  translateY: buttonTranslateYVal.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, hp(28)],
-                  }),
-                  translateX: buttonTranslateXVal.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, -wp(100)],
-                  }),
-                },
-              ],
-            },
-          ]}>
-          {/* shine animation when button is clicked every odd time */}
-          <LottieView
-            source={require('../assets/animations/shine.json')}
-            loop={false}
-            ref={shineRef}
-            style={{
-              zIndex: 10,
-              elevation: 10,
-              width: wp(65),
-              position: 'absolute',
-            }}
-          />
-          {buttonVisible ? (
-            // !Big Button
-            <Animated.View
-              style={[
-                styles.bigButtonContainer,
-                {
-                  // backgroundColor: 'green',
-                  opacity: buttonOpacityVal,
-                  transform: [
-                    {
-                      scale: pulse.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [1, 1.1],
-                      }),
-                    },
-                  ],
-                },
-              ]}>
-              <Pressable
-                onPress={() => {
-                  if (!sessionSliderShowing) {
-                    shineRef.current.play();
-                    animConstructorFunc(buttonTranslateYVal, 1, 300).start();
-                    setAnimateSongContainerUp(false);
-                    setSessionSliderShowing(true);
-                  } else if (sessionSliderShowing) {
-                    animConstructorFunc(buttonTranslateYVal, 0, 300).start();
-                    setAnimateSongContainerUp(true);
+        {/* //! Linear Gradient background when session isn't playing */}
+        <LinearGradient
+          colors={['#E26452', '#F59C75']}
+          end={{x: 0.5, y: 1}}
+          style={[styles.preSessionGradientContainer]}>
+          <SessionNav navigation={navigation} />
 
-                    callAfterXMs(() => {
-                      setSessionSliderShowing(false);
-                    }, 600);
-                  }
-                }}
-                style={[styles.bigButton]}>
-                <Image
-                  source={require('../assets/images/white-logo.png')}
-                  style={styles.logo}
-                />
-              </Pressable>
-            </Animated.View>
+          {sessionSliderShowing ? (
+            <>
+              <Suspense fallback={<Text style={{fontSize: 30}} />}>
+                <SongContainer animateUp={animateSongContainerUp} />
+              </Suspense>
+            </>
           ) : null}
 
+          {/* Image that shows during session */}
           {sessionPlaying ? (
-            <TimeLeftCircle
-              style={{position: 'absolute', alignSelf: 'center', top: hp(-2)}}
-            />
+            <PeriLogo style={{position: 'absolute', top: hp(28)}} />
           ) : null}
-        </Animated.View>
 
-        {/* {sessionPlaying ? (
+          {/* //! View that contains button */}
+          <Animated.View
+            style={[
+              styles.centerContentContainer,
+              {
+                transform: [
+                  {
+                    translateY: buttonTranslateYVal.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, hp(28)],
+                    }),
+                    translateX: buttonTranslateXVal.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, -wp(100)],
+                    }),
+                  },
+                ],
+              },
+            ]}>
+            {/* shine animation when button is clicked every odd time */}
+            {Platform.OS === 'android' ? (
+              <LottieView
+                source={require('../assets/animations/shine.json')}
+                loop={false}
+                ref={shineRef}
+                // autoPlay
+                // onAnimationFinish={() => console.log('shine finished')}
+                style={{
+                  zIndex: 10,
+                  elevation: 10,
+                  width: wp(65),
+                  position: 'absolute',
+                }}
+              />
+            ) : null}
+            {buttonVisible ? (
+              // !Big Button
+              <Animated.View
+                style={[
+                  styles.bigButtonContainer,
+                  {
+                    // backgroundColor: 'green',
+                    opacity: buttonOpacityVal,
+                    transform: [
+                      {
+                        scale: pulse.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [1, 1.1],
+                        }),
+                      },
+                    ],
+                  },
+                ]}>
+                <Pressable
+                  onPress={() => {
+                    if (!sessionSliderShowing) {
+                      Platform.OS === 'android'
+                        ? shineRef.current.play()
+                        : null;
+                      animConstructorFunc(buttonTranslateYVal, 1, 300).start();
+                      setAnimateSongContainerUp(false);
+                      setSessionSliderShowing(true);
+                    } else if (sessionSliderShowing) {
+                      animConstructorFunc(buttonTranslateYVal, 0, 300).start();
+                      setAnimateSongContainerUp(true);
+                      // setSessionSliderShowing(false);
+                      callAfterXMs(() => {
+                        setSessionSliderShowing(false);
+                      }, 600);
+                    }
+                  }}
+                  style={[styles.bigButton]}>
+                  <Image
+                    source={require('../assets/images/white-logo.png')}
+                    style={styles.logo}
+                  />
+                </Pressable>
+              </Animated.View>
+            ) : null}
+
+            {sessionPlaying ? (
+              <TimeLeftCircle
+                style={{position: 'absolute', alignSelf: 'center', top: hp(-2)}}
+              />
+            ) : null}
+          </Animated.View>
+
+          {/* {sessionPlaying ? (
           <>
             <WaveForm style={{position: 'absolute', top: hp(20), zIndex: 7}} />
           </>
         ) : null} */}
 
-        {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null}
-        {/* <SessionAnimation /> */}
+          {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null}
+          {/* <SessionAnimation /> */}
 
-        {/* //! Pause and play button */}
-        {sessionPlaying && !sessionPaused ? (
-          <Foundation
-            name="pause"
-            style={styles.playPauseIcon}
-            onPress={() => {
-              shouldSessionPause(true);
-            }}
-          />
-        ) : null}
+          {/* //! Pause and play button */}
+          {sessionPlaying && !sessionPaused ? (
+            <Foundation
+              name="pause"
+              style={styles.playPauseIcon}
+              onPress={() => {
+                shouldSessionPause(true);
+                // console.log('PRESSED');
+              }}
+            />
+          ) : null}
 
-        {sessionPlaying && sessionPaused ? (
-          <Foundation
-            name="play"
-            style={styles.playPauseIcon}
-            onPress={() => {
-              shouldSessionPause(false);
-            }}
-          />
-        ) : null}
+          {sessionPlaying && sessionPaused ? (
+            <Foundation
+              name="play"
+              style={styles.playPauseIcon}
+              onPress={() => {
+                shouldSessionPause(false);
+              }}
+            />
+          ) : null}
 
-        {/* //! Stop session button */}
-        {sessionPlaying ? (
-          <StopSessionButton style={styles.stopSessionButton} />
-        ) : null}
-      </LinearGradient>
-    </Animated.View>
+          {/* //! Stop session button */}
+          {sessionPlaying ? (
+            <StopSessionButton style={styles.stopSessionButton} />
+          ) : null}
+        </LinearGradient>
+      </Animated.View>
+    </SafeAreaView>
   );
 };
 
@@ -578,7 +609,14 @@ const styles = StyleSheet.create({
     // height: wp(65),
     // width: wp(65),
     borderRadius: wp(32.5),
-    elevation: 9,
+    elevation: Platform.OS === 'android' ? 9 : undefined,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 1,
+      height: 3,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 3.84,
     alignSelf: 'center',
     justifyContent: 'center',
     // zIndex: 10,

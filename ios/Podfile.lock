@@ -325,6 +325,8 @@ PODS:
     - React
   - RNCPicker (1.7.1):
     - React
+  - RNDeviceInfo (7.0.2):
+    - React-Core
   - RNGestureHandler (1.8.0):
     - React
   - RNIap (4.6.3):
@@ -408,6 +410,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNCPicker (from `../node_modules/@react-native-community/picker`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNIap (from `../node_modules/react-native-iap`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -510,6 +513,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/masked-view"
   RNCPicker:
     :path: "../node_modules/@react-native-community/picker"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNIap:
@@ -579,6 +584,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: db711e29e5e0500d9bd21aa0c2e397efa45302b1
   RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
   RNCPicker: a2bf7bad059f23de52add203c3c5a3bc5b5239d8
+  RNDeviceInfo: a37a15a98822c31c3982cb28eba6d336ba4d0968
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNIap: 091b98e143440e580e51d08b43a3196ae788e87b
   RNReanimated: 7de2dca51deacff78bb880f63c1389a24311b376
@@ -591,6 +597,6 @@ SPEC CHECKSUMS:
   Yoga: 7d2edc5b410474191962e6dee88ee67f9b328b6b
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 9b4fec63449e7c83f416d1d819b1bb213d3195cb
+PODFILE CHECKSUM: 1703c9c700079c406d684c25c713b09fdf14d6f8
 
 COCOAPODS: 1.9.3

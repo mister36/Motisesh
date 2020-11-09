@@ -66,9 +66,10 @@ const styles = StyleSheet.create({
   container: {
     height: wp(28),
     width: wp(28),
-    borderRadius: wp(6),
+    borderRadius: wp(14),
     justifyContent: 'center',
     position: 'relative',
+    backgroundColor: '#ffffff',
     // TODO: remove this
     // marginLeft: wp(28),
   },

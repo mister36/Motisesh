@@ -18,7 +18,7 @@ const StatsScreen = () => {
   const circleRef = React.useRef('circleRef');
   return (
     <View>
-      <AnimatedCircularProgress
+      {/* <AnimatedCircularProgress
         size={120}
         width={15}
         fill={30}
@@ -41,7 +41,6 @@ const StatsScreen = () => {
           marginTop: hp(5),
         }}>
         {/* <Text>PRESS ME</Text> */}
-      </Pressable>
     </View>
   );
 };

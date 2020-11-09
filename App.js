@@ -18,6 +18,12 @@ import AsyncStorage from '@react-native-community/async-storage';
 // Date and time
 import date from 'date-and-time';
 
+// In app purchases
+import Iaphub from 'react-native-iaphub';
+
+// Device info
+import DeviceInfo from 'react-native-device-info';
+
 // Native screen support
 import {enableScreens} from 'react-native-screens';
 
@@ -43,6 +49,36 @@ import SplashScreen from 'react-native-splash-screen';
 import * as Sentry from '@sentry/react-native';
 
 enableScreens(true);
+
+const setUserIdForSubscription = async () => {
+  const uniqueId = DeviceInfo.getUniqueId();
+  console.log('UNIQUE ID: ', uniqueId);
+  try {
+    await Iaphub.setUserId(uniqueId);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const initIAPConfig = async () => {
+  try {
+    await Iaphub.init({
+      // The app id is available on the settings page of your app
+      appId: '5f8d198411b9d90ea10af329',
+      // The (client) api key is available on the settings page of your app
+      apiKey: 'V8tHkshKr07svrhNVKhv7atD5mWdgxWB',
+      // App environment (production by default, other environments must be created on the IAPHUB dashboard)
+      environment: 'production',
+    });
+
+    // After IAP initialized, sets the user ID
+    // setUserIdForSubscription()
+  } catch (error) {
+    console.log('Iaphub error: ', error);
+  }
+};
+
+initIAPConfig();
 
 Sentry.init({
   dsn:
@@ -81,7 +117,7 @@ const App = () => {
   // Sets up notifications
   const registerDevice = () => {
     Notifications.events().registerRemoteNotificationsRegistered(event => {
-      console.log('Token received', event.deviceToken);
+      // console.log('Token received', event.deviceToken);
     });
     Notifications.events().registerRemoteNotificationsRegistrationFailed(
       event => {

@@ -21,6 +21,7 @@ const PlayMusic = () => {
     durationOfSessionSetter,
     currentSessionTimeSetter,
     sessionName,
+    shouldSessionEnd,
   ] = useSessionStore(
     state => [
       state.sessionPaused,
@@ -30,6 +31,7 @@ const PlayMusic = () => {
       state.durationOfSessionSetter,
       state.currentSessionTimeSetter,
       state.sessionName,
+      state.shouldSessionEnd,
     ],
     shallow,
   );
@@ -107,37 +109,41 @@ const PlayMusic = () => {
   }, [shouldFirstVoice, sessionPaused, googleVoiceShouldPlay]);
 
   // Sound effect timer
-  // React.useEffect(() => {
-  //   // only after name is set and session is playing
-  //   if (!shouldFirstVoice && !sessionPaused) {
-  //     const soundArray = sessionName.toLowerCase().includes('hero')
-  //       ? heroSoundEffects
-  //       : riseSoundEffects;
-  //     const soundEffectTimer = BackgroundTimer.setInterval(() => {
-  //       // will select a random sound effect from array, pass to Video component
-  //       const randomNum = Math.floor(Math.random() * soundArray.length);
+  React.useEffect(() => {
+    // only after name is set and session is playing
+    if (!shouldFirstVoice && !sessionPaused) {
+      const soundArray = sessionName.toLowerCase().includes('hero')
+        ? heroSoundEffects
+        : riseSoundEffects;
+      const soundEffectTimer = BackgroundTimer.setInterval(() => {
+        // will select a random sound effect from array, pass to Video component
+        const randomNum = Math.floor(Math.random() * soundArray.length);
 
-  //       console.log('randomNum is ', randomNum); // TODO: Remove this
+        console.log('randomNum is ', randomNum); // TODO: Remove this
 
-  //       // sets volume
-  //       soundEffectVolumeSetter(soundArray[randomNum]);
-  //       setSoundEffectPlaying(
-  //         `http://192.168.1.72:4000/api/v1/audio/sound.opus?name=${
-  //           soundArray[randomNum]
-  //         }`,
-  //       );
-  //     }, 15000);
+        // sets volume
+        soundEffectVolumeSetter(soundArray[randomNum]);
+        setSoundEffectPlaying(
+          `http://192.168.1.72:4000/api/v1/audio/sound.opus?name=${
+            soundArray[randomNum]
+          }`,
+        );
+      }, 15000);
 
-  //     return () => BackgroundTimer.clearInterval(soundEffectTimer);
-  //   }
-  // }, [shouldFirstVoice, sessionPaused]);
+      return () => BackgroundTimer.clearInterval(soundEffectTimer);
+    }
+  }, [shouldFirstVoice, sessionPaused]);
+
+  console.log('SESSION PAUSED: ', sessionPaused);
 
   return (
     <>
       <Video
         source={{
           // uri:
-          // 'https://file-examples-com.github.io/uploads/2017/11/file_example_OOG_1MG.ogg',
+          //   'https://raw.githubusercontent.com/anars/blank-audio/master/2-seconds-and-500-milliseconds-of-silence.mp3',
+          // uri:
+          //   'https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3',
           uri: currentSessionURL,
         }}
         ref={backgroundMusicRef}
@@ -146,6 +152,8 @@ const PlayMusic = () => {
         playWhenInactive={true}
         progressUpdateInterval={10000}
         volume={0.9}
+        ignoreSilentSwitch="ignore"
+        // mixWithOthers="duck"
         disableFocus
         rate={1}
         onLoad={data => {
@@ -156,6 +164,10 @@ const PlayMusic = () => {
         onProgress={data => {
           currentSessionTimeSetter(data.currentTime);
           // setGoogleVoiceShouldPlay(true);
+        }}
+        onEnd={() => {
+          console.log('ended');
+          shouldSessionEnd();
         }}
         // Paused if the session is paused or the starting google voice is playing
         paused={sessionPaused || shouldFirstVoice ? true : false}
@@ -172,6 +184,7 @@ const PlayMusic = () => {
           // ref={voiceRef}
           playInBackground={true}
           playWhenInactive={true}
+          ignoreSilentSwitch="ignore"
           volume={1}
           onLoad={() => {
             // shouldVoicePlay(true);
@@ -196,6 +209,7 @@ const PlayMusic = () => {
           // audioOnly={true}
           playInBackground={true}
           playWhenInactive={true}
+          ignoreSilentSwitch="ignore"
           onError={error => {
             console.log('error', error);
           }}
@@ -216,6 +230,7 @@ const PlayMusic = () => {
           source={{uri: soundEffectPlaying}}
           playInBackground
           playWhenInactive
+          ignoreSilentSwitch="ignore"
           disableFocus
           // volume={0.05}
           volume={soundEffectVolume}
