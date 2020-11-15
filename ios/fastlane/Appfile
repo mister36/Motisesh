@@ -1,0 +1,8 @@
+app_identifier("com.motisesh.motisesh") # The bundle identifier of your app
+apple_id("chinwe@motisesh.com") # Your Apple email address
+
+itc_team_id("122290603") # App Store Connect Team ID
+team_id("47LAP568ST") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

@@ -7,8 +7,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 let wakeful = new Wakeful();
 
-const voiceUrlBase = 'http://192.168.1.72:4000/api/v1/audio/voice.opus';
-const sessionUrlBase = 'http://192.168.1.72:4000/api/v1/audio/background';
+// 192.168.1.72:4000
 
 /* currentSessionURL: url for session
  currentVoiceSessionURL: url for voice
@@ -46,6 +45,11 @@ setName();
 // const name = await getFirstName();
 
 const useSessionStore = create((set, get) => ({
+  sessionUrlBase: `https://motisesh.com/api/v1/audio/background.${
+    Platform.OS === 'android' ? 'opus' : 'mp3'
+  }`,
+  voiceUrlBase: 'https://motisesh.com/api/v1/audio/voice.mp3',
+  soundUrlBase: 'https://motisesh.com/api/v1/audio/sound.mp3',
   currentSessionURL: '',
   currentVoiceSessionURL: '',
   sessionName: '',
@@ -65,13 +69,14 @@ const useSessionStore = create((set, get) => ({
         set(
           state => ({
             sessionPlaying: true,
-            currentSessionURL: `${sessionUrlBase}?name=${sessionName.replace(
-              ' ',
-              '',
-            )}&genre=${getGenreFromTitle(sessionName)}`,
-            currentVoiceSessionURL: `${voiceUrlBase}?genre=${getGenreFromTitle(
+            currentSessionURL: `${
+              get().sessionUrlBase
+            }?name=${sessionName.replace(' ', '')}&genre=${getGenreFromTitle(
               sessionName,
             )}`,
+            currentVoiceSessionURL: `${
+              get().voiceUrlBase
+            }?genre=${getGenreFromTitle(sessionName)}`,
             sessionName: sessionName,
             getReadyForSessionUI: true,
           }),

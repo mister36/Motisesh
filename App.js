@@ -50,15 +50,15 @@ import * as Sentry from '@sentry/react-native';
 
 enableScreens(true);
 
-const setUserIdForSubscription = async () => {
-  const uniqueId = DeviceInfo.getUniqueId();
-  console.log('UNIQUE ID: ', uniqueId);
-  try {
-    await Iaphub.setUserId(uniqueId);
-  } catch (error) {
-    console.log(error);
-  }
-};
+// const setUserIdForSubscription = async () => {
+//   const uniqueId = DeviceInfo.getUniqueId();
+//   console.log('UNIQUE ID: ', uniqueId);
+//   try {
+//     await Iaphub.setUserId(uniqueId);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 const initIAPConfig = async () => {
   try {

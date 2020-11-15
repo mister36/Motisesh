@@ -273,30 +273,30 @@ const SessionScreen = ({navigation}) => {
     [pulse],
   );
 
-  // Setting User Id for subscription
-  const setUserIdForSubscription = async () => {
-    const uniqueId = DeviceInfo.getUniqueId();
-    console.log('UNIQUE ID: ', uniqueId);
-    try {
-      await Iaphub.setUserId(uniqueId);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  // GETTING SUBSCRIPTION
-  const getSubDetails = async () => {
-    try {
-      await setUserIdForSubscription();
-      const products = await Iaphub.getProductsForSale();
-      console.log(products);
-    } catch (error) {
-      console.log('IAP error: ', error);
-    }
-  };
+  // // Setting User Id for subscription
+  // const setUserIdForSubscription = async () => {
+  //   const uniqueId = DeviceInfo.getUniqueId();
+  //   console.log('UNIQUE ID: ', uniqueId);
+  //   try {
+  //     await Iaphub.setUserId(uniqueId);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // // GETTING SUBSCRIPTION
+  // const getSubDetails = async () => {
+  //   try {
+  //     await setUserIdForSubscription();
+  //     const products = await Iaphub.getProductsForSale();
+  //     console.log(products);
+  //   } catch (error) {
+  //     console.log('IAP error: ', error);
+  //   }
+  // };
 
-  React.useEffect(() => {
-    getSubDetails();
-  }, []);
+  // React.useEffect(() => {
+  //   getSubDetails();
+  // }, []);
 
   /////////////////////////
   // Header slide animation

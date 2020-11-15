@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   FlatList,
+  Platform,
   InteractionManager,
 } from 'react-native';
 import {
@@ -16,8 +17,11 @@ import {useMemoOne} from 'use-memo-one';
 
 import SessionSlider from './SessionSlider';
 import SongButton from './SongButton';
+import {useSessionStore} from '../zustand/store';
 
-const sessionUrlBase = 'http://192.168.1.72:4000/api/v1/audio/background?name=';
+// const sessionUrlBase = `https://motisesh.com/api/v1/audio/background.${
+//   Platform.OS === 'android' ? 'opus' : 'mp3'
+// }?name=`;
 
 const heroOptions = [
   {
@@ -70,7 +74,8 @@ const animConstructorFunc = (node, endVal, duration, easing = Easing.linear) =>
   });
 
 const SongContainer = ({animateUp = false}) => {
-  // state
+  // Store state
+  const [sessionUrlBase] = useSessionStore(state => [state.sessionUrlBase]);
   // decides which session options are shown, hero or rise
   const [optionsShown, setOptionsShown] = React.useState('hero');
 
@@ -132,7 +137,7 @@ const SongContainer = ({animateUp = false}) => {
                 <SongButton
                   length={wp(21)}
                   type={item.type}
-                  sessionUrl={`${sessionUrlBase}${item.type}${index + 1}`}
+                  sessionUrl={`${sessionUrlBase}?name=${item.type}${index + 1}`}
                   sessionTitle={`${item.type} ${index + 1}`}
                   // voiceUrl={item.type === 'hero' ? ''}
                 />

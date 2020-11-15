@@ -14,6 +14,7 @@ import shallow from 'zustand/shallow';
 const PlayMusic = () => {
   // Store state
   const [
+    soundUrlBase,
     sessionPaused,
     shouldVoicePlay,
     currentSessionURL,
@@ -24,6 +25,7 @@ const PlayMusic = () => {
     shouldSessionEnd,
   ] = useSessionStore(
     state => [
+      state.soundUrlBase,
       state.sessionPaused,
       state.shouldVoicePlay,
       state.currentSessionURL,
@@ -61,7 +63,7 @@ const PlayMusic = () => {
     'tiger',
     'war_chant',
   ];
-  const riseSoundEffects = [];
+  const riseSoundEffects = ['yes_chant', 'tomorrow_chant'];
 
   // function that sets volume for sound effect
   const soundEffectVolumeSetter = effectName => {
@@ -123,11 +125,7 @@ const PlayMusic = () => {
 
         // sets volume
         soundEffectVolumeSetter(soundArray[randomNum]);
-        setSoundEffectPlaying(
-          `http://192.168.1.72:4000/api/v1/audio/sound.opus?name=${
-            soundArray[randomNum]
-          }`,
-        );
+        setSoundEffectPlaying(`${soundUrlBase}?name=${soundArray[randomNum]}`);
       }, 15000);
 
       return () => BackgroundTimer.clearInterval(soundEffectTimer);
@@ -142,8 +140,6 @@ const PlayMusic = () => {
         source={{
           // uri:
           //   'https://raw.githubusercontent.com/anars/blank-audio/master/2-seconds-and-500-milliseconds-of-silence.mp3',
-          // uri:
-          //   'https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3',
           uri: currentSessionURL,
         }}
         ref={backgroundMusicRef}
@@ -204,6 +200,7 @@ const PlayMusic = () => {
         <Video
           source={{
             uri: `${currentVoiceSessionURL}&firstName=${name}&firstVoice=true`,
+            // uri: 'https://motisesh.com/api/v1/audio/background.opus?name=hero2',
             // uri: 'http://192.168.1.72:4000/api/v1/audio/test.opus',
           }}
           // audioOnly={true}
