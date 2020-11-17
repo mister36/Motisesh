@@ -2,6 +2,7 @@ import create from 'zustand';
 import {Platform} from 'react-native';
 import {devtools} from 'zustand/middleware';
 import VIForegroundService from '@voximplant/react-native-foreground-service';
+import MusicControl from 'react-native-music-control';
 import Wakeful from 'react-native-wakeful';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -62,43 +63,31 @@ const useSessionStore = create((set, get) => ({
   durationOfSession: 0,
   currentSessionTime: 0,
   // If session should run, turn on wifi/wake lock, start foreground service, play session; if not, stop session, unpause it, remove foreground service, remove wake/wifi lock
-  shouldSessionRun: async (bool = true) => {
+  shouldSessionRun: async () => {
     try {
       const sessionName = get().sessionName;
-      if (bool) {
-        set(
-          state => ({
-            sessionPlaying: true,
-            currentSessionURL: `${
-              get().sessionUrlBase
-            }?name=${sessionName.replace(' ', '')}&genre=${getGenreFromTitle(
-              sessionName,
-            )}`,
-            currentVoiceSessionURL: `${
-              get().voiceUrlBase
-            }?genre=${getGenreFromTitle(sessionName)}`,
-            sessionName: sessionName,
-            getReadyForSessionUI: true,
-          }),
-          // 'shouldSessionRun',
-        );
+      set(
+        state => ({
+          sessionPlaying: true,
+          currentSessionURL: `${
+            get().sessionUrlBase
+          }?name=${sessionName.replace(' ', '')}&genre=${getGenreFromTitle(
+            sessionName,
+          )}`,
+          currentVoiceSessionURL: `${
+            get().voiceUrlBase
+          }?genre=${getGenreFromTitle(sessionName)}`,
+          sessionName: sessionName,
+          getReadyForSessionUI: true,
+        }),
+        // 'shouldSessionRun',
+      );
 
-        if (Platform.OS === 'android') {
-          wakeful.acquire();
-          await startForeground();
-        }
+      if (Platform.OS === 'android') {
+        wakeful.acquire();
+        await startForeground();
       } else {
-        if (Platform.OS === 'android') {
-          await stopForeground();
-        }
-
-        set(
-          state => ({
-            sessionPlaying: false,
-            sessionPaused: false,
-          }),
-          // 'shouldSessionRun',
-        );
+        enableIOSMusicControls();
       }
     } catch (error) {
       console.log(error);
@@ -141,7 +130,9 @@ const useSessionStore = create((set, get) => ({
   },
   shouldSessionEnd: async () => {
     try {
-      Platform.OS === 'android' ? await stopForeground() : null;
+      Platform.OS === 'android'
+        ? await stopForeground()
+        : MusicControl.stopControl();
       set(state => ({
         sessionEnding: true,
         sessionPlaying: false,
@@ -182,6 +173,16 @@ const useSessionStore = create((set, get) => ({
     set(state => ({sessionName}));
   },
 }));
+
+const enableIOSMusicControls = () => {
+  MusicControl.enableControl('play', true);
+  MusicControl.enableControl('pause', true);
+
+  MusicControl.setNowPlaying({
+    title: 'Moti Session',
+    artist: 'Motisesh',
+  });
+};
 
 const startForeground = async () => {
   //! IMPORTANT: channelConfig.id MUST EQUAL notificationConfig.channelId OR WILL CRASH

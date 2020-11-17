@@ -19,6 +19,9 @@ const StopSessionButton = ({style}) => {
   ]);
 
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [userPressedEndSession, setUserPressedEndSession] = React.useState(
+    false,
+  );
   return (
     <View style={[style, styles.container]}>
       <Pressable
@@ -35,6 +38,11 @@ const StopSessionButton = ({style}) => {
         onBackButtonPress={() => setModalVisible(false)}
         onBackdropPress={() => setModalVisible(false)}
         useNativeDriver={true}
+        onModalHide={() => {
+          if (userPressedEndSession) {
+            shouldSessionEnd();
+          }
+        }}
         deviceWidth={wp(100)}>
         <View style={styles.modalView}>
           <Text style={styles.modalHeader}>Are you sure?</Text>
@@ -44,7 +52,10 @@ const StopSessionButton = ({style}) => {
 
           <View style={styles.modalButtonContainer}>
             <Pressable
-              onPress={() => shouldSessionEnd()}
+              onPress={() => {
+                setUserPressedEndSession(true);
+                setModalVisible(false);
+              }}
               style={[styles.modalButton, {backgroundColor: '#CA2121'}]}>
               <Text style={[styles.modalButtonText, {color: '#FFFFFF'}]}>
                 End Session

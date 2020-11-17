@@ -95,7 +95,7 @@ const SessionAnimation = () => {
           />
           <Video
             source={require('../assets/sound/thunder.mp3')}
-            volume={0.1}
+            volume={0.6}
             rate={1.3}
             playInBackground
             playWhenInactive
@@ -128,7 +128,7 @@ const SessionAnimation = () => {
         </>
       ) : null}
 
-      {playChant ? (
+      {/* {playChant ? (
         <Video
           source={require('../assets/sound/war_chant.mp3')}
           playInBackground
@@ -138,7 +138,7 @@ const SessionAnimation = () => {
           // rate={2.9}
           volume={0.5}
         />
-      ) : null}
+      ) : null} */}
     </Animated.View>
   );
 };

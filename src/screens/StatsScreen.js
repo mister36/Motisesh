@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {View, Text, StyleSheet, Pressable, Platform, Image} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -11,9 +11,12 @@ import {Easing} from 'react-native-reanimated';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
 // In app subscription
+import * as RNIap from 'react-native-iap';
 import Iaphub from 'react-native-iaphub';
 
 import DeviceInfo from 'react-native-device-info';
+
+import Modal from 'react-native-modal';
 
 // import SessionSlider from '../components/SessionSlider';
 // import SongButton from '../components/SongButton';
@@ -23,46 +26,84 @@ import DeviceInfo from 'react-native-device-info';
 const StatsScreen = () => {
   // const [musicPlaying, setMusicPlaying] = React.useState(false);
   const [counter, setCounter] = React.useState(0);
-
-  // Setting User Id for subscription
-  const setUserIdForSubscription = async () => {
-    const uniqueId = DeviceInfo.getUniqueId();
-    console.log('UNIQUE ID: ', uniqueId);
-    try {
-      await Iaphub.setUserId(uniqueId);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  // GETTING SUBSCRIPTION
-  const getSubDetails = async () => {
-    try {
-      await setUserIdForSubscription();
-      const products = await Iaphub.getProductsForSale();
-      console.log(products);
-    } catch (error) {
-      console.log('IAP error: ', error);
-    }
-  };
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const itemSkus = Platform.select({
+    android: ['motisesh.test_subscription_1'],
+  });
 
   React.useEffect(() => {
-    const runSubDetails = async () => {
+    const productGetter = async () => {
       try {
-        await getSubDetails();
+        const connectResults = await RNIap.initConnection();
+        console.log('results: ', connectResults);
+        const products = await RNIap.getSubscriptions(itemSkus);
+        console.log(products);
       } catch (error) {
-        console.log('uh oh');
+        console.log('IAP error: ', error);
       }
     };
-    runSubDetails();
+    productGetter();
   }, [counter]);
+
+  // Setting User Id for subscription
+  // const setUserIdForSubscription = async () => {
+  //   const uniqueId = DeviceInfo.getUniqueId();
+  //   try {
+  //     await Iaphub.setUserId(uniqueId);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // // GETTING SUBSCRIPTION
+  // const getSubDetails = async () => {
+  //   try {
+  //     await setUserIdForSubscription();
+  //     const products = await Iaphub.getActiveProducts();
+  //     console.log(products);
+  //   } catch (error) {
+  //     console.log('IAP error: ', error);
+  //     // console.log(error.code);
+  //   }
+  // };
+
+  // React.useEffect(() => {
+  //   const runSubDetails = async () => {
+  //     try {
+  //       await getSubDetails();
+  //     } catch (error) {
+  //       console.log('uh oh');
+  //     }
+  //   };
+  //   runSubDetails();
+  // }, [counter]);
 
   return (
     <View>
+      <Image
+        // source={{uri: 'ninja'}}
+        source={require('../assets/images/ninja.png')}
+        style={{
+          height: wp(50), // w:h = 6:7
+          width: wp(50),
+          // alignSelf: 'center',
+        }}
+      />
       <Pressable
         style={{height: hp(20), width: wp(50), backgroundColor: 'orange'}}
-        onPress={() => setCounter(0 ? 1 : 0)}
+        onPress={() => {
+          setModalVisible(true);
+          // setCounter(counter === 0 ? 1 : 0);
+        }}
         // onPress={() => setMusicPlaying(musicPlaying ? false : true)}
       />
+      <Modal
+        isVisible={modalVisible}
+        // isVisible
+        onBackdropPress={() => setModalVisible(false)}>
+        <View
+          style={{height: hp(20), width: wp(50), backgroundColor: 'white'}}
+        />
+      </Modal>
       {/* {musicPlaying ? (
         <Video
           source={{

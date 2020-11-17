@@ -88,7 +88,7 @@ const PeriLogo = ({style}) => {
   return (
     <Animated.View style={[style, styles.container]}>
       <Animated.Image
-        source={require('../assets/images/white-logo.png')}
+        source={{uri: 'white-logo'}}
         style={[
           styles.logo,
           // style,

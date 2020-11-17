@@ -11,6 +11,9 @@ import BackgroundTimer from 'react-native-background-timer';
 import {useSessionStore} from './src/zustand/store';
 import shallow from 'zustand/shallow';
 
+// Music controls
+import MusicControl from 'react-native-music-control';
+
 const PlayMusic = () => {
   // Store state
   const [
@@ -72,9 +75,9 @@ const PlayMusic = () => {
       case 'war_chant':
         setSoundEffectVolume(1);
       case 'horse':
-        setSoundEffectVolume(0.1);
+        setSoundEffectVolume(0.3);
       default:
-        setSoundEffectVolume(0.2);
+        setSoundEffectVolume(0.6);
     }
   };
 
@@ -101,7 +104,6 @@ const PlayMusic = () => {
       const voiceOnTimer = BackgroundTimer.setTimeout(() => {
         // console.log(`voiceRef.volume: ${voiceRef.current.volume}`);
         if (!googleVoiceShouldPlay) {
-          console.log('setting googleVoice on');
           setGoogleVoiceShouldPlay(true);
         }
       }, 7000);
@@ -121,8 +123,6 @@ const PlayMusic = () => {
         // will select a random sound effect from array, pass to Video component
         const randomNum = Math.floor(Math.random() * soundArray.length);
 
-        console.log('randomNum is ', randomNum); // TODO: Remove this
-
         // sets volume
         soundEffectVolumeSetter(soundArray[randomNum]);
         setSoundEffectPlaying(`${soundUrlBase}?name=${soundArray[randomNum]}`);
@@ -131,8 +131,6 @@ const PlayMusic = () => {
       return () => BackgroundTimer.clearInterval(soundEffectTimer);
     }
   }, [shouldFirstVoice, sessionPaused]);
-
-  console.log('SESSION PAUSED: ', sessionPaused);
 
   return (
     <>
@@ -153,7 +151,6 @@ const PlayMusic = () => {
         disableFocus
         rate={1}
         onLoad={data => {
-          console.log('data from playMusc ', data);
           durationOfSessionSetter(data.duration);
           console.log('loadeed');
         }}

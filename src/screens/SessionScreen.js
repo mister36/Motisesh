@@ -191,7 +191,7 @@ const SessionScreen = ({navigation}) => {
             animConstructorFunc(buttonTranslateXVal, 1, 400).start(() => {
               setSessionSliderShowing(false);
               setButtonVisible(false);
-              shouldSessionRun(true);
+              shouldSessionRun();
             });
           } else {
             console.log('RESETTING SESSION UI');
@@ -215,6 +215,8 @@ const SessionScreen = ({navigation}) => {
             console.log('session ending');
             setEndSessionModalShowing(true);
             // console.log('session ending');
+          } else {
+            console.log('session Not ending');
           }
         },
         state => state.sessionEnding,
@@ -446,7 +448,7 @@ const SessionScreen = ({navigation}) => {
                   {
                     translateY: buttonTranslateYVal.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, hp(28)],
+                      outputRange: [0, hp(34)],
                     }),
                     translateX: buttonTranslateXVal.interpolate({
                       inputRange: [0, 1],
@@ -509,10 +511,7 @@ const SessionScreen = ({navigation}) => {
                     }
                   }}
                   style={[styles.bigButton]}>
-                  <Image
-                    source={require('../assets/images/white-logo.png')}
-                    style={styles.logo}
-                  />
+                  <Image source={{uri: 'white-logo'}} style={styles.logo} />
                 </Pressable>
               </Animated.View>
             ) : null}
@@ -678,7 +677,7 @@ const styles = StyleSheet.create({
   },
   playPauseIcon: {
     position: 'absolute',
-    bottom: hp(15),
+    bottom: hp(12),
     fontSize: wp(25),
     alignSelf: 'center',
     color: '#FFFFFF',
