@@ -529,7 +529,8 @@ const SessionScreen = ({navigation}) => {
           </>
         ) : null} */}
 
-          {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null}
+          {/* UNDOOOOOO */}
+          {/* {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null} */}
           {/* <SessionAnimation /> */}
 
           {/* //! Pause and play button */}

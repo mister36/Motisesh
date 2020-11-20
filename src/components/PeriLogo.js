@@ -40,13 +40,13 @@ const PeriLogo = ({style}) => {
     () =>
       useSessionStore.subscribe(
         currentSessionTime => {
-          console.log(
-            `currentSessionTime: ${currentSessionTime}, durationOfSession: ${durationOfSession}`,
-          );
+          // console.log(
+          //   `currentSessionTime: ${currentSessionTime}, durationOfSession: ${durationOfSession}`,
+          // );
           progressRef.current.animate(
             (currentSessionTime / durationOfSession) * 100,
             // 30,
-            1000,
+            200,
             Easing.linear,
           );
         },

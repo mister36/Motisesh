@@ -5,6 +5,7 @@ import VIForegroundService from '@voximplant/react-native-foreground-service';
 import MusicControl from 'react-native-music-control';
 import Wakeful from 'react-native-wakeful';
 import AsyncStorage from '@react-native-community/async-storage';
+import BackgroundTimer from 'react-native-background-timer';
 
 let wakeful = new Wakeful();
 
@@ -120,6 +121,7 @@ const useSessionStore = create((set, get) => ({
         }),
         // 'shouldSessionPause',
       );
+
       // if session should play, play it
     } else if (!bool && !get().setVoicePlayingOnSessionPlaying) {
       set(
@@ -130,9 +132,11 @@ const useSessionStore = create((set, get) => ({
   },
   shouldSessionEnd: async () => {
     try {
-      Platform.OS === 'android'
-        ? await stopForeground()
-        : MusicControl.stopControl();
+      if (Platform.OS === 'android') {
+        await stopForeground();
+      } else {
+        MusicControl.stopControl();
+      }
       set(state => ({
         sessionEnding: true,
         sessionPlaying: false,
@@ -178,10 +182,8 @@ const enableIOSMusicControls = () => {
   MusicControl.enableControl('play', true);
   MusicControl.enableControl('pause', true);
 
-  MusicControl.setNowPlaying({
-    title: 'Moti Session',
-    artist: 'Motisesh',
-  });
+  MusicControl.enableBackgroundMode(true);
+  MusicControl.handleAudioInterruptions(true);
 };
 
 const startForeground = async () => {

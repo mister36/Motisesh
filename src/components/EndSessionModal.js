@@ -13,14 +13,7 @@ import LottieView from 'lottie-react-native';
 
 import BackgroundTimer from 'react-native-background-timer';
 
-const EndSessionModal = ({shouldShowNow}) => {
-  // if shouldShowNow, then will show modal
-  //   useState(() => {
-  //     if (shouldShowNow && !setModalVisible) {
-  //       setModalVisible(true);
-  //     }
-  //   }, [shouldShowNow]);
-
+const EndSessionModal = () => {
   // store
   const [resetForNewSession] = useSessionStore(
     state => [state.resetForNewSession],
@@ -29,15 +22,6 @@ const EndSessionModal = ({shouldShowNow}) => {
   // state
   const [modalVisible, setModalVisible] = React.useState(true);
 
-  console.log('modalVisible: ', console.log(modalVisible));
-
-  // React.useEffect(() => {
-  //   const testTimer = BackgroundTimer.setInterval(() => {
-  //     console.log('EndSessionModal still on screen');
-  //   }, 2000);
-
-  //   return () => BackgroundTimer.clearInterval(testTimer);
-  // }, []);
   return (
     <>
       <Modal

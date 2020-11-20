@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {AppState} from 'react-native';
 import Video from 'react-native-video';
 
 // Storage
@@ -13,12 +14,15 @@ import shallow from 'zustand/shallow';
 
 // Music controls
 import MusicControl from 'react-native-music-control';
+import {Platform} from 'react-native';
 
 const PlayMusic = () => {
   // Store state
   const [
     soundUrlBase,
+    sessionUrlBase,
     sessionPaused,
+    shouldSessionPause,
     shouldVoicePlay,
     currentSessionURL,
     currentVoiceSessionURL,
@@ -29,7 +33,9 @@ const PlayMusic = () => {
   ] = useSessionStore(
     state => [
       state.soundUrlBase,
+      state.sessionUrlBase,
       state.sessionPaused,
+      state.shouldSessionPause,
       state.shouldVoicePlay,
       state.currentSessionURL,
       state.currentVoiceSessionURL,
@@ -46,10 +52,23 @@ const PlayMusic = () => {
   // console.log('right after ', useSessionStore);
 
   // Refs
+  const appState = React.useRef(AppState.currentState);
   const backgroundMusicRef = React.useRef('backgroundMusicRef');
   const voiceRef = React.useRef('voiceRef');
+  const soundRef = React.useRef('soundRef');
+  const durationRef = React.useRef(0);
+
+  const voiceTimerRef = React.useRef('voiceTimerRef');
+  const soundTimerRef = React.useRef('soundTimerRef');
 
   // State
+  const [appStateVisible, setAppStateVisible] = React.useState(
+    appState.current,
+  );
+  const [
+    backgroundTimerAlreadyStarted,
+    setBackgroundTimerAlreadyStarted,
+  ] = React.useState(false);
   const [googleVoiceShouldPlay, setGoogleVoiceShouldPlay] = React.useState(
     false,
   );
@@ -70,7 +89,7 @@ const PlayMusic = () => {
 
   // function that sets volume for sound effect
   const soundEffectVolumeSetter = effectName => {
-    console.log(`effectName: ${effectName}`);
+    // console.log(`effectName: ${effectName}`);
     switch (effectName) {
       case 'war_chant':
         setSoundEffectVolume(1);
@@ -96,41 +115,154 @@ const PlayMusic = () => {
     getFirstName();
   }, []);
 
-  // Voice timer
   React.useEffect(() => {
-    // only after name is set and session is playing
-    if (!shouldFirstVoice && !sessionPaused) {
-      // console.log('THIS TIMER SHOULD BE RUNNING');
-      const voiceOnTimer = BackgroundTimer.setTimeout(() => {
-        // console.log(`voiceRef.volume: ${voiceRef.current.volume}`);
-        if (!googleVoiceShouldPlay) {
-          setGoogleVoiceShouldPlay(true);
-        }
-      }, 7000);
+    AppState.addEventListener('change', _handleAppStateChange);
 
-      return () => BackgroundTimer.clearTimeout(voiceOnTimer);
+    return () => {
+      AppState.removeEventListener('change', _handleAppStateChange);
+    };
+  });
+
+  const _handleAppStateChange = nextAppState => {
+    if (
+      appState.current === 'active' &&
+      nextAppState.match(/inactive|background/)
+    ) {
+      console.log('App going to background');
     }
-  }, [shouldFirstVoice, sessionPaused, googleVoiceShouldPlay]);
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+    console.log('AppState', appState.current);
+  };
 
-  // Sound effect timer
+  // Sets listeners for iOS control center actions
   React.useEffect(() => {
-    // only after name is set and session is playing
-    if (!shouldFirstVoice && !sessionPaused) {
-      const soundArray = sessionName.toLowerCase().includes('hero')
-        ? heroSoundEffects
-        : riseSoundEffects;
-      const soundEffectTimer = BackgroundTimer.setInterval(() => {
-        // will select a random sound effect from array, pass to Video component
-        const randomNum = Math.floor(Math.random() * soundArray.length);
+    MusicControl.on('play', () => {
+      shouldSessionPause(false);
+    });
 
-        // sets volume
-        soundEffectVolumeSetter(soundArray[randomNum]);
-        setSoundEffectPlaying(`${soundUrlBase}?name=${soundArray[randomNum]}`);
-      }, 15000);
+    MusicControl.on('pause', () => {
+      shouldSessionPause(true);
+    });
+  }, []);
 
-      return () => BackgroundTimer.clearInterval(soundEffectTimer);
-    }
-  }, [shouldFirstVoice, sessionPaused]);
+  // soundArray
+  const soundArray = sessionName.toLowerCase().includes('hero')
+    ? heroSoundEffects
+    : riseSoundEffects;
+
+  // Starts background timer on iOS
+  // React.useEffect(() => {
+  //   if (Platform.OS === 'ios') {
+  //     if (!backgroundTimerAlreadyStarted) {
+  //       BackgroundTimer.start();
+  //       setBackgroundTimerAlreadyStarted(true);
+  //     } else {
+  //       // Voice timer
+  //       if (!shouldFirstVoice && !sessionPaused) {
+  //         const voiceOnTimer = BackgroundTimer.setTimeout(() => {
+  //           if (!googleVoiceShouldPlay) {
+  //             setGoogleVoiceShouldPlay(true);
+  //           }
+  //         }, 7000);
+
+  //         // Sound effect timer
+
+  //         // const soundEffectTimer = BackgroundTimer.setTimeout(() => {
+  //         //   // will select a random sound effect from array, pass to Video component
+
+  //         //   console.log('do something');
+  //         //   if (!soundEffectPlaying) {
+  //         //     const randomNum = Math.floor(Math.random() * soundArray.length);
+
+  //         //     // sets volume
+  //         //     soundEffectVolumeSetter(soundArray[randomNum]);
+  //         //     console.log('sound changing');
+  //         //     setSoundEffectPlaying(
+  //         //       `${soundUrlBase}?name=${soundArray[randomNum]}`,
+  //         //     );
+  //         //   }
+  //         // }, 15000);
+
+  //         return () => {
+  //           console.log('clearing timeouts');
+  //           BackgroundTimer.clearTimeout(voiceOnTimer);
+  //           // BackgroundTimer.clearTimeout(soundEffectTimer);
+  //           BackgroundTimer.stop();
+  //         };
+  //       }
+  //     }
+  //   }
+  // }, [
+  //   shouldFirstVoice,
+  //   sessionPaused,
+  //   googleVoiceShouldPlay,
+  //   // soundEffectPlaying,
+  // ]);
+
+  // IDEA
+  // video tracks every time sound should play after onProgress
+  // video paused
+  // video unpaused
+  // onProgress ran, if time isn't greater than last predicted recorded time don't play, set interval to time needed
+  // reset interval
+
+  // pleajssse
+  // React.useEffect(() => {
+  //   const soundEffectTimer = BackgroundTimer.setTimeout(() => {
+  //     // will select a random sound effect from array, pass to Video component
+
+  //     console.log('do something');
+  //     if (!soundEffectPlaying && !sessionPaused) {
+  //       const randomNum = Math.floor(Math.random() * soundArray.length);
+
+  //       // sets volume
+  //       soundEffectVolumeSetter(soundArray[randomNum]);
+  //       console.log('sound changing');
+  //       setSoundEffectPlaying(`${soundUrlBase}?name=${soundArray[randomNum]}`);
+  //     }
+  //   }, 15000);
+
+  //   return () => BackgroundTimer.clearTimeout(soundEffectTimer);
+  // }, [soundEffectPlaying, sessionPaused]);
+
+  // // Voice timer
+  // React.useEffect(() => {
+  //   // only after name is set and session is playing
+  //   if (!shouldFirstVoice && !sessionPaused && Platform.OS === 'android') {
+  //     // console.log('THIS TIMER SHOULD BE RUNNING');
+  //     const voiceOnTimer = BackgroundTimer.setTimeout(() => {
+  //       // console.log(`voiceRef.volume: ${voiceRef.current.volume}`);
+  //       if (!googleVoiceShouldPlay) {
+  //         setGoogleVoiceShouldPlay(true);
+  //       }
+  //     }, 7000);
+
+  //     return () => BackgroundTimer.clearTimeout(voiceOnTimer);
+  //   }
+  // }, [shouldFirstVoice, sessionPaused, googleVoiceShouldPlay]);
+
+  // // Sound effect timer
+  // React.useEffect(() => {
+  //   // only after name is set and session is playing
+  //   if (!shouldFirstVoice && !sessionPaused && Platform.OS === 'android') {
+  //     const soundArray = sessionName.toLowerCase().includes('hero')
+  //       ? heroSoundEffects
+  //       : riseSoundEffects;
+
+  //     const soundEffectTimer = BackgroundTimer.setInterval(() => {
+  //       // will select a random sound effect from array, pass to Video component
+  //       const randomNum = Math.floor(Math.random() * soundArray.length);
+
+  //       // sets volume
+  //       console.log('THIS SHOULDNT RUN');
+  //       soundEffectVolumeSetter(soundArray[randomNum]);
+  //       setSoundEffectPlaying(`${soundUrlBase}?name=${soundArray[randomNum]}`);
+  //     }, 15000);
+
+  //     return () => BackgroundTimer.clearInterval(soundEffectTimer);
+  //   }
+  // }, [shouldFirstVoice, sessionPaused]);
 
   return (
     <>
@@ -144,7 +276,7 @@ const PlayMusic = () => {
         // audioOnly={true}
         playInBackground={true}
         playWhenInactive={true}
-        progressUpdateInterval={10000}
+        progressUpdateInterval={100}
         volume={0.9}
         ignoreSilentSwitch="ignore"
         // mixWithOthers="duck"
@@ -152,29 +284,95 @@ const PlayMusic = () => {
         rate={1}
         onLoad={data => {
           durationOfSessionSetter(data.duration);
+          if (Platform.OS === 'ios') {
+            MusicControl.setNowPlaying({
+              title: 'Moti Session',
+              artist: 'Motisesh',
+              duration: data.duration,
+            });
+          }
+
           console.log('loadeed');
         }}
         onProgress={data => {
-          currentSessionTimeSetter(data.currentTime);
+          // ONLY UPDATES UI OF PERILOGO WHILE APP IS ACTIVE, NEEDED OR IOS WILL CRASH
+          if (appStateVisible === 'active') {
+            currentSessionTimeSetter(data.currentTime);
+          }
+
+          durationRef.current = data.currentTime;
+          // console.log('data');
           // setGoogleVoiceShouldPlay(true);
         }}
         onEnd={() => {
           console.log('ended');
           shouldSessionEnd();
         }}
+        onPlaybackRateChange={({playbackRate}) => {
+          if (Platform.OS === 'ios' && playbackRate === 1) {
+            MusicControl.updatePlayback({
+              state: MusicControl.STATE_PLAYING,
+              speed: 1,
+              elapsedTime: durationRef.current,
+            });
+          } else if (Platform.OS === 'ios' && playbackRate === 0) {
+            MusicControl.updatePlayback({
+              state: MusicControl.STATE_PAUSED,
+              elapsedTime: durationRef.current,
+            });
+          }
+        }}
         // Paused if the session is paused or the starting google voice is playing
         paused={sessionPaused || shouldFirstVoice ? true : false}
         // muted
       />
 
+      {/* Timer for voice */}
+      <Video
+        source={{uri: `${sessionUrlBase}?name=silence`}}
+        playInBackground
+        playWhenInactive
+        ignoreSilentSwitch="ignore"
+        muted
+        progressUpdateInterval={10000}
+        onProgress={() => {
+          setGoogleVoiceShouldPlay(true);
+        }}
+        paused={sessionPaused || shouldFirstVoice ? true : false}
+      />
+
+      {/* Timer for sound */}
+      <Video
+        source={{uri: `${sessionUrlBase}?name=silence`}}
+        playInBackground
+        playWhenInactive
+        ignoreSilentSwitch="ignore"
+        muted
+        ref={soundTimerRef}
+        progressUpdateInterval={15000}
+        onProgress={data => {
+          const randomNum = Math.floor(Math.random() * soundArray.length);
+
+          // sets volume
+          soundEffectVolumeSetter(soundArray[randomNum]);
+          setSoundEffectPlaying(
+            `${soundUrlBase}?name=${soundArray[randomNum]}`,
+          );
+        }}
+        // onPlaybackRateChange={({playbackRate}) => {
+        //   if (playbackRate !== 0) {
+        //     soundRef.current.setNativeProps({progressUpdateInterval: 15000});
+        //   }
+        // }}
+        paused={sessionPaused || shouldFirstVoice ? true : false}
+      />
+
       {googleVoiceShouldPlay ? (
         <Video
           source={{
-            // currentVoiceSessionURL = http://192.168.1.72:4000/api/v1/audio/voice?genre=hero&firstName=
+            // currentVoiceSessionURL = https://motisesh/api/v1/audio/voice.mp3?genre=hero&firstName=
             uri: `${currentVoiceSessionURL}&firstName=${name}`,
           }}
-          // audioOnly
-          // ref={voiceRef}
           playInBackground={true}
           playWhenInactive={true}
           ignoreSilentSwitch="ignore"
@@ -198,9 +396,7 @@ const PlayMusic = () => {
           source={{
             uri: `${currentVoiceSessionURL}&firstName=${name}&firstVoice=true`,
             // uri: 'https://motisesh.com/api/v1/audio/background.opus?name=hero2',
-            // uri: 'http://192.168.1.72:4000/api/v1/audio/test.opus',
           }}
-          // audioOnly={true}
           playInBackground={true}
           playWhenInactive={true}
           ignoreSilentSwitch="ignore"
@@ -208,7 +404,6 @@ const PlayMusic = () => {
             console.log('error', error);
           }}
           onLoad={data => {
-            // shouldVoicePlay(true);
             console.log('voice loadeed');
           }}
           onEnd={() => {
@@ -228,8 +423,12 @@ const PlayMusic = () => {
           disableFocus
           // volume={0.05}
           volume={soundEffectVolume}
+          onLoad={() => console.log('sound is loaded')}
           onEnd={() => setSoundEffectPlaying(false)}
           paused={sessionPaused}
+          onError={error => {
+            console.log('sound effect error: ', error);
+          }}
         />
       ) : null}
     </>

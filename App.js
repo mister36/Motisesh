@@ -60,25 +60,25 @@ enableScreens(true);
 //   }
 // };
 
-const initIAPConfig = async () => {
-  try {
-    await Iaphub.init({
-      // The app id is available on the settings page of your app
-      appId: '5f8d198411b9d90ea10af329',
-      // The (client) api key is available on the settings page of your app
-      apiKey: 'V8tHkshKr07svrhNVKhv7atD5mWdgxWB',
-      // App environment (production by default, other environments must be created on the IAPHUB dashboard)
-      environment: 'production',
-    });
+// const initIAPConfig = async () => {
+//   try {
+//     await Iaphub.init({
+//       // The app id is available on the settings page of your app
+//       appId: '5f8d198411b9d90ea10af329',
+//       // The (client) api key is available on the settings page of your app
+//       apiKey: 'V8tHkshKr07svrhNVKhv7atD5mWdgxWB',
+//       // App environment (production by default, other environments must be created on the IAPHUB dashboard)
+//       environment: 'production',
+//     });
 
-    // After IAP initialized, sets the user ID
-    // setUserIdForSubscription()
-  } catch (error) {
-    console.log('Iaphub error: ', error);
-  }
-};
+//     // After IAP initialized, sets the user ID
+//     // setUserIdForSubscription()
+//   } catch (error) {
+//     console.log('Iaphub error: ', error);
+//   }
+// };
 
-initIAPConfig();
+// initIAPConfig();
 
 Sentry.init({
   dsn:
@@ -93,6 +93,7 @@ const MaterialTab = createMaterialTopTabNavigator();
 const MaterialTabNav = () => {
   return (
     <MaterialTab.Navigator
+      lazy
       initialRouteName="Session"
       initialLayout={{width: wp(100), height: hp(100)}}
       sceneContainerStyle={{backgroundColor: '#ffffff'}}

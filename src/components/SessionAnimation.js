@@ -51,21 +51,21 @@ const SessionAnimation = () => {
     );
   }, []);
 
-  React.useEffect(() => {
-    const lightningTimer = BackgroundTimer.setInterval(() => {
-      setLightningVisible(true);
-    }, 12000);
+  // React.useEffect(() => {
+  //   const lightningTimer = BackgroundTimer.setInterval(() => {
+  //     setLightningVisible(true);
+  //   }, 12000);
 
-    return () => BackgroundTimer.clearInterval(lightningTimer);
-  }, [lightningVisible]);
+  //   return () => BackgroundTimer.clearInterval(lightningTimer);
+  // }, [lightningVisible]);
 
-  React.useEffect(() => {
-    const explodeTimer = BackgroundTimer.setInterval(() => {
-      setExplodeVisible(true);
-    }, 15000);
+  // React.useEffect(() => {
+  //   const explodeTimer = BackgroundTimer.setInterval(() => {
+  //     setExplodeVisible(true);
+  //   }, 15000);
 
-    return () => BackgroundTimer.clearInterval(explodeTimer);
-  }, [explodeVisible]);
+  //   return () => BackgroundTimer.clearInterval(explodeTimer);
+  // }, [explodeVisible]);
 
   // React.useEffect(() => {
   //   const chantTimer = BackgroundTimer.setInterval(() => {
