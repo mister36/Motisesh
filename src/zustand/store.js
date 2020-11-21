@@ -189,7 +189,7 @@ const enableIOSMusicControls = () => {
 const startForeground = async () => {
   //! IMPORTANT: channelConfig.id MUST EQUAL notificationConfig.channelId OR WILL CRASH
   const channelConfig = {
-    id: 'CheerSess',
+    id: 'Moti-sesh',
     name: 'Moti Session',
     description: 'Motisesh foreground service',
     enableVibration: false,
@@ -197,7 +197,7 @@ const startForeground = async () => {
   };
 
   const notificationConfig = {
-    channelId: 'CheerSess',
+    channelId: 'Moti-sesh',
     id: 19818,
     title: 'Moti Session',
     text: 'Currently playing a session',

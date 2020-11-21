@@ -24,12 +24,18 @@ import {
 } from 'react-native-responsive-screen';
 
 import LottieView from 'lottie-react-native';
+import shallow from 'zustand/shallow';
 
 const randomIntFromInterval = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
 const SessionAnimation = () => {
+  // Store
+  const [sessionUrlBase, sessionPaused] = useSessionStore(
+    state => [state.sessionUrlBase, state.sessionPaused],
+    shallow,
+  );
   // State
   const [lightningVisible, setLightningVisible] = React.useState(false);
   const [explodeVisible, setExplodeVisible] = React.useState(false);
@@ -103,7 +109,26 @@ const SessionAnimation = () => {
         </>
       ) : null}
 
-      {explodeVisible ? (
+      <Video
+        source={{uri: `${sessionUrlBase}?name=silence`}}
+        playInBackground
+        playWhenInactive
+        ignoreSilentSwitch="ignore"
+        muted
+        // ref={soundTimerRef}
+        progressUpdateInterval={15000}
+        onProgress={data => {
+          setLightningVisible(true);
+        }}
+        // onPlaybackRateChange={({playbackRate}) => {
+        //   if (playbackRate !== 0) {
+        //     soundRef.current.setNativeProps({progressUpdateInterval: 15000});
+        //   }
+        // }}
+        paused={sessionPaused ? true : false}
+      />
+
+      {/* {explodeVisible ? (
         <>
           <LottieView
             source={require('../assets/animations/smoke.json')}
@@ -126,7 +151,7 @@ const SessionAnimation = () => {
             // volume={0}
           />
         </>
-      ) : null}
+      ) : null} */}
 
       {/* {playChant ? (
         <Video

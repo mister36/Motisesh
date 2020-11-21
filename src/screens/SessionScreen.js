@@ -511,7 +511,7 @@ const SessionScreen = ({navigation}) => {
                     }
                   }}
                   style={[styles.bigButton]}>
-                  <Image source={{uri: 'white-logo'}} style={styles.logo} />
+                  <Image source={{uri: 'white_logo'}} style={styles.logo} />
                 </Pressable>
               </Animated.View>
             ) : null}
@@ -529,8 +529,7 @@ const SessionScreen = ({navigation}) => {
           </>
         ) : null} */}
 
-          {/* UNDOOOOOO */}
-          {/* {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null} */}
+          {sessionPlaying && !sessionPaused ? <SessionAnimation /> : null}
           {/* <SessionAnimation /> */}
 
           {/* //! Pause and play button */}

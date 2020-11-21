@@ -85,7 +85,8 @@ const PlayMusic = () => {
     'tiger',
     'war_chant',
   ];
-  const riseSoundEffects = ['yes_chant', 'tomorrow_chant'];
+  const riseSoundEffects = ['yes_chant', 'tomorrow_chant', 'ferocious', 'bang'];
+  // const riseSoundEffects = ['bang'];
 
   // function that sets volume for sound effect
   const soundEffectVolumeSetter = effectName => {
@@ -94,6 +95,10 @@ const PlayMusic = () => {
       case 'war_chant':
         setSoundEffectVolume(1);
       case 'horse':
+        setSoundEffectVolume(0.3);
+      case 'ferocious':
+        setSoundEffectVolume(0.2);
+      case 'bang':
         setSoundEffectVolume(0.3);
       default:
         setSoundEffectVolume(0.6);
@@ -349,7 +354,7 @@ const PlayMusic = () => {
         ignoreSilentSwitch="ignore"
         muted
         ref={soundTimerRef}
-        progressUpdateInterval={15000}
+        progressUpdateInterval={14000}
         onProgress={data => {
           const randomNum = Math.floor(Math.random() * soundArray.length);
 
