@@ -354,7 +354,7 @@ const PlayMusic = () => {
         ignoreSilentSwitch="ignore"
         muted
         ref={soundTimerRef}
-        progressUpdateInterval={14000}
+        progressUpdateInterval={18000}
         onProgress={data => {
           const randomNum = Math.floor(Math.random() * soundArray.length);
 
