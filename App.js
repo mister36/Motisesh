@@ -117,16 +117,49 @@ const App = () => {
 
   // Sets up notifications
   const registerDevice = () => {
+    // Request permissions on iOS, refresh token on Android
+    Notifications.registerRemoteNotifications();
+
+    // gets device token
     Notifications.events().registerRemoteNotificationsRegistered(event => {
-      // console.log('Token received', event.deviceToken);
+      console.log('Token received', event.deviceToken);
     });
+
+    // If receiving token failed
     Notifications.events().registerRemoteNotificationsRegistrationFailed(
       event => {
         console.error(event);
       },
     );
 
-    Notifications.registerRemoteNotifications();
+    // Receiving notifications in foreground
+    Notifications.events().registerNotificationReceivedForeground(
+      (notification, completion) => {
+        console.log('Notification Received - Foreground', notification.payload);
+
+        // Calling completion on iOS with `alert: true` will present the native iOS inApp notification.
+        completion({alert: true, sound: true, badge: false});
+      },
+    );
+
+    // Whe user opens notification
+    Notifications.events().registerNotificationOpened(
+      (notification, completion) => {
+        // console.log("Notification opened by device user", notification.payload);
+        // console.log(`Notification opened with an action identifier: ${action.identifier} and response text: ${action.text}`);
+        completion();
+      },
+    );
+
+    // Receiving notifications in background
+    Notifications.events().registerNotificationReceivedBackground(
+      (notification, completion) => {
+        console.log('Notification Received - Background', notification.payload);
+
+        // Calling completion on iOS with `alert: true` will present the native iOS inApp notification.
+        completion({alert: true, sound: true, badge: false});
+      },
+    );
   };
 
   React.useEffect(() => {
