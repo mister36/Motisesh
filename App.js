@@ -1,6 +1,9 @@
 import * as React from 'react';
 // Importing Navigation
 import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import AnimatedTabBar from '@gorhom/animated-tabbar';
+
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 
 // Stores
@@ -18,8 +21,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 // Date and time
 import date from 'date-and-time';
 
-// In app purchases
-import Iaphub from 'react-native-iaphub';
+// Animation
+import Animated from 'react-native-reanimated';
 
 // Device info
 import DeviceInfo from 'react-native-device-info';
@@ -32,6 +35,16 @@ import SettingsScreen from './src/screens/SettingsScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import AskNameScreen from './src/screens/AskNameScreen';
 import SessionScreen from './src/screens/SessionScreen';
+
+// Icons
+import Bubble from './src/svgs/Bubble';
+import Disk from './src/svgs/Disk';
+import Home from './src/svgs/Home';
+import User from './src/svgs/User';
+
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Foundation from 'react-native-vector-icons/Foundation';
 
 // Tab bar
 import TabBar from './src/components/TabBar';
@@ -47,38 +60,10 @@ import SplashScreen from 'react-native-splash-screen';
 
 // Error tracking
 import * as Sentry from '@sentry/react-native';
+import HomeScreen from './src/screens/HomeScreen';
+import MotiMessageScreen from './src/screens/MotiMessageScreen';
 
 enableScreens(true);
-
-// const setUserIdForSubscription = async () => {
-//   const uniqueId = DeviceInfo.getUniqueId();
-//   console.log('UNIQUE ID: ', uniqueId);
-//   try {
-//     await Iaphub.setUserId(uniqueId);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-// const initIAPConfig = async () => {
-//   try {
-//     await Iaphub.init({
-//       // The app id is available on the settings page of your app
-//       appId: '5f8d198411b9d90ea10af329',
-//       // The (client) api key is available on the settings page of your app
-//       apiKey: 'V8tHkshKr07svrhNVKhv7atD5mWdgxWB',
-//       // App environment (production by default, other environments must be created on the IAPHUB dashboard)
-//       environment: 'production',
-//     });
-
-//     // After IAP initialized, sets the user ID
-//     // setUserIdForSubscription()
-//   } catch (error) {
-//     console.log('Iaphub error: ', error);
-//   }
-// };
-
-// initIAPConfig();
 
 Sentry.init({
   dsn:
@@ -86,24 +71,110 @@ Sentry.init({
   enableAutoSessionTracking: true,
 });
 
+// Animatable Icons
+const FontistoAnim = Animated.createAnimatedComponent(Fontisto);
+const MaterialCommunityIconsAnim = Animated.createAnimatedComponent(
+  MaterialCommunityIcons,
+);
+const FoundationAnim = Animated.createAnimatedComponent(Foundation);
+
 // Navigators
+
+const tabs = {
+  Home: {
+    labelStyle: {
+      color: 'white',
+      fontFamily: 'GalanoGrotesque-SemiBold',
+    },
+    icon: {
+      component: props => {
+        console.log('props: ', props);
+        return <Home size={wp(8)} {...props} />;
+      },
+      activeColor: 'rgb(255, 255, 255)',
+      inactiveColor: 'rgb(71, 71, 71)',
+    },
+    background: {
+      activeColor: '#FF6F61',
+      inactiveColor: 'white',
+    },
+  },
+  Session: {
+    labelStyle: {
+      color: 'white',
+      fontFamily: 'GalanoGrotesque-SemiBold',
+    },
+    icon: {
+      component: props => <Disk size={wp(8)} {...props} />,
+      activeColor: 'rgb(255, 255, 255)',
+      inactiveColor: 'rgb(71, 71, 71)',
+    },
+    background: {
+      activeColor: '#FF6F61',
+      inactiveColor: '#white',
+    },
+  },
+  MotiMessage: {
+    labelStyle: {
+      color: 'white',
+      fontFamily: 'GalanoGrotesque-SemiBold',
+    },
+    icon: {
+      component: props => <Bubble size={wp(7)} {...props} />,
+      activeColor: 'rgb(255, 255, 255)',
+      inactiveColor: 'rgb(71, 71, 71)',
+    },
+    background: {
+      activeColor: '#FF6F61',
+      inactiveColor: '#white',
+    },
+  },
+  Profile: {
+    labelStyle: {
+      color: 'white',
+      fontFamily: 'GalanoGrotesque-SemiBold',
+    },
+    icon: {
+      component: props => <User size={wp(8)} {...props} />,
+      activeColor: 'rgb(255, 255, 255)',
+      inactiveColor: 'rgb(71, 71, 71)',
+    },
+    background: {
+      activeColor: '#FF6F61',
+      inactiveColor: '#white',
+    },
+  },
+};
+
+const Tab = createBottomTabNavigator();
+
 const MaterialTab = createMaterialTopTabNavigator();
 
 // Building App Navigation
-const MaterialTabNav = () => {
+const TabNav = () => {
   return (
-    <MaterialTab.Navigator
-      lazy
-      initialRouteName="Session"
-      initialLayout={{width: wp(100), height: hp(100)}}
-      sceneContainerStyle={{backgroundColor: '#ffffff'}}
-      tabBar={props => <TabBar {...props} />}>
-      <MaterialTab.Screen name="Settings" component={SettingsScreen} />
-      <MaterialTab.Screen name="Session" component={SessionScreen} />
-      <MaterialTab.Screen name="Stats" component={StatsScreen} />
-    </MaterialTab.Navigator>
+    <Tab.Navigator tabBar={props => <AnimatedTabBar tabs={tabs} {...props} />}>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Session" component={SessionScreen} />
+      <Tab.Screen name="MotiMessage" component={MotiMessageScreen} />
+      <Tab.Screen name="Profile" component={SettingsScreen} />
+    </Tab.Navigator>
   );
 };
+// const MaterialTabNav = () => {
+//   return (
+//     <MaterialTab.Navigator
+//       lazy
+//       initialRouteName="Session"
+//       initialLayout={{width: wp(100), height: hp(100)}}
+//       sceneContainerStyle={{backgroundColor: '#ffffff'}}
+//       tabBar={props => <TabBar {...props} />}>
+//       <MaterialTab.Screen name="Settings" component={SettingsScreen} />
+//       <MaterialTab.Screen name="Session" component={SessionScreen} />
+//       <MaterialTab.Screen name="Stats" component={StatsScreen} />
+//     </MaterialTab.Navigator>
+//   );
+// };
 
 // App
 const App = () => {
@@ -195,7 +266,7 @@ const App = () => {
     try {
       return (
         <NavigationContainer>
-          <MaterialTabNav />
+          <TabNav />
         </NavigationContainer>
       );
     } finally {

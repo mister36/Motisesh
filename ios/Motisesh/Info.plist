@@ -13,7 +13,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
-	<string></string>
+	<string/>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -29,7 +29,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -105,6 +105,47 @@
 		<string>NunitoSans-Regular.ttf</string>
 		<string>NunitoSans-SemiBold.ttf</string>
 		<string>NunitoSans-SemiBoldItalic.ttf</string>
+		<string>GalanoGrotesque-Black.ttf</string>
+		<string>GalanoGrotesque-BlackItalic.ttf</string>
+		<string>GalanoGrotesque-Bold.ttf</string>
+		<string>GalanoGrotesque-BoldItalic.ttf</string>
+		<string>GalanoGrotesque-ExtraBold.ttf</string>
+		<string>GalanoGrotesque-ExtraBoldItalic.ttf</string>
+		<string>GalanoGrotesque-ExtraLight.ttf</string>
+		<string>GalanoGrotesque-ExtraLightItalic.ttf</string>
+		<string>GalanoGrotesque-Heavy.ttf</string>
+		<string>GalanoGrotesque-HeavyItalic.ttf</string>
+		<string>GalanoGrotesque-Italic.ttf</string>
+		<string>GalanoGrotesque-Light.ttf</string>
+		<string>GalanoGrotesque-LightItalic.ttf</string>
+		<string>GalanoGrotesque-Medium.ttf</string>
+		<string>GalanoGrotesque-MediumItalic.ttf</string>
+		<string>GalanoGrotesque-SemiBold.ttf</string>
+		<string>GalanoGrotesque-SemiBoldItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Black.ttf</string>
+		<string>GalanoGrotesqueAlt-BlackItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Bold.ttf</string>
+		<string>GalanoGrotesqueAlt-BoldItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-ExtraBold.ttf</string>
+		<string>GalanoGrotesqueAlt-ExtraBoldItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-ExtraLight.ttf</string>
+		<string>GalanoGrotesqueAlt-ExtraLightItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Heavy.ttf</string>
+		<string>GalanoGrotesqueAlt-HeavyItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Italic.ttf</string>
+		<string>GalanoGrotesqueAlt-Light.ttf</string>
+		<string>GalanoGrotesqueAlt-LightItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Medium.ttf</string>
+		<string>GalanoGrotesqueAlt-MediumItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Regular.ttf</string>
+		<string>GalanoGrotesqueAlt-SemiBold.ttf</string>
+		<string>GalanoGrotesqueAlt-SemiBoldItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Thin.ttf</string>
+		<string>GalanoGrotesqueAlt-ThinItalic.ttf</string>
+		<string>GalanoGrotesqueAltDEMO-Bold.ttf</string>
+		<string>GalanoGrotesqueDEMO-Bold.ttf</string>
+		<string>SFProText-Semibold.ttf</string>
+		<string>segoeui-semibold.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
