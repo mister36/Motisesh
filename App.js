@@ -87,10 +87,7 @@ const tabs = {
       fontFamily: 'GalanoGrotesque-SemiBold',
     },
     icon: {
-      component: props => {
-        console.log('props: ', props);
-        return <Home size={wp(8)} {...props} />;
-      },
+      component: props => <Home {...props} />,
       activeColor: 'rgb(255, 255, 255)',
       inactiveColor: 'rgb(71, 71, 71)',
     },
@@ -105,7 +102,7 @@ const tabs = {
       fontFamily: 'GalanoGrotesque-SemiBold',
     },
     icon: {
-      component: props => <Disk size={wp(8)} {...props} />,
+      component: props => <Disk {...props} />,
       activeColor: 'rgb(255, 255, 255)',
       inactiveColor: 'rgb(71, 71, 71)',
     },
@@ -120,7 +117,7 @@ const tabs = {
       fontFamily: 'GalanoGrotesque-SemiBold',
     },
     icon: {
-      component: props => <Bubble size={wp(7)} {...props} />,
+      component: props => <Bubble {...props} />,
       activeColor: 'rgb(255, 255, 255)',
       inactiveColor: 'rgb(71, 71, 71)',
     },
@@ -135,7 +132,7 @@ const tabs = {
       fontFamily: 'GalanoGrotesque-SemiBold',
     },
     icon: {
-      component: props => <User size={wp(8)} {...props} />,
+      component: props => <User {...props} />,
       activeColor: 'rgb(255, 255, 255)',
       inactiveColor: 'rgb(71, 71, 71)',
     },
@@ -153,7 +150,15 @@ const MaterialTab = createMaterialTopTabNavigator();
 // Building App Navigation
 const TabNav = () => {
   return (
-    <Tab.Navigator tabBar={props => <AnimatedTabBar tabs={tabs} {...props} />}>
+    <Tab.Navigator
+      sceneContainerStyle={{backgroundColor: 'white'}}
+      tabBarOptions={{
+        style: {
+          elevation: 3,
+          borderRadius: wp(12),
+        },
+      }}
+      tabBar={props => <AnimatedTabBar tabs={tabs} {...props} />}>
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Session" component={SessionScreen} />
       <Tab.Screen name="MotiMessage" component={MotiMessageScreen} />
@@ -161,20 +166,6 @@ const TabNav = () => {
     </Tab.Navigator>
   );
 };
-// const MaterialTabNav = () => {
-//   return (
-//     <MaterialTab.Navigator
-//       lazy
-//       initialRouteName="Session"
-//       initialLayout={{width: wp(100), height: hp(100)}}
-//       sceneContainerStyle={{backgroundColor: '#ffffff'}}
-//       tabBar={props => <TabBar {...props} />}>
-//       <MaterialTab.Screen name="Settings" component={SettingsScreen} />
-//       <MaterialTab.Screen name="Session" component={SessionScreen} />
-//       <MaterialTab.Screen name="Stats" component={StatsScreen} />
-//     </MaterialTab.Navigator>
-//   );
-// };
 
 // App
 const App = () => {
