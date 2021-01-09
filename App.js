@@ -9,6 +9,9 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 // Stores
 import {useSessionStore, useAuthStore} from './src/zustand/store';
 
+// Socket connection
+// import socket from './socket';
+
 // Notifications
 import {Notifications} from 'react-native-notifications';
 
@@ -31,10 +34,7 @@ import DeviceInfo from 'react-native-device-info';
 import {enableScreens} from 'react-native-screens';
 
 // Screens
-import SettingsScreen from './src/screens/SettingsScreen';
-import StatsScreen from './src/screens/StatsScreen';
-import AskNameScreen from './src/screens/AskNameScreen';
-import SessionScreen from './src/screens/SessionScreen';
+import HomeScreen from './src/screens/HomeScreen';
 
 // Icons
 import Bubble from './src/svgs/Bubble';
@@ -60,8 +60,6 @@ import SplashScreen from 'react-native-splash-screen';
 
 // Error tracking
 import * as Sentry from '@sentry/react-native';
-import HomeScreen from './src/screens/HomeScreen';
-import MotiMessageScreen from './src/screens/MotiMessageScreen';
 
 enableScreens(true);
 
@@ -145,7 +143,7 @@ const tabs = {
 
 const Tab = createBottomTabNavigator();
 
-const MaterialTab = createMaterialTopTabNavigator();
+// const MaterialTab = createMaterialTopTabNavigator();
 
 // Building App Navigation
 const TabNav = () => {
@@ -158,11 +156,12 @@ const TabNav = () => {
           borderRadius: wp(12),
         },
       }}
-      tabBar={props => <AnimatedTabBar tabs={tabs} {...props} />}>
+      // tabBar={props => <AnimatedTabBar tabs={tabs} {...props} />}
+    >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Session" component={SessionScreen} />
-      <Tab.Screen name="MotiMessage" component={MotiMessageScreen} />
-      <Tab.Screen name="Profile" component={SettingsScreen} />
+      {/* <Tab.Screen name="Session" component={SessionScreen} /> */}
+      {/* <Tab.Screen name="MotiMessage" component={MotiMessageScreen} /> */}
+      {/* <Tab.Screen name="Profile" component={SettingsScreen} /> */}
     </Tab.Navigator>
   );
 };
@@ -184,7 +183,7 @@ const App = () => {
 
     // gets device token
     Notifications.events().registerRemoteNotificationsRegistered(event => {
-      console.log('Token received', event.deviceToken);
+      // console.log('Token received', event.deviceToken);
     });
 
     // If receiving token failed
@@ -229,49 +228,55 @@ const App = () => {
   }, []);
 
   // checks for name in storage to know whether to render Home or not
-  React.useEffect(() => {
-    const checkForName = async () => {
-      try {
-        const storedName = await AsyncStorage.getItem('name');
-        if (storedName) {
-          setIsLoadingAndNewUser([false, false]);
-        } else {
-          const today = date.format(new Date(), 'MMM DD YYYY');
-          const initial = {
-            [today]: [{category: 'workout'}, {category: 'general'}],
-            'Jun 20 2020': [{category: 'workout'}, {category: 'chores'}],
-          }; // allows variable to be used in object
+  // React.useEffect(() => {
+  //   const checkForName = async () => {
+  //     try {
+  //       const storedName = await AsyncStorage.getItem('name');
+  //       if (storedName) {
+  //         setIsLoadingAndNewUser([false, false]);
+  //       } else {
+  //         const today = date.format(new Date(), 'MMM DD YYYY');
+  //         const initial = {
+  //           [today]: [{category: 'workout'}, {category: 'general'}],
+  //           'Jun 20 2020': [{category: 'workout'}, {category: 'chores'}],
+  //         }; // allows variable to be used in object
 
-          await AsyncStorage.setItem('sessionInfo', JSON.stringify(initial));
+  //         await AsyncStorage.setItem('sessionInfo', JSON.stringify(initial));
 
-          setIsLoadingAndNewUser([false, true]);
-        }
-      } catch (error) {
-        console.log('check name error: ', error);
-      }
-    };
-    checkForName();
-  }, [setUpComplete]);
+  //         setIsLoadingAndNewUser([false, true]);
+  //       }
+  //     } catch (error) {
+  //       console.log('check name error: ', error);
+  //     }
+  //   };
+  //   checkForName();
+  // }, [setUpComplete]);
+  SplashScreen.hide();
+  return (
+    <NavigationContainer>
+      <TabNav />
+    </NavigationContainer>
+  );
 
-  if (isLoadingAndNewUser[0] === false && isLoadingAndNewUser[1] === false) {
-    try {
-      return (
-        <NavigationContainer>
-          <TabNav />
-        </NavigationContainer>
-      );
-    } finally {
-      SplashScreen.hide();
-    }
-  } else if (
-    isLoadingAndNewUser[0] === false &&
-    isLoadingAndNewUser[1] === true
-  ) {
-    SplashScreen.hide();
-    return <AskNameScreen />;
-  } else {
-    return null;
-  }
+  // if (isLoadingAndNewUser[0] === false && isLoadingAndNewUser[1] === false) {
+  //   try {
+  //     return (
+  //       <NavigationContainer>
+  //         <TabNav />
+  //       </NavigationContainer>
+  //     );
+  //   } finally {
+  //     SplashScreen.hide();
+  //   }
+  // } else if (
+  //   isLoadingAndNewUser[0] === false &&
+  //   isLoadingAndNewUser[1] === true
+  // ) {
+  //   SplashScreen.hide();
+  //   return <AskNameScreen />;
+  // } else {
+  //   return null;
+  //   }
 };
 
 export default () => {

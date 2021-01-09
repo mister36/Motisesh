@@ -20,27 +20,6 @@ voicePlaying: whether or not the Google voice is playing
 getReadyForSessionUI: whether to animate away objects on SessionScreen; this changes to true when the session first starts
  */
 
-const getFirstName = async () => {
-  try {
-    const firstName = await AsyncStorage.getItem('name');
-    // name = firstName;
-    return firstName;
-  } catch (error) {
-    console.log('FIRST NAME ERROR', error);
-    return 'Bob';
-  }
-};
-
-let name;
-const setName = async () => {
-  try {
-    name = await getFirstName();
-  } catch (error) {
-    console.log(error);
-  }
-};
-setName();
-
 // getFirstName();
 
 //  const
