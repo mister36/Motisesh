@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, Pressable, Platform, Image} from 'react-native';
 import {
   heightPercentageToDP as hp,

@@ -8,35 +8,17 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {authHeader, thinFont} from '../styles/uiStyles';
 
-import axiosBase from '../utils/axiosBase';
-
 // Components
 import AuthTextInput from '../components/AuthTextInput';
 import Spacer from '../components/Spacer';
 import ActionButton from '../components/ActionButton';
 
-const LoginScreen = ({navigation}) => {
+const SignupScreen = ({navigation}) => {
   const colors = useTheme();
 
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const login = async () => {
-    setLoading(true);
-    try {
-      const results = await axiosBase.post('/user/login', {
-        email,
-        password,
-      });
-
-      navigation.navigate('Main');
-      console.log(results.data);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -54,7 +36,7 @@ const LoginScreen = ({navigation}) => {
             />
           </Pressable>
 
-          <Text style={styles.header}>Login</Text>
+          <Text style={styles.header}>Sign Up</Text>
         </View>
 
         <Spacer margin={hp(10)} />
@@ -68,6 +50,15 @@ const LoginScreen = ({navigation}) => {
 
         <Spacer margin={hp(5)} />
         <AuthTextInput
+          value={name}
+          onChangeText={setName}
+          placeholder="First Name"
+          style={[styles.textInput]}
+          autoCapitalize="words"
+        />
+
+        <Spacer margin={hp(5)} />
+        <AuthTextInput
           value={password}
           onChangeText={setPassword}
           placeholder="Password"
@@ -77,22 +68,20 @@ const LoginScreen = ({navigation}) => {
 
         <Spacer margin={hp(5)} />
         <ActionButton
-          text="Sign In"
+          text="Sign Up"
           color1="#F39772"
           color2={colors.colors.primary}
           style={styles.button}
           textStyle={{color: 'white'}}
-          onPress={login}
-          loading={loading}
         />
 
         <Spacer margin={hp(10)} />
         <Text style={styles.bottomText}>
-          Have no account?{' '}
+          Already have an account?{' '}
           <Text
-            onPress={() => navigation.navigate('Signup')}
+            onPress={() => navigation.navigate('Login')}
             style={{fontFamily: 'Montserrat-Bold', color: '#E6705A'}}>
-            Sign up
+            Log In
           </Text>
         </Text>
       </View>
@@ -133,4 +122,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default SignupScreen;

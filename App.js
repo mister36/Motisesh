@@ -1,16 +1,17 @@
-import * as React from 'react';
+import React from 'react';
 // Importing Navigation
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AnimatedTabBar from '@gorhom/animated-tabbar';
-
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {
+  createStackNavigator,
+  CardStyleInterpolators,
+} from '@react-navigation/stack';
 
 // Stores
 import {useSessionStore, useAuthStore} from './src/zustand/store';
 
 // Socket connection
-// import socket from './socket';
 
 // Notifications
 import {Notifications} from 'react-native-notifications';
@@ -34,7 +35,14 @@ import DeviceInfo from 'react-native-device-info';
 import {enableScreens} from 'react-native-screens';
 
 // Screens
+import AuthOptionsScreen from './src/screens/AuthOptionsScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import SignupScreen from './src/screens/SignupScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import ThinkScreen from './src/screens/ThinkScreen';
+import ChatScreen from './src/screens/ChatScreen';
+import StatsScreen from './src/screens/StatsScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 
 // Icons
 import Bubble from './src/svgs/Bubble';
@@ -47,7 +55,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Foundation from 'react-native-vector-icons/Foundation';
 
 // Tab bar
-import TabBar from './src/components/TabBar';
 
 // Responsiveness
 import {
@@ -69,113 +76,62 @@ Sentry.init({
   enableAutoSessionTracking: true,
 });
 
-// Animatable Icons
-const FontistoAnim = Animated.createAnimatedComponent(Fontisto);
-const MaterialCommunityIconsAnim = Animated.createAnimatedComponent(
-  MaterialCommunityIcons,
-);
-const FoundationAnim = Animated.createAnimatedComponent(Foundation);
-
 // Navigators
 
-const tabs = {
-  Home: {
-    labelStyle: {
-      color: 'white',
-      fontFamily: 'GalanoGrotesque-SemiBold',
-    },
-    icon: {
-      component: props => <Home {...props} />,
-      activeColor: 'rgb(255, 255, 255)',
-      inactiveColor: 'rgb(71, 71, 71)',
-    },
-    background: {
-      activeColor: '#FF6F61',
-      inactiveColor: 'white',
-    },
-  },
-  Session: {
-    labelStyle: {
-      color: 'white',
-      fontFamily: 'GalanoGrotesque-SemiBold',
-    },
-    icon: {
-      component: props => <Disk {...props} />,
-      activeColor: 'rgb(255, 255, 255)',
-      inactiveColor: 'rgb(71, 71, 71)',
-    },
-    background: {
-      activeColor: '#FF6F61',
-      inactiveColor: '#white',
-    },
-  },
-  MotiMessage: {
-    labelStyle: {
-      color: 'white',
-      fontFamily: 'GalanoGrotesque-SemiBold',
-    },
-    icon: {
-      component: props => <Bubble {...props} />,
-      activeColor: 'rgb(255, 255, 255)',
-      inactiveColor: 'rgb(71, 71, 71)',
-    },
-    background: {
-      activeColor: '#FF6F61',
-      inactiveColor: '#white',
-    },
-  },
-  Profile: {
-    labelStyle: {
-      color: 'white',
-      fontFamily: 'GalanoGrotesque-SemiBold',
-    },
-    icon: {
-      component: props => <User {...props} />,
-      activeColor: 'rgb(255, 255, 255)',
-      inactiveColor: 'rgb(71, 71, 71)',
-    },
-    background: {
-      activeColor: '#FF6F61',
-      inactiveColor: '#white',
-    },
-  },
-};
-
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 // const MaterialTab = createMaterialTopTabNavigator();
 
 // Building App Navigation
+
 const TabNav = () => {
   return (
-    <Tab.Navigator
-      sceneContainerStyle={{backgroundColor: 'white'}}
-      tabBarOptions={{
-        style: {
-          elevation: 3,
-          borderRadius: wp(12),
-        },
-      }}
-      // tabBar={props => <AnimatedTabBar tabs={tabs} {...props} />}
-    >
+    <Tab.Navigator sceneContainerStyle={{backgroundColor: 'white'}}>
       <Tab.Screen name="Home" component={HomeScreen} />
-      {/* <Tab.Screen name="Session" component={SessionScreen} /> */}
-      {/* <Tab.Screen name="MotiMessage" component={MotiMessageScreen} /> */}
-      {/* <Tab.Screen name="Profile" component={SettingsScreen} /> */}
+      <Tab.Screen name="Think" component={ThinkScreen} />
+      <Tab.Screen name="Chat" component={ChatScreen} />
+      <Tab.Screen name="Stats" component={StatsScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
+  );
+};
+
+const StackNav = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        cardStyle: {
+          backgroundColor: '#FBFBFB',
+        },
+      }}>
+      <Stack.Screen
+        name="AuthOptions"
+        component={AuthOptionsScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Signup"
+        component={SignupScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Main"
+        component={TabNav}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
   );
 };
 
 // App
 const App = () => {
-  // Tells whether the set up is complete for first time users
-  const setUpComplete = useAuthStore(state => state.setUpComplete);
-  // state variable for if app is still rendering and the user is new
-  const [isLoadingAndNewUser, setIsLoadingAndNewUser] = React.useState([
-    true,
-    null,
-  ]);
-
   // Sets up notifications
   const registerDevice = () => {
     // Request permissions on iOS, refresh token on Android
@@ -227,63 +183,31 @@ const App = () => {
     registerDevice();
   }, []);
 
-  // checks for name in storage to know whether to render Home or not
-  // React.useEffect(() => {
-  //   const checkForName = async () => {
-  //     try {
-  //       const storedName = await AsyncStorage.getItem('name');
-  //       if (storedName) {
-  //         setIsLoadingAndNewUser([false, false]);
-  //       } else {
-  //         const today = date.format(new Date(), 'MMM DD YYYY');
-  //         const initial = {
-  //           [today]: [{category: 'workout'}, {category: 'general'}],
-  //           'Jun 20 2020': [{category: 'workout'}, {category: 'chores'}],
-  //         }; // allows variable to be used in object
+  const myTheme = {
+    dark: false,
+    colors: {
+      primary: '#E26452',
+      background: 'white',
+      card: '#E26452',
+      text: '#E26452',
+      border: '#E46B56',
+      notification: 'E26452',
+    },
+  };
 
-  //         await AsyncStorage.setItem('sessionInfo', JSON.stringify(initial));
-
-  //         setIsLoadingAndNewUser([false, true]);
-  //       }
-  //     } catch (error) {
-  //       console.log('check name error: ', error);
-  //     }
-  //   };
-  //   checkForName();
-  // }, [setUpComplete]);
   SplashScreen.hide();
   return (
-    <NavigationContainer>
-      <TabNav />
+    <NavigationContainer theme={myTheme}>
+      <StackNav />
     </NavigationContainer>
   );
-
-  // if (isLoadingAndNewUser[0] === false && isLoadingAndNewUser[1] === false) {
-  //   try {
-  //     return (
-  //       <NavigationContainer>
-  //         <TabNav />
-  //       </NavigationContainer>
-  //     );
-  //   } finally {
-  //     SplashScreen.hide();
-  //   }
-  // } else if (
-  //   isLoadingAndNewUser[0] === false &&
-  //   isLoadingAndNewUser[1] === true
-  // ) {
-  //   SplashScreen.hide();
-  //   return <AskNameScreen />;
-  // } else {
-  //   return null;
-  //   }
 };
 
 export default () => {
-  const sessionPlaying = useSessionStore(state => state.sessionPlaying);
+  // const sessionPlaying = useSessionStore(state => state.sessionPlaying);
   return (
     <>
-      {sessionPlaying ? <PlayMusic /> : null}
+      {/* {sessionPlaying ? <PlayMusic /> : null} */}
       <App />
     </>
   );

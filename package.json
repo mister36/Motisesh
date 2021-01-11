@@ -53,6 +53,7 @@
     "react-native-redash": "^14.2.3",
     "react-native-responsive-screen": "^1.4.1",
     "react-native-safe-area-context": "^3.0.7",
+    "react-native-scalable-image": "^1.0.0",
     "react-native-screens": "^2.10.1",
     "react-native-shared-element": "^0.7.0",
     "react-native-snap-carousel": "^3.9.1",

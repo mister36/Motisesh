@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import ws, {postMessage} from '../../socket';
+// import {ws, postMessage} from '../../socket';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import {
@@ -64,19 +64,22 @@ const HomeScreen = () => {
   //   grabToken();
   // }, []);
 
+  // TODO: Look into caching
   // useEffect(() => {
-  //   const botMessageListener = ws.on('bot_message', message => {
-  //     setNewMessage(message);
-  //   });
-  //   return () => ws.off('bot_message', botMessageListener);
+  //   ws.onmessage = message => {
+  //     console.log(message);
+  //     setNewMessage(JSON.parse(message.data).text);
+  //   };
+
+  //   return () => ws.close();
   // }, []);
 
-  // useEffect(() => {
-  //   setMessages([
-  //     ...messages,
-  //     {text: newMessage, id: (Math.random() * 324).toString(10)},
-  //   ]);
-  // }, [newMessage]);
+  useEffect(() => {
+    setMessages([
+      ...messages,
+      {text: newMessage, id: (Math.random() * 324).toString(10)},
+    ]);
+  }, [newMessage]);
 
   return (
     <View>

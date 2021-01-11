@@ -1,9 +1,4 @@
-// import ReconnectingWebSocket from 'react-native-reconnecting-websocket';
 import AsyncStorage from '@react-native-community/async-storage';
-import str2ab from 'string-to-arraybuffer';
-import {Buffer} from 'buffer';
-
-// import WebSocketClient from './WebSocketClient';
 
 let ws = new WebSocket('ws://192.168.1.72:4000/');
 let t0;
@@ -11,7 +6,7 @@ let t1;
 
 export let postMessage = message => {
   t0 = performance.now();
-  ws.send(str2ab(message));
+  ws.send(message);
   // setLastMessageTime();
 };
 
@@ -21,20 +16,19 @@ export let postMessage = message => {
 
 const connect = () => {
   ws.close();
+  ws.binaryType = 'blob';
   ws = new WebSocket('ws://192.168.1.72:4000/');
-  ws.binaryType = 'arraybuffer';
 
   ws.onopen = () => {
     console.log('Websocket connection opened');
     // ws.send('hiya');
   };
 
-  ws.onmessage = message => {
-    t1 = performance.now();
-    console.log(`took ${t1 - t0} milliseconds`);
-    console.log(message.data);
-    console.log(Buffer.from(message.data).toString('utf8'));
-  };
+  // ws.onmessage = message => {
+  //   t1 = performance.now();
+  //   console.log(`took ${t1 - t0} milliseconds`);
+  //   console.log(message.data);
+  // };
 
   // postMessage = message => {
   //   ws.send(message);
@@ -141,5 +135,5 @@ connect();
 //   console.log(err.message);
 // });
 
-export default ws;
+export {ws};
 // export postMessage

@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 
-const SettingsScreen = () => {
+const ChatScreen = () => {
   return <View />;
 };
 
-export default SettingsScreen;
+export default ChatScreen;
