@@ -7,8 +7,10 @@ import {
 } from 'react-native-responsive-screen';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {authHeader, thinFont} from '../styles/uiStyles';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import axiosBase from '../utils/axiosBase';
+import {useAuthStore} from '../zustand/store';
 
 // Components
 import AuthTextInput from '../components/AuthTextInput';
@@ -16,22 +18,28 @@ import Spacer from '../components/Spacer';
 import ActionButton from '../components/ActionButton';
 
 const LoginScreen = ({navigation}) => {
+  const saveToken = useAuthStore(state => state.saveToken);
   const colors = useTheme();
 
+  // state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const login = async () => {
-    setLoading(true);
+    setLoading(true); // for ActivityIndicator in button
     try {
       const results = await axiosBase.post('/user/login', {
         email,
         password,
       });
 
-      navigation.navigate('Main');
-      console.log(results.data);
+      // saves tokens into storage
+      // NOTE: May want to use something like Realm in the future
+      await AsyncStorage.setItem('accessToken', results.data.token);
+      await AsyncStorage.setItem('refreshToken', results.data.refreshToken);
+      // saves accessToken in state, rerenders app to main flow
+      saveToken(results.data.token);
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -129,7 +137,7 @@ const styles = StyleSheet.create({
   bottomText: {
     ...thinFont,
     textAlign: 'center',
-    fontSize: wp(4),
+    fontSize: wp(4.12),
   },
 });
 

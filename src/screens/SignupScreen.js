@@ -7,6 +7,10 @@ import {
 } from 'react-native-responsive-screen';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {authHeader, thinFont} from '../styles/uiStyles';
+import AsyncStorage from '@react-native-community/async-storage';
+
+import axiosBase from '../utils/axiosBase';
+import {useAuthStore} from '../zustand/store';
 
 // Components
 import AuthTextInput from '../components/AuthTextInput';
@@ -14,11 +18,34 @@ import Spacer from '../components/Spacer';
 import ActionButton from '../components/ActionButton';
 
 const SignupScreen = ({navigation}) => {
+  const saveToken = useAuthStore(state => state.saveToken);
   const colors = useTheme();
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const signup = async () => {
+    setLoading(true); // for ActivityIndicator in button
+    try {
+      const results = await axiosBase.post('/user/signup', {
+        email,
+        name,
+        password,
+      });
+
+      // saves tokens into storage
+      // NOTE: May want to use something like Realm in the future
+      await AsyncStorage.setItem('accessToken', results.data.token);
+      await AsyncStorage.setItem('refreshToken', results.data.refreshToken);
+      // saves accessToken in state, rerenders app to main flow
+      saveToken(results.data.token);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -73,6 +100,8 @@ const SignupScreen = ({navigation}) => {
           color2={colors.colors.primary}
           style={styles.button}
           textStyle={{color: 'white'}}
+          onPress={signup}
+          loading={loading}
         />
 
         <Spacer margin={hp(10)} />
@@ -118,7 +147,7 @@ const styles = StyleSheet.create({
   bottomText: {
     ...thinFont,
     textAlign: 'center',
-    fontSize: wp(4),
+    fontSize: wp(4.12),
   },
 });
 

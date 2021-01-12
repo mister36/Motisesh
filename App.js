@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 // Importing Navigation
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -6,10 +6,11 @@ import AnimatedTabBar from '@gorhom/animated-tabbar';
 import {
   createStackNavigator,
   CardStyleInterpolators,
+  TransitionSpecs,
 } from '@react-navigation/stack';
 
 // Stores
-import {useSessionStore, useAuthStore} from './src/zustand/store';
+import {useAuthStore} from './src/zustand/store';
 
 // Socket connection
 
@@ -67,6 +68,7 @@ import SplashScreen from 'react-native-splash-screen';
 
 // Error tracking
 import * as Sentry from '@sentry/react-native';
+import shallow from 'zustand/shallow';
 
 enableScreens(true);
 
@@ -105,6 +107,10 @@ const StackNav = () => {
         cardStyle: {
           backgroundColor: '#FBFBFB',
         },
+        transitionSpec: {
+          open: TransitionSpecs.TransitionIOSSpec,
+          close: TransitionSpecs.TransitionIOSSpec,
+        },
       }}>
       <Stack.Screen
         name="AuthOptions"
@@ -121,17 +127,17 @@ const StackNav = () => {
         component={SignupScreen}
         options={{headerShown: false}}
       />
-      <Stack.Screen
-        name="Main"
-        component={TabNav}
-        options={{headerShown: false}}
-      />
     </Stack.Navigator>
   );
 };
 
 // App
 const App = () => {
+  // store
+  const [token, saveToken] = useAuthStore(state => [
+    state.token,
+    state.saveToken,
+  ]);
   // Sets up notifications
   const registerDevice = () => {
     // Request permissions on iOS, refresh token on Android
@@ -179,9 +185,30 @@ const App = () => {
     );
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     registerDevice();
   }, []);
+
+  // gets token from storage, save it
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem('accessToken');
+
+        // TODO: Verify token
+        // exits function
+        if (!storedToken) return;
+
+        saveToken(storedToken);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        // removes splash screen
+        SplashScreen.hide();
+      }
+    };
+    checkToken();
+  }, [token]);
 
   const myTheme = {
     dark: false,
@@ -195,10 +222,9 @@ const App = () => {
     },
   };
 
-  SplashScreen.hide();
   return (
     <NavigationContainer theme={myTheme}>
-      <StackNav />
+      {!token ? <StackNav /> : <TabNav />}
     </NavigationContainer>
   );
 };

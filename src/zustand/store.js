@@ -211,8 +211,8 @@ const getGenreFromTitle = title => {
 };
 
 const useAuthStore = create(set => ({
-  setUpComplete: false,
-  setSetUpComplete: (bool = true) => set(state => ({setUpComplete: true})),
+  token: null, // access, not refreshToken
+  saveToken: token => set(state => ({token})),
 }));
 
 export {useSessionStore, useAuthStore};
