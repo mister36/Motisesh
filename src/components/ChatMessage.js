@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   gradientContainer: {
     // minHeight: hp(5),
-    maxWidth: '50%',
+    maxWidth: '70%',
     padding: wp(2.5),
     // paddingLeft: wp(4),
     borderTopLeftRadius: wp(6),

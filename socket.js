@@ -1,38 +1,28 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
-let ws = new WebSocket('ws://192.168.1.72:4000/');
+let ws = new WebSocket('ws://192.168.1.72:4000/chat');
 let t0;
 let t1;
 
 export let postMessage = message => {
   t0 = performance.now();
-  ws.send(message);
+  ws.send(JSON.stringify({event: 'user_message', data: {message}}));
   // setLastMessageTime();
 };
-
-// let ws = new ReconnectingWebSocket('ws://192.168.1.72:4000/', null, {
-//   reconnectInterval: 3000,
-// });
 
 const connect = () => {
   ws.close();
   ws.binaryType = 'blob';
-  ws = new WebSocket('ws://192.168.1.72:4000/');
+  ws = new WebSocket('ws://192.168.1.72:4000/chat');
 
   ws.onopen = () => {
     console.log('Websocket connection opened');
-    // ws.send('hiya');
+
+    AsyncStorage.getItem('accessToken', (err, jwt) => {
+      if (err) return console.log(err);
+      ws.send(JSON.stringify({event: 'auth', data: {message: jwt}}));
+    });
   };
-
-  // ws.onmessage = message => {
-  //   t1 = performance.now();
-  //   console.log(`took ${t1 - t0} milliseconds`);
-  //   console.log(message.data);
-  // };
-
-  // postMessage = message => {
-  //   ws.send(message);
-  // };
 
   ws.onclose = e => {
     console.log('Socket closed, will try to reconnect every 5 seconds');

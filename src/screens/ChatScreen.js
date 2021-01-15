@@ -1,17 +1,44 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import {View, Text} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 import {GiftedChat} from 'react-native-gifted-chat';
+import {ws, postMessage} from '../../socket';
 
 // Components
 import ChatMessage from '../components/ChatMessage';
+import Input from '../components/InputToolbar';
 
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    ws.onmessage = message => {
+      const text = JSON.parse(message.data).text;
+
+      const chatMessage = [
+        {
+          _id: Math.random() * 3242.2134,
+          text: text,
+          createdAt: new Date(),
+          user: {
+            _id: 1,
+            name: 'Moti',
+          },
+        },
+      ];
+
+      setMessages(previousMessages =>
+        GiftedChat.append(previousMessages, chatMessage),
+      );
+    };
+
+    return () => ws.close();
+  }, [ws]);
 
   useEffect(() => {
     setMessages([
@@ -31,17 +58,13 @@ const ChatScreen = () => {
     setMessages(previousMessages =>
       GiftedChat.append(previousMessages, messages),
     );
+    postMessage(messages[0].text);
   }, []);
 
-  // useEffect(() => {
-  //   GiftedChat.append(messages, messages);
-  // }, []);
   return (
     <View style={{flex: 1}}>
       <GiftedChat
         messages={messages}
-        // text={text}
-        // onInputTextChanged={setText}
         user={{_id: 123445, name: 'Adam'}}
         onSend={messages => {
           send(messages);
@@ -49,10 +72,22 @@ const ChatScreen = () => {
         renderMessage={ChatMessage}
         showAvatarForEveryMessage
         alignTop
+        textInputStyle={styles.textInput}
+        renderInputToolbar={props => <Input {...props} />}
       />
-      {/* <Text>Wassup</Text> */}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  textInput: {
+    backgroundColor: '#F2F2F2',
+    borderRadius: wp(10),
+    fontFamily: 'Poppins-Regular',
+    paddingLeft: wp(2),
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
+});
 
 export default ChatScreen;

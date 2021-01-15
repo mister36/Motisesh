@@ -108,7 +108,7 @@ const tabs = {
       visible: true,
     },
   },
-  Chat: {
+  Moti: {
     labelStyle: {
       color: '#E26452',
       fontFamily: 'Montserrat-SemiBold',
@@ -154,7 +154,7 @@ const ChatNav = () => {
         },
         headerTitle: props => <Header {...props} />,
       }}>
-      <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="Moti" component={ChatScreen} />
       <Stack.Screen name="Think" component={ThinkScreen} />
     </Stack.Navigator>
   );
@@ -163,15 +163,15 @@ const ChatNav = () => {
 const TabNav = () => {
   return (
     <Tab.Navigator
-      sceneContainerStyle={{backgroundColor: 'white'}}
-      initialRouteName="Chat"
+      sceneContainerStyle={{backgroundColor: '#fff'}}
+      initialRouteName="Moti"
       tabBarOptions={{keyboardHidesTabBar: true}}
       tabBar={props => (
         <AnimatedTabBar tabs={tabs} preset="flashy" {...props} />
       )}>
       <Tab.Screen name="Home" component={HomeScreen} />
       {/* <Tab.Screen name="Think" component={ThinkScreen} /> */}
-      <Tab.Screen name="Chat" component={ChatNav} />
+      <Tab.Screen name="Moti" component={ChatNav} />
       {/* <Tab.Screen name="Stats" component={StatsScreen} /> */}
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
