@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 // Importing Navigation
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import AnimatedTabBar from '@gorhom/animated-tabbar';
 import {
   createStackNavigator,
   CardStyleInterpolators,
@@ -45,6 +44,9 @@ import ChatScreen from './src/screens/ChatScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 
+// Components
+import Header from './src/components/Header';
+
 // Icons
 import Bubble from './src/svgs/Bubble';
 import Disk from './src/svgs/Disk';
@@ -54,8 +56,11 @@ import User from './src/svgs/User';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Foundation from 'react-native-vector-icons/Foundation';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 // Tab bar
+import AnimatedTabBar from '@gorhom/animated-tabbar';
 
 // Responsiveness
 import {
@@ -87,13 +92,87 @@ const Stack = createStackNavigator();
 
 // Building App Navigation
 
+const tabs = {
+  Home: {
+    labelStyle: {
+      color: '#E26452',
+      fontFamily: 'Montserrat-SemiBold',
+    },
+    icon: {
+      component: props => (
+        <Entypo name="home" style={{fontSize: wp(6)}} {...props} />
+      ),
+      color: '#CACACA',
+    },
+    indicator: {
+      visible: true,
+    },
+  },
+  Chat: {
+    labelStyle: {
+      color: '#E26452',
+      fontFamily: 'Montserrat-SemiBold',
+    },
+    icon: {
+      component: props => (
+        <FontAwesome5 name="robot" style={{fontSize: wp(6)}} {...props} />
+      ),
+      color: '#CACACA',
+    },
+    indicator: {
+      visible: true,
+    },
+  },
+  Profile: {
+    labelStyle: {
+      color: '#E26452',
+      fontFamily: 'Montserrat-SemiBold',
+    },
+    icon: {
+      component: props => (
+        <MaterialCommunityIcons
+          name="account"
+          style={{fontSize: wp(7)}}
+          {...props}
+        />
+      ),
+      color: '#CACACA',
+    },
+    indicator: {
+      visible: true,
+    },
+  },
+};
+
+const ChatNav = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: 'white',
+          elevation: 0,
+        },
+        headerTitle: props => <Header {...props} />,
+      }}>
+      <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="Think" component={ThinkScreen} />
+    </Stack.Navigator>
+  );
+};
+
 const TabNav = () => {
   return (
-    <Tab.Navigator sceneContainerStyle={{backgroundColor: 'white'}}>
+    <Tab.Navigator
+      sceneContainerStyle={{backgroundColor: 'white'}}
+      initialRouteName="Chat"
+      tabBarOptions={{keyboardHidesTabBar: true}}
+      tabBar={props => (
+        <AnimatedTabBar tabs={tabs} preset="flashy" {...props} />
+      )}>
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Think" component={ThinkScreen} />
-      <Tab.Screen name="Chat" component={ChatScreen} />
-      <Tab.Screen name="Stats" component={StatsScreen} />
+      {/* <Tab.Screen name="Think" component={ThinkScreen} /> */}
+      <Tab.Screen name="Chat" component={ChatNav} />
+      {/* <Tab.Screen name="Stats" component={StatsScreen} /> */}
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

@@ -16,6 +16,8 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
+import Spacer from '../components/Spacer';
+
 const HomeScreen = () => {
   const [text, setText] = useState('');
   const [token, setToken] = useState('');
@@ -52,18 +54,6 @@ const HomeScreen = () => {
   //   setLastMessageTime();
   // };
 
-  // useEffect(() => {
-  //   const grabToken = async () => {
-  //     try {
-  //       const jwtToken = await AsyncStorage.getItem('jwt_token');
-  //       setToken(jwtToken);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   grabToken();
-  // }, []);
-
   // TODO: Look into caching
   // useEffect(() => {
   //   ws.onmessage = message => {
@@ -82,9 +72,16 @@ const HomeScreen = () => {
   }, [newMessage]);
 
   return (
-    <View>
+    <View style={styles.container}>
       <StatusBar backgroundColor="black" />
-      <TextInput
+      <Spacer margin={hp(10)} />
+      {/* <MessageText
+        currentMessage={{
+          text: 'Hey wassup bro i love you',
+        }}
+      /> */}
+      {/* <TabBar /> */}
+      {/* <TextInput
         multiline
         onChangeText={setText}
         value={text}
@@ -94,8 +91,8 @@ const HomeScreen = () => {
           fontSize: hp(4),
           fontFamily: 'Lato-Regular',
         }}
-      />
-      <TouchableOpacity
+      /> */}
+      {/* <TouchableOpacity
         style={{width: wp(50), height: hp(8), backgroundColor: 'black'}}
         onPress={() => {
           postMessage(text);
@@ -104,9 +101,9 @@ const HomeScreen = () => {
         <Text style={{color: 'white', fontSize: wp(8), textAlign: 'center'}}>
           Send
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
-      <FlatList
+      {/* <FlatList
         style={{flexGrow: 1, marginBottom: hp(13)}}
         keyExtractor={item => item.id}
         data={messages}
@@ -121,11 +118,15 @@ const HomeScreen = () => {
             </Text>
           );
         }}
-      />
+      /> */}
     </View>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+  },
+});
 
 export default HomeScreen;
