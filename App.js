@@ -213,9 +213,10 @@ const StackNav = () => {
 // App
 const App = () => {
   // store
-  const [token, saveToken] = useAuthStore(state => [
+  const [token, saveToken, saveName] = useAuthStore(state => [
     state.token,
     state.saveToken,
+    state.saveName,
   ]);
   // Sets up notifications
   const registerDevice = () => {
@@ -287,6 +288,20 @@ const App = () => {
       }
     };
     checkToken();
+  }, [token]);
+
+  // sets name in storage into the store for easy use
+  useEffect(() => {
+    const nameInStore = async () => {
+      try {
+        const name = await AsyncStorage.getItem('name');
+        if (!name) return;
+        saveName(name);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    nameInStore();
   }, [token]);
 
   const myTheme = {

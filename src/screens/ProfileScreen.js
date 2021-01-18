@@ -1,8 +1,13 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View, StatusBar, Text} from 'react-native';
 
 const ProfileScreen = () => {
-  return <View />;
+  return (
+    <View>
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
+      {/* <MissionForm /> */}
+    </View>
+  );
 };
 
 export default ProfileScreen;

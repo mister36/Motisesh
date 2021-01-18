@@ -39,58 +39,6 @@ const connect = () => {
 };
 connect();
 
-// ws.onclose = e => {
-//   console.log(e);
-//   console.log('Socket closed, will try to reconnect every 5 seconds');
-
-//     ws = new WebSocket('ws://192.168.1.72:4000/');
-
-//   ws.onopen = () => {
-//     ws.send('heartbeat');
-//     console.log('Websocket connection opened');
-//   };
-//   ws.onmessage = (message) => {
-//     console.log(message)
-//   }
-// };
-
-// ws.onmessage = message => {
-//   console.log(message);
-// };
-
-// ws.onclose = (e) => {
-//   ws = new WebSocket('ws://192.168.1.72:4000/');
-
-//   ws.onopen = () => {
-//     ws.send('heartbeat');
-//     console.log('Websocket connection opened');
-//   };
-//   ws.onmessage = (message) => {
-//     console.log(message)
-//   }
-//   ws.onclose
-// }
-
-// ws.onmessage = message => {
-//   console.log(message);
-// };
-// ws.binaryType = 'blob';
-
-// const ws = new WebSocket('ws://192.168.1.72:4000/');
-
-// ws.onclose = () => {
-//   ws = new WebSocket('ws://192.168.1.72:4000/')
-// }
-
-// const socket = io('http://192.168.1.72:4000/', {
-//   auth: async cb => {
-//     cb({
-//       token: await AsyncStorage.getItem('jwt_token'),
-//     });
-//   },
-//   transports: ['websocket'],
-// });
-
 // const sendGreet = async () => {
 //   try {
 //     const lastMessageTime = await AsyncStorage.getItem('last_message_time');
@@ -108,22 +56,4 @@ connect();
 //   }
 // };
 
-// // TODO: Send random token to Node JS for session persistence
-
-// socket.on('connect', async () => {
-//   console.log('Socket connection established');
-//   try {
-//     if (await sendGreet()) {
-//       socket.emit('greet');
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
-
-// socket.on('connect_error', err => {
-//   console.log(err.message);
-// });
-
 export {ws};
-// export postMessage

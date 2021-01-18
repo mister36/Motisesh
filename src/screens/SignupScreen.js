@@ -39,6 +39,7 @@ const SignupScreen = ({navigation}) => {
       // NOTE: May want to use something like Realm in the future
       await AsyncStorage.setItem('accessToken', results.data.token);
       await AsyncStorage.setItem('refreshToken', results.data.refreshToken);
+      await AsyncStorage.setItem('name', results.data.name);
       // saves accessToken in state, rerenders app to main flow
       saveToken(results.data.token);
     } catch (error) {
