@@ -1,23 +1,38 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import ActionButton from './ActionButton';
+import {postMessage} from '../../socket';
 
 const MissionForm = ({style}) => {
+  const [mission, setMission] = useState('');
+  const [date, setDate] = useState('');
+  const [loading, setLoading] = useState(false);
+
   return (
-    <View style={styles.wrapper}>
-      <View style={[styles.container, style]}>
+    <View style={[styles.wrapper, style]}>
+      <View style={[styles.container]}>
         <View style={styles.row}>
           <Text style={styles.header}>Mission</Text>
-          <TextInput style={styles.input} placeholder="Lose 25 pounds" />
+          <TextInput
+            value={mission}
+            onChangeText={setMission}
+            style={styles.input}
+            placeholder="Lose 25 pounds"
+          />
         </View>
 
         <View style={styles.row}>
           <Text style={styles.header}>When should it end?</Text>
-          <TextInput style={styles.input} placeholder="January 25" />
+          <TextInput
+            value={date}
+            onChangeText={setDate}
+            style={styles.input}
+            placeholder="January 25"
+          />
         </View>
 
         <ActionButton
@@ -26,6 +41,17 @@ const MissionForm = ({style}) => {
           color1="#F39772"
           color2="#E26452"
           text="Confirm"
+          loading={loading}
+          onPress={() => {
+            setLoading(true);
+            postMessage(
+              '/info' +
+                JSON.stringify({
+                  mission,
+                  word_time: date,
+                }),
+            );
+          }}
         />
       </View>
     </View>
@@ -43,6 +69,7 @@ const styles = StyleSheet.create({
     // height: hp(55),
     borderRadius: wp(5),
     backgroundColor: 'transparent',
+    paddingTop: hp(1),
   },
   header: {
     color: '#E26452',
@@ -50,6 +77,8 @@ const styles = StyleSheet.create({
   },
   row: {
     marginLeft: wp(5),
+
+    // marginTop: hp(1),
   },
   input: {
     fontSize: wp(4.5),

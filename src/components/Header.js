@@ -23,7 +23,7 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   text: {
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'Montserrat-Medium',
     textAlign: 'center',
     fontSize: wp(6),
   },

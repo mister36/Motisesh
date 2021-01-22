@@ -164,6 +164,7 @@ const TabNav = () => {
   return (
     <Tab.Navigator
       sceneContainerStyle={{backgroundColor: '#fff'}}
+      // TODO: Bring back
       initialRouteName="Moti"
       tabBarOptions={{keyboardHidesTabBar: true}}
       tabBar={props => (

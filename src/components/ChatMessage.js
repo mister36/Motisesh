@@ -8,15 +8,18 @@ import LinearGradient from 'react-native-linear-gradient';
 import Image from 'react-native-scalable-image';
 
 import Spacer from './Spacer';
+import MissionForm from './MissionForm';
 
-const MessageText = ({currentMessage}) => {
-  //   console.log('props: ', props);
+let render;
+
+const ChatMessage = ({currentMessage}) => {
   let textColor;
   let gradientColors;
   let position;
   const {
     text,
     user: {name},
+    component,
   } = currentMessage;
 
   // Message looks different according to sender
@@ -30,8 +33,10 @@ const MessageText = ({currentMessage}) => {
     position = {right: wp(5), alignSelf: 'flex-end'};
   }
 
-  return (
-    <>
+  if (component === 'mission_form') {
+    render = <MissionForm style={styles.missionForm} />;
+  } else {
+    render = (
       <View style={[styles.container, position]}>
         {name === 'Moti' ? (
           <Image source={{uri: 'logo'}} height={hp(6.5)} />
@@ -42,10 +47,22 @@ const MessageText = ({currentMessage}) => {
           <Text style={[styles.text, {color: textColor}]}>{text}</Text>
         </LinearGradient>
       </View>
-      <Spacer margin={hp(2)} />
-    </>
-  );
+    );
+  }
+
+  return render;
 };
+
+{
+  /* <View style={[styles.container, position]}>
+      {name === 'Moti' ? (
+        <Image source={{uri: 'logo'}} height={hp(6.5)} />
+      ) : null}
+      <LinearGradient colors={gradientColors} style={styles.gradientContainer}>
+        <Text style={[styles.text, {color: textColor}]}>{text}</Text>
+      </LinearGradient>
+    </View> */
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -64,10 +81,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'flex-start',
   },
+  missionForm: {
+    alignSelf: 'center',
+  },
   text: {
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'Montserrat-Medium',
     fontSize: wp(4),
   },
 });
 
-export default MessageText;
+export default ChatMessage;

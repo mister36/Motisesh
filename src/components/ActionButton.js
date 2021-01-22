@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import {Text, Pressable, StyleSheet, ActivityIndicator} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   heightPercentageToDP as hp,

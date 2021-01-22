@@ -31,7 +31,7 @@ const ChatScreen = () => {
       const response = JSON.parse(message.data);
 
       if (response.event !== 'pong') {
-        const text = response.data.text;
+        const {text, component} = response.data;
 
         const chatMessage = [
           {
@@ -42,6 +42,7 @@ const ChatScreen = () => {
               _id: 1,
               name: 'Moti',
             },
+            component: component,
           },
         ];
 
