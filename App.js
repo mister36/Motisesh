@@ -31,6 +31,10 @@ import Animated from 'react-native-reanimated';
 // Device info
 import DeviceInfo from 'react-native-device-info';
 
+// uuid
+import 'react-native-get-random-values';
+import {v4 as uuidv4} from 'uuid';
+
 // Native screen support
 import {enableScreens} from 'react-native-screens';
 
@@ -41,7 +45,6 @@ import SignupScreen from './src/screens/SignupScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ThinkScreen from './src/screens/ThinkScreen';
 import ChatScreen from './src/screens/ChatScreen';
-import StatsScreen from './src/screens/StatsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 
 // Components
@@ -266,11 +269,27 @@ const App = () => {
     );
   };
 
+  // Notifications
   useEffect(() => {
     registerDevice();
   }, []);
 
-  // gets token from storage, save it
+  // uuid for websocket session
+  useEffect(() => {
+    // generates id, saves in storage
+    const wsId = uuidv4();
+
+    const setId = async () => {
+      try {
+        await AsyncStorage.setItem('wsId', wsId);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    setId();
+  }, []);
+
+  // gets token from storage, save it in store
   useEffect(() => {
     const checkToken = async () => {
       try {
@@ -291,7 +310,7 @@ const App = () => {
     checkToken();
   }, [token]);
 
-  // sets name in storage into the store for easy use
+  // sets name in storage into the store for easy access
   useEffect(() => {
     const nameInStore = async () => {
       try {

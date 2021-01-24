@@ -62,22 +62,22 @@ const styles = StyleSheet.create({
     marginTop: hp(5),
   },
   dateHeaderText: {
-    fontFamily: 'Poppins-Medium',
+    fontFamily: 'Montserrat-Medium',
     color: '#E26452',
     fontSize: wp(3.75),
   },
   greeting: {
-    fontFamily: 'Poppins-Medium',
+    fontFamily: 'Montserrat-Medium',
     fontSize: wp(10),
   },
   infoText: {
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: wp(5),
-    marginTop: -hp(1),
+    marginTop: hp(1),
   },
   goalHeader: {
     marginLeft: greatMarginLeft,
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'Montserrat-Bold',
     fontSize: wp(5),
   },
 });

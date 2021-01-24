@@ -9,6 +9,7 @@ import Image from 'react-native-scalable-image';
 
 import Spacer from './Spacer';
 import MissionForm from './MissionForm';
+import GoalForm from './GoalForm';
 
 let render;
 
@@ -22,7 +23,7 @@ const ChatMessage = ({currentMessage}) => {
     component,
   } = currentMessage;
 
-  // Message looks different according to sender
+  // Text message looks different according to sender
   if (name === 'Moti') {
     textColor = 'black';
     gradientColors = ['transparent', 'transparent'];
@@ -35,6 +36,8 @@ const ChatMessage = ({currentMessage}) => {
 
   if (component === 'mission_form') {
     render = <MissionForm style={styles.missionForm} />;
+  } else if (component === 'goal_form') {
+    render = <GoalForm style={styles.missionForm} />;
   } else {
     render = (
       <View style={[styles.container, position]}>
@@ -52,17 +55,6 @@ const ChatMessage = ({currentMessage}) => {
 
   return render;
 };
-
-{
-  /* <View style={[styles.container, position]}>
-      {name === 'Moti' ? (
-        <Image source={{uri: 'logo'}} height={hp(6.5)} />
-      ) : null}
-      <LinearGradient colors={gradientColors} style={styles.gradientContainer}>
-        <Text style={[styles.text, {color: textColor}]}>{text}</Text>
-      </LinearGradient>
-    </View> */
-}
 
 const styles = StyleSheet.create({
   container: {

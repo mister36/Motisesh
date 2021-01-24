@@ -13,9 +13,6 @@ const DayComponent = ({style, fullDate, selectedDate, setSelectedDate}) => {
     selectedDate.month === fullDate.month &&
     selectedDate.day === fullDate.day;
 
-  //   console.log(selectedDate.year, fullDate.year);
-  //   console.log(selectedDate.month, fullDate.month);
-  //   console.log(selectedDate.day, fullDate.day);
   return (
     <Pressable
       onPress={() => {
@@ -53,7 +50,7 @@ const styles = StyleSheet.create({
     // borderRadius: wp(6),
   },
   text: {
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'Montserrat-Medium',
     alignSelf: 'center',
     marginTop: hp(1),
   },
