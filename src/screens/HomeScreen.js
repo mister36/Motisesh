@@ -17,19 +17,39 @@ import {
 import {DateTime} from 'luxon';
 
 import {useAuthStore} from '../zustand/store';
+import axiosBase from '../utils/axiosBase';
+import {sameDate} from '../utils/helpers';
 
 import Spacer from '../components/Spacer';
 import CalendarStrip from '../components/CalendarStrip';
-import DayComponent from '../components/DayComponent';
+import GoalBox from '../components/GoalBox';
 
 const greatMarginLeft = wp(5);
 
 const HomeScreen = () => {
   const now = DateTime.local().toFormat('ccc d LLL');
   // store
-  const [name] = useAuthStore(state => [state.name]);
+  const [name, token] = useAuthStore(state => [state.name, state.token]);
   // state
   const [selectedDate, setSelectedDate] = useState(DateTime.local());
+  const [goals, setGoals] = useState([]);
+
+  // Fetches goals
+  useEffect(() => {
+    const fetchGoals = async () => {
+      try {
+        const goals = await axiosBase.get('/goals', {
+          headers: {
+            token,
+          },
+        });
+        setGoals(goals.data.goals);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchGoals();
+  }, []);
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -47,7 +67,27 @@ const HomeScreen = () => {
       />
 
       <Spacer margin={hp(2)} />
-      <Text style={styles.goalHeader}>Today's Goals</Text>
+      <View style={styles.goalContainer}>
+        <Text style={styles.goalHeader}>Today's Goals</Text>
+        <FlatList
+          horizontal
+          data={goals}
+          keyExtractor={item => item._id}
+          renderItem={({item, index}) => {
+            const date = DateTime.fromISO(item.dateEnd);
+            if (sameDate(date, selectedDate)) {
+              return (
+                <GoalBox
+                  title={item.description}
+                  date={date}
+                  type={item.type}
+                />
+              );
+            }
+          }}
+        />
+        {/* <GoalBox /> */}
+      </View>
     </View>
   );
 };
@@ -75,10 +115,13 @@ const styles = StyleSheet.create({
     fontSize: wp(5),
     marginTop: hp(1),
   },
-  goalHeader: {
+  goalContainer: {
     marginLeft: greatMarginLeft,
+  },
+  goalHeader: {
     fontFamily: 'Montserrat-Bold',
     fontSize: wp(5),
+    marginBottom: hp(2),
   },
 });
 

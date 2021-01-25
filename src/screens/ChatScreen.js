@@ -55,20 +55,6 @@ const ChatScreen = () => {
     return () => ws.close();
   }, [ws]);
 
-  useEffect(() => {
-    setMessages([
-      {
-        _id: 123445,
-        text: 'Hello developer',
-        createdAt: new Date(),
-        user: {
-          _id: 1,
-          name: 'Moti',
-        },
-      },
-    ]);
-  }, []);
-
   const send = useCallback((messages = []) => {
     setMessages(previousMessages =>
       GiftedChat.append(previousMessages, messages),

@@ -5,13 +5,12 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {sameDate} from '../utils/helpers';
 
 const DayComponent = ({style, fullDate, selectedDate, setSelectedDate}) => {
   const dayArr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const isSelected =
-    selectedDate.year === fullDate.year &&
-    selectedDate.month === fullDate.month &&
-    selectedDate.day === fullDate.day;
+
+  const isSelected = sameDate(selectedDate, fullDate);
 
   return (
     <Pressable

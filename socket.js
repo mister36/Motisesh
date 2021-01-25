@@ -4,9 +4,10 @@ import {v4 as uuidv4} from 'uuid';
 import jwt_decode from 'jwt-decode';
 import axiosBase from './src/utils/axiosBase';
 
-let ws = new WebSocket('ws://192.168.1.72:4000/chat');
+let ws = new WebSocket('ws://192.168.1.72:4000');
 
 export let postMessage = message => {
+  console.log('counter:', ws.counter);
   ws.send(JSON.stringify({event: 'user_message', data: {message}}));
   // setLastMessageTime();
 };
@@ -35,8 +36,9 @@ const refreshToken = async () => {
 
 const connect = () => {
   ws.close();
-  ws.binaryType = 'blob';
+
   ws = new WebSocket('ws://192.168.1.72:4000/chat');
+  ws.binaryType = 'blob';
 
   ws.onopen = () => {
     console.log('Websocket connection opened');
@@ -48,6 +50,7 @@ const connect = () => {
       const jwt = tokenArr[1],
         wsId = wsIdArr[1];
       ws.send(JSON.stringify({event: 'auth', id: wsId, data: {message: jwt}}));
+      console.log('sending auth');
     });
   };
 
