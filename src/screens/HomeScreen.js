@@ -68,19 +68,21 @@ const HomeScreen = () => {
 
       <Spacer margin={hp(2)} />
       <View style={styles.goalContainer}>
-        <Text style={styles.goalHeader}>Today's Goals</Text>
+        <Text style={styles.goalHeader}>Things today</Text>
         <FlatList
           horizontal
+          showsHorizontalScrollIndicator={false}
           data={goals}
           keyExtractor={item => item._id}
           renderItem={({item, index}) => {
             const date = DateTime.fromISO(item.dateEnd);
-            if (sameDate(date, selectedDate)) {
+            if (item.type === 'habit' || sameDate(date, selectedDate)) {
               return (
                 <GoalBox
                   title={item.description}
                   date={date}
                   type={item.type}
+                  style={{marginRight: wp(3)}}
                 />
               );
             }
@@ -94,7 +96,7 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FBFBFB',
+    backgroundColor: '#FEFEFE',
     flex: 1,
   },
   header: {
@@ -107,11 +109,11 @@ const styles = StyleSheet.create({
     fontSize: wp(3.75),
   },
   greeting: {
-    fontFamily: 'Montserrat-Medium',
+    fontFamily: 'ProximaNova-Bold',
     fontSize: wp(10),
   },
   infoText: {
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: 'ProximaNova-Regular',
     fontSize: wp(5),
     marginTop: hp(1),
   },

@@ -24,6 +24,7 @@ const GoalForm = ({style}) => {
   const [expanded, setExpanded] = useState(true);
 
   const heightVal = useSharedValue(hp(45));
+
   // anim
   const heightAnim = useAnimatedStyle(() => {
     // const height = withTiming(heightVal.value, {duration: 150});
@@ -74,6 +75,11 @@ const GoalForm = ({style}) => {
                   itemStyle={styles.pickerItem}
                   selectedValue={goalType}
                   onValueChange={itemValue => {
+                    if (itemValue === 'Habit') {
+                      heightVal.value = hp(35);
+                    } else {
+                      heightVal.value = hp(45);
+                    }
                     setGoalType(itemValue);
                   }}>
                   <Picker.Item label="Task" value="Task" />

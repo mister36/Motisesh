@@ -63,7 +63,7 @@ const ChatScreen = () => {
   }, []);
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: '#FFF'}}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <GiftedChat
         messages={messages}

@@ -16,14 +16,14 @@ const Header = () => {
 
   return (
     <View>
-      <Text style={styles.text}>Good {timeOfDay}</Text>
+      <Text style={styles.text}>Moti</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   text: {
-    fontFamily: 'Montserrat-Medium',
+    fontFamily: 'SF-Pro-Text-Semibold',
     textAlign: 'center',
     fontSize: wp(6),
   },

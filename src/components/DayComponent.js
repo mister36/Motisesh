@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     // borderRadius: wp(6),
   },
   text: {
-    fontFamily: 'Montserrat-Medium',
+    fontFamily: 'ProximaNova-Regular',
     alignSelf: 'center',
     marginTop: hp(1),
   },

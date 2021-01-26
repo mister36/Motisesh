@@ -9,7 +9,7 @@ const ProfileScreen = () => {
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       {/* <DayComponent /> */}
-      <MissionForm />
+      <GoalForm />
     </View>
   );
 };

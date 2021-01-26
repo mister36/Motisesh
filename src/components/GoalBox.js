@@ -7,7 +7,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {DateTime} from 'luxon';
 
-const GoalBox = ({title, date, type}) => {
+const GoalBox = ({title, date, type, style}) => {
   let colors;
 
   if (type === 'task') {
@@ -17,7 +17,7 @@ const GoalBox = ({title, date, type}) => {
   }
 
   return (
-    <LinearGradient style={styles.container} colors={colors}>
+    <LinearGradient style={[styles.container, style]} colors={colors}>
       <View style={styles.content}>
         <Text
           style={[
@@ -27,7 +27,9 @@ const GoalBox = ({title, date, type}) => {
           {title}
         </Text>
         <Text style={[styles.goalText]}>
-          {date.toLocaleString(DateTime.DATE_SHORT)}
+          {type === 'task'
+            ? date.toLocaleString(DateTime.TIME_SIMPLE)
+            : 'Everyday'}
         </Text>
       </View>
     </LinearGradient>

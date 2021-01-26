@@ -182,6 +182,67 @@
 		<string>Poppins-SemiBoldItalic.ttf</string>
 		<string>Poppins-Thin.ttf</string>
 		<string>Poppins-ThinItalic.ttf</string>
+		<string>ProximaNova-Alt-Bold.otf</string>
+		<string>ProximaNova-Alt-Light.otf</string>
+		<string>ProximaNova-Alt-Thin.otf</string>
+		<string>ProximaNova-Black.otf</string>
+		<string>ProximaNova-Bold.otf</string>
+		<string>ProximaNova-Extrabold.otf</string>
+		<string>ProximaNova-Regular.otf</string>
+		<string>ProximaNova-Thin.otf</string>
+		<string>Milliard-Black.otf</string>
+		<string>Milliard-BlackItalic.otf</string>
+		<string>Milliard-Bold.otf</string>
+		<string>Milliard-BoldItalic.otf</string>
+		<string>Milliard-Book.otf</string>
+		<string>Milliard-BookItalic.otf</string>
+		<string>Milliard-ExtraBold.otf</string>
+		<string>Milliard-ExtraBoldItalic.otf</string>
+		<string>Milliard-ExtraLight.otf</string>
+		<string>Milliard-ExtraLightItalic.otf</string>
+		<string>Milliard-Hairline.otf</string>
+		<string>Milliard-HairlineItalic.otf</string>
+		<string>Milliard-Heavy.otf</string>
+		<string>Milliard-HeavyItalic.otf</string>
+		<string>Milliard-Light.otf</string>
+		<string>Milliard-LightItalic.otf</string>
+		<string>Milliard-Medium.otf</string>
+		<string>Milliard-MediumItalic.otf</string>
+		<string>Milliard-SemiBold.otf</string>
+		<string>Milliard-SemiBoldItalic.otf</string>
+		<string>Milliard-Thin.otf</string>
+		<string>Milliard-ThinItalic.otf</string>
+		<string>SF-Pro-Display-Black.otf</string>
+		<string>SF-Pro-Display-BlackItalic.otf</string>
+		<string>SF-Pro-Display-Bold.otf</string>
+		<string>SF-Pro-Display-BoldItalic.otf</string>
+		<string>SF-Pro-Display-Heavy.otf</string>
+		<string>SF-Pro-Display-HeavyItalic.otf</string>
+		<string>SF-Pro-Display-Light.otf</string>
+		<string>SF-Pro-Display-LightItalic.otf</string>
+		<string>SF-Pro-Display-Medium.otf</string>
+		<string>SF-Pro-Display-MediumItalic.otf</string>
+		<string>SF-Pro-Display-Regular.otf</string>
+		<string>SF-Pro-Display-RegularItalic.otf</string>
+		<string>SF-Pro-Display-Semibold.otf</string>
+		<string>SF-Pro-Display-SemiboldItalic.otf</string>
+		<string>SF-Pro-Display-Thin.otf</string>
+		<string>SF-Pro-Display-ThinItalic.otf</string>
+		<string>SF-Pro-Display-Ultralight.otf</string>
+		<string>SF-Pro-Display-UltralightItalic.otf</string>
+		<string>SF-Pro-Text-Bold.otf</string>
+		<string>SF-Pro-Text-BoldItalic.otf</string>
+		<string>SF-Pro-Text-Heavy.otf</string>
+		<string>SF-Pro-Text-HeavyItalic.otf</string>
+		<string>SF-Pro-Text-Light.otf</string>
+		<string>SF-Pro-Text-LightItalic.otf</string>
+		<string>SF-Pro-Text-Medium.otf</string>
+		<string>SF-Pro-Text-MediumItalic.otf</string>
+		<string>SF-Pro-Text-Regular.otf</string>
+		<string>SF-Pro-Text-RegularItalic.otf</string>
+		<string>SF-Pro-Text-Semibold.otf</string>
+		<string>SF-Pro-Text-SemiboldItalic.otf</string>
+		<string>SFUIText-Regular.otf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
