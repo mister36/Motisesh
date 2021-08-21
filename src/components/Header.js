@@ -1,33 +1,31 @@
-import * as React from 'react';
+import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {HeaderStyle} from '../styles';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
-const Header = ({navigation}) => {
+const Header = () => {
+  const date = new Date().getHours();
+  let timeOfDay;
+
+  if (date >= 3 && date < 12) {
+    timeOfDay = 'morning';
+  } else if (date >= 12 && date < 17) {
+    timeOfDay = 'afternoon';
+  } else {
+    timeOfDay = 'evening';
+  }
+
   return (
-    <View style={styles.container}>
-      <Icon
-        name="ios-menu"
-        size={24}
-        style={styles.icon}
-        onPress={() => {
-          navigation.openDrawer();
-        }}
-      />
-      <Text style={styles.text}>TopCheer</Text>
+    <View>
+      <Text style={styles.text}>Moti</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: HeaderStyle.container,
-  icon: {
-    ...HeaderStyle.color,
-    ...HeaderStyle.icon,
-  },
   text: {
-    ...HeaderStyle.color,
-    ...HeaderStyle.text,
+    fontFamily: 'SF-Pro-Text-Semibold',
+    textAlign: 'center',
+    fontSize: wp(6),
   },
 });
 

@@ -1,10 +1,17 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 // Importing Navigation
 import {NavigationContainer} from '@react-navigation/native';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  createStackNavigator,
+  CardStyleInterpolators,
+  TransitionSpecs,
+} from '@react-navigation/stack';
 
 // Stores
-import {useSessionStore, useAuthStore} from './src/zustand/store';
+import {useAuthStore} from './src/zustand/store';
+
+// Socket connection
 
 // Notifications
 import {Notifications} from 'react-native-notifications';
@@ -18,23 +25,45 @@ import AsyncStorage from '@react-native-community/async-storage';
 // Date and time
 import date from 'date-and-time';
 
-// In app purchases
-import Iaphub from 'react-native-iaphub';
+// Animation
+import Animated from 'react-native-reanimated';
 
 // Device info
 import DeviceInfo from 'react-native-device-info';
+
+// uuid
+import 'react-native-get-random-values';
+import {v4 as uuidv4} from 'uuid';
 
 // Native screen support
 import {enableScreens} from 'react-native-screens';
 
 // Screens
-import SettingsScreen from './src/screens/SettingsScreen';
-import StatsScreen from './src/screens/StatsScreen';
-import AskNameScreen from './src/screens/AskNameScreen';
-import SessionScreen from './src/screens/SessionScreen';
+import AuthOptionsScreen from './src/screens/AuthOptionsScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import SignupScreen from './src/screens/SignupScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import ThinkScreen from './src/screens/ThinkScreen';
+import ChatScreen from './src/screens/ChatScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+
+// Components
+import Header from './src/components/Header';
+
+// Icons
+import Bubble from './src/svgs/Bubble';
+import Disk from './src/svgs/Disk';
+import Home from './src/svgs/Home';
+import User from './src/svgs/User';
+
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Foundation from 'react-native-vector-icons/Foundation';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 // Tab bar
-import TabBar from './src/components/TabBar';
+import AnimatedTabBar from '@gorhom/animated-tabbar';
 
 // Responsiveness
 import {
@@ -47,38 +76,9 @@ import SplashScreen from 'react-native-splash-screen';
 
 // Error tracking
 import * as Sentry from '@sentry/react-native';
+import shallow from 'zustand/shallow';
 
 enableScreens(true);
-
-// const setUserIdForSubscription = async () => {
-//   const uniqueId = DeviceInfo.getUniqueId();
-//   console.log('UNIQUE ID: ', uniqueId);
-//   try {
-//     await Iaphub.setUserId(uniqueId);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-// const initIAPConfig = async () => {
-//   try {
-//     await Iaphub.init({
-//       // The app id is available on the settings page of your app
-//       appId: '5f8d198411b9d90ea10af329',
-//       // The (client) api key is available on the settings page of your app
-//       apiKey: 'V8tHkshKr07svrhNVKhv7atD5mWdgxWB',
-//       // App environment (production by default, other environments must be created on the IAPHUB dashboard)
-//       environment: 'production',
-//     });
-
-//     // After IAP initialized, sets the user ID
-//     // setUserIdForSubscription()
-//   } catch (error) {
-//     console.log('Iaphub error: ', error);
-//   }
-// };
-
-// initIAPConfig();
 
 Sentry.init({
   dsn:
@@ -87,34 +87,141 @@ Sentry.init({
 });
 
 // Navigators
-const MaterialTab = createMaterialTopTabNavigator();
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+// const MaterialTab = createMaterialTopTabNavigator();
 
 // Building App Navigation
-const MaterialTabNav = () => {
+
+const tabs = {
+  Home: {
+    labelStyle: {
+      color: '#E26452',
+      fontFamily: 'Montserrat-SemiBold',
+    },
+    icon: {
+      component: props => (
+        <Entypo name="home" style={{fontSize: wp(6)}} {...props} />
+      ),
+      color: '#CACACA',
+    },
+    indicator: {
+      visible: true,
+    },
+  },
+  Moti: {
+    labelStyle: {
+      color: '#E26452',
+      fontFamily: 'Montserrat-SemiBold',
+    },
+    icon: {
+      component: props => (
+        <FontAwesome5 name="robot" style={{fontSize: wp(6)}} {...props} />
+      ),
+      color: '#CACACA',
+    },
+    indicator: {
+      visible: true,
+    },
+  },
+  Profile: {
+    labelStyle: {
+      color: '#E26452',
+      fontFamily: 'Montserrat-SemiBold',
+    },
+    icon: {
+      component: props => (
+        <MaterialCommunityIcons
+          name="account"
+          style={{fontSize: wp(7)}}
+          {...props}
+        />
+      ),
+      color: '#CACACA',
+    },
+    indicator: {
+      visible: true,
+    },
+  },
+};
+
+const ChatNav = () => {
   return (
-    <MaterialTab.Navigator
-      lazy
-      initialRouteName="Session"
-      initialLayout={{width: wp(100), height: hp(100)}}
-      sceneContainerStyle={{backgroundColor: '#ffffff'}}
-      tabBar={props => <TabBar {...props} />}>
-      <MaterialTab.Screen name="Settings" component={SettingsScreen} />
-      <MaterialTab.Screen name="Session" component={SessionScreen} />
-      <MaterialTab.Screen name="Stats" component={StatsScreen} />
-    </MaterialTab.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: 'white',
+          elevation: 0,
+        },
+        headerTitle: props => <Header {...props} />,
+      }}>
+      <Stack.Screen name="Moti" component={ChatScreen} />
+      <Stack.Screen name="Think" component={ThinkScreen} />
+    </Stack.Navigator>
+  );
+};
+
+const TabNav = () => {
+  return (
+    <Tab.Navigator
+      sceneContainerStyle={{backgroundColor: '#fff'}}
+      // TODO: Bring back
+      initialRouteName="Moti"
+      tabBarOptions={{keyboardHidesTabBar: true}}
+      tabBar={props => (
+        <AnimatedTabBar tabs={tabs} preset="flashy" {...props} />
+      )}>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      {/* <Tab.Screen name="Think" component={ThinkScreen} /> */}
+      <Tab.Screen name="Moti" component={ChatNav} />
+      {/* <Tab.Screen name="Stats" component={StatsScreen} /> */}
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
+};
+
+const StackNav = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        cardStyle: {
+          backgroundColor: '#FBFBFB',
+        },
+        transitionSpec: {
+          open: TransitionSpecs.TransitionIOSSpec,
+          close: TransitionSpecs.TransitionIOSSpec,
+        },
+      }}>
+      <Stack.Screen
+        name="AuthOptions"
+        component={AuthOptionsScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Signup"
+        component={SignupScreen}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
   );
 };
 
 // App
 const App = () => {
-  // Tells whether the set up is complete for first time users
-  const setUpComplete = useAuthStore(state => state.setUpComplete);
-  // state variable for if app is still rendering and the user is new
-  const [isLoadingAndNewUser, setIsLoadingAndNewUser] = React.useState([
-    true,
-    null,
+  // store
+  const [token, saveToken, saveName] = useAuthStore(state => [
+    state.token,
+    state.saveToken,
+    state.saveName,
   ]);
-
   // Sets up notifications
   const registerDevice = () => {
     // Request permissions on iOS, refresh token on Android
@@ -122,7 +229,7 @@ const App = () => {
 
     // gets device token
     Notifications.events().registerRemoteNotificationsRegistered(event => {
-      console.log('Token received', event.deviceToken);
+      // console.log('Token received', event.deviceToken);
     });
 
     // If receiving token failed
@@ -162,61 +269,85 @@ const App = () => {
     );
   };
 
-  React.useEffect(() => {
+  // Notifications
+  useEffect(() => {
     registerDevice();
   }, []);
 
-  // checks for name in storage to know whether to render Home or not
-  React.useEffect(() => {
-    const checkForName = async () => {
+  // uuid for websocket session
+  useEffect(() => {
+    // generates id, saves in storage
+    const wsId = uuidv4();
+
+    const setId = async () => {
       try {
-        const storedName = await AsyncStorage.getItem('name');
-        if (storedName) {
-          setIsLoadingAndNewUser([false, false]);
-        } else {
-          const today = date.format(new Date(), 'MMM DD YYYY');
-          const initial = {
-            [today]: [{category: 'workout'}, {category: 'general'}],
-            'Jun 20 2020': [{category: 'workout'}, {category: 'chores'}],
-          }; // allows variable to be used in object
-
-          await AsyncStorage.setItem('sessionInfo', JSON.stringify(initial));
-
-          setIsLoadingAndNewUser([false, true]);
-        }
+        await AsyncStorage.setItem('wsId', wsId);
       } catch (error) {
-        console.log('check name error: ', error);
+        console.log(error);
       }
     };
-    checkForName();
-  }, [setUpComplete]);
+    setId();
+  }, []);
 
-  if (isLoadingAndNewUser[0] === false && isLoadingAndNewUser[1] === false) {
-    try {
-      return (
-        <NavigationContainer>
-          <MaterialTabNav />
-        </NavigationContainer>
-      );
-    } finally {
-      SplashScreen.hide();
-    }
-  } else if (
-    isLoadingAndNewUser[0] === false &&
-    isLoadingAndNewUser[1] === true
-  ) {
-    SplashScreen.hide();
-    return <AskNameScreen />;
-  } else {
-    return null;
-  }
+  // gets token from storage, save it in store
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem('accessToken');
+
+        // TODO: Verify token
+        // exits function
+        if (!storedToken) return;
+
+        saveToken(storedToken);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        // removes splash screen
+        SplashScreen.hide();
+      }
+    };
+    checkToken();
+  }, [token]);
+
+  // sets name in storage into the store for easy access
+  useEffect(() => {
+    const nameInStore = async () => {
+      try {
+        const name = await AsyncStorage.getItem('name');
+        if (!name) return;
+        saveName(name);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    nameInStore();
+  }, [token]);
+
+  const myTheme = {
+    dark: false,
+    colors: {
+      primary: '#E26452',
+      background: 'white',
+      card: '#E26452',
+      text: '#E26452',
+      border: '#E46B56',
+      notification: 'E26452',
+    },
+  };
+
+  return (
+    <NavigationContainer theme={myTheme}>
+      {!token ? <StackNav /> : <TabNav />}
+    </NavigationContainer>
+  );
 };
 
 export default () => {
-  const sessionPlaying = useSessionStore(state => state.sessionPlaying);
+  // const sessionPlaying = useSessionStore(state => state.sessionPlaying);
   return (
     <>
-      {sessionPlaying ? <PlayMusic /> : null}
+      {/* {sessionPlaying ? <PlayMusic /> : null} */}
       <App />
     </>
   );

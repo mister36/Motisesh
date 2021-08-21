@@ -13,7 +13,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
-	<string></string>
+	<string/>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -29,7 +29,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -105,6 +105,144 @@
 		<string>NunitoSans-Regular.ttf</string>
 		<string>NunitoSans-SemiBold.ttf</string>
 		<string>NunitoSans-SemiBoldItalic.ttf</string>
+		<string>GalanoGrotesque-Black.ttf</string>
+		<string>GalanoGrotesque-BlackItalic.ttf</string>
+		<string>GalanoGrotesque-Bold.ttf</string>
+		<string>GalanoGrotesque-BoldItalic.ttf</string>
+		<string>GalanoGrotesque-ExtraBold.ttf</string>
+		<string>GalanoGrotesque-ExtraBoldItalic.ttf</string>
+		<string>GalanoGrotesque-ExtraLight.ttf</string>
+		<string>GalanoGrotesque-ExtraLightItalic.ttf</string>
+		<string>GalanoGrotesque-Heavy.ttf</string>
+		<string>GalanoGrotesque-HeavyItalic.ttf</string>
+		<string>GalanoGrotesque-Italic.ttf</string>
+		<string>GalanoGrotesque-Light.ttf</string>
+		<string>GalanoGrotesque-LightItalic.ttf</string>
+		<string>GalanoGrotesque-Medium.ttf</string>
+		<string>GalanoGrotesque-MediumItalic.ttf</string>
+		<string>GalanoGrotesque-SemiBold.ttf</string>
+		<string>GalanoGrotesque-SemiBoldItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Black.ttf</string>
+		<string>GalanoGrotesqueAlt-BlackItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Bold.ttf</string>
+		<string>GalanoGrotesqueAlt-BoldItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-ExtraBold.ttf</string>
+		<string>GalanoGrotesqueAlt-ExtraBoldItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-ExtraLight.ttf</string>
+		<string>GalanoGrotesqueAlt-ExtraLightItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Heavy.ttf</string>
+		<string>GalanoGrotesqueAlt-HeavyItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Italic.ttf</string>
+		<string>GalanoGrotesqueAlt-Light.ttf</string>
+		<string>GalanoGrotesqueAlt-LightItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Medium.ttf</string>
+		<string>GalanoGrotesqueAlt-MediumItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Regular.ttf</string>
+		<string>GalanoGrotesqueAlt-SemiBold.ttf</string>
+		<string>GalanoGrotesqueAlt-SemiBoldItalic.ttf</string>
+		<string>GalanoGrotesqueAlt-Thin.ttf</string>
+		<string>GalanoGrotesqueAlt-ThinItalic.ttf</string>
+		<string>GalanoGrotesqueAltDEMO-Bold.ttf</string>
+		<string>GalanoGrotesqueDEMO-Bold.ttf</string>
+		<string>SFProText-Semibold.ttf</string>
+		<string>segoeui-semibold.ttf</string>
+		<string>Montserrat-Black.ttf</string>
+		<string>Montserrat-BlackItalic.ttf</string>
+		<string>Montserrat-Bold.ttf</string>
+		<string>Montserrat-BoldItalic.ttf</string>
+		<string>Montserrat-ExtraBold.ttf</string>
+		<string>Montserrat-ExtraBoldItalic.ttf</string>
+		<string>Montserrat-ExtraLight.ttf</string>
+		<string>Montserrat-ExtraLightItalic.ttf</string>
+		<string>Montserrat-Italic.ttf</string>
+		<string>Montserrat-Light.ttf</string>
+		<string>Montserrat-LightItalic.ttf</string>
+		<string>Montserrat-Medium.ttf</string>
+		<string>Montserrat-MediumItalic.ttf</string>
+		<string>Montserrat-Regular.ttf</string>
+		<string>Montserrat-SemiBold.ttf</string>
+		<string>Montserrat-SemiBoldItalic.ttf</string>
+		<string>Montserrat-Thin.ttf</string>
+		<string>Montserrat-ThinItalic.ttf</string>
+		<string>Poppins-Black.ttf</string>
+		<string>Poppins-BlackItalic.ttf</string>
+		<string>Poppins-Bold.ttf</string>
+		<string>Poppins-BoldItalic.ttf</string>
+		<string>Poppins-ExtraBold.ttf</string>
+		<string>Poppins-ExtraBoldItalic.ttf</string>
+		<string>Poppins-ExtraLight.ttf</string>
+		<string>Poppins-ExtraLightItalic.ttf</string>
+		<string>Poppins-Italic.ttf</string>
+		<string>Poppins-Light.ttf</string>
+		<string>Poppins-LightItalic.ttf</string>
+		<string>Poppins-Medium.ttf</string>
+		<string>Poppins-MediumItalic.ttf</string>
+		<string>Poppins-Regular.ttf</string>
+		<string>Poppins-SemiBold.ttf</string>
+		<string>Poppins-SemiBoldItalic.ttf</string>
+		<string>Poppins-Thin.ttf</string>
+		<string>Poppins-ThinItalic.ttf</string>
+		<string>ProximaNova-Alt-Bold.otf</string>
+		<string>ProximaNova-Alt-Light.otf</string>
+		<string>ProximaNova-Alt-Thin.otf</string>
+		<string>ProximaNova-Black.otf</string>
+		<string>ProximaNova-Bold.otf</string>
+		<string>ProximaNova-Extrabold.otf</string>
+		<string>ProximaNova-Regular.otf</string>
+		<string>ProximaNova-Thin.otf</string>
+		<string>Milliard-Black.otf</string>
+		<string>Milliard-BlackItalic.otf</string>
+		<string>Milliard-Bold.otf</string>
+		<string>Milliard-BoldItalic.otf</string>
+		<string>Milliard-Book.otf</string>
+		<string>Milliard-BookItalic.otf</string>
+		<string>Milliard-ExtraBold.otf</string>
+		<string>Milliard-ExtraBoldItalic.otf</string>
+		<string>Milliard-ExtraLight.otf</string>
+		<string>Milliard-ExtraLightItalic.otf</string>
+		<string>Milliard-Hairline.otf</string>
+		<string>Milliard-HairlineItalic.otf</string>
+		<string>Milliard-Heavy.otf</string>
+		<string>Milliard-HeavyItalic.otf</string>
+		<string>Milliard-Light.otf</string>
+		<string>Milliard-LightItalic.otf</string>
+		<string>Milliard-Medium.otf</string>
+		<string>Milliard-MediumItalic.otf</string>
+		<string>Milliard-SemiBold.otf</string>
+		<string>Milliard-SemiBoldItalic.otf</string>
+		<string>Milliard-Thin.otf</string>
+		<string>Milliard-ThinItalic.otf</string>
+		<string>SF-Pro-Display-Black.otf</string>
+		<string>SF-Pro-Display-BlackItalic.otf</string>
+		<string>SF-Pro-Display-Bold.otf</string>
+		<string>SF-Pro-Display-BoldItalic.otf</string>
+		<string>SF-Pro-Display-Heavy.otf</string>
+		<string>SF-Pro-Display-HeavyItalic.otf</string>
+		<string>SF-Pro-Display-Light.otf</string>
+		<string>SF-Pro-Display-LightItalic.otf</string>
+		<string>SF-Pro-Display-Medium.otf</string>
+		<string>SF-Pro-Display-MediumItalic.otf</string>
+		<string>SF-Pro-Display-Regular.otf</string>
+		<string>SF-Pro-Display-RegularItalic.otf</string>
+		<string>SF-Pro-Display-Semibold.otf</string>
+		<string>SF-Pro-Display-SemiboldItalic.otf</string>
+		<string>SF-Pro-Display-Thin.otf</string>
+		<string>SF-Pro-Display-ThinItalic.otf</string>
+		<string>SF-Pro-Display-Ultralight.otf</string>
+		<string>SF-Pro-Display-UltralightItalic.otf</string>
+		<string>SF-Pro-Text-Bold.otf</string>
+		<string>SF-Pro-Text-BoldItalic.otf</string>
+		<string>SF-Pro-Text-Heavy.otf</string>
+		<string>SF-Pro-Text-HeavyItalic.otf</string>
+		<string>SF-Pro-Text-Light.otf</string>
+		<string>SF-Pro-Text-LightItalic.otf</string>
+		<string>SF-Pro-Text-Medium.otf</string>
+		<string>SF-Pro-Text-MediumItalic.otf</string>
+		<string>SF-Pro-Text-Regular.otf</string>
+		<string>SF-Pro-Text-RegularItalic.otf</string>
+		<string>SF-Pro-Text-Semibold.otf</string>
+		<string>SF-Pro-Text-SemiboldItalic.otf</string>
+		<string>SFUIText-Regular.otf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

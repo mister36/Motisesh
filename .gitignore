@@ -57,3 +57,7 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+# src
+/src/assets/fonts
+/src/assets/fonts-to-link
