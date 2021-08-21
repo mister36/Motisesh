@@ -29,7 +29,7 @@ This repository contains the frontend of the app. For the backend, check [here](
 
 ### Built With
 
-* [React Native](https://getbootstrap.com)
+* [React Native](https://reactnative.dev/)
 
 
 
