@@ -7,7 +7,7 @@
 <p align="center">
     <img src="src/assets/images/splash_icon.png" alt="Logo" >
 
-  <h3 align="center">Wellness App</h3>
+  <h3 align="center">Moti: AI Wellness App</h3>
 
 ## About The Project
 
@@ -23,7 +23,7 @@
 
 During the 2020 COVID lockdown, I wanted to build a project that would not only allow me to practice my React Native skills, but provide an actual service that I needed. So, I decided to make this mobile app.
 
-My goal was simple (sort of): build an AI-powered virtual wellness assistant that users can communicate with 24/7, all without the need to book an expensive therapist or other form of support. The assistant can help users form long-term goals, map user emotions, and provide motivation in times of negative mental states. 
+My goal was simple (sort of): build an AI-powered virtual wellness assistant, called Moti, that users can communicate with 24/7, all without the need to book an expensive therapist or other form of support. The assistant can help users form long-term goals, map user emotions, and provide motivation in times of negative mental states. 
 
 This repository contains the frontend of the app. For the backend, check [here](https://github.com/mister36/wellness-api), and for the chatbot server, check [here](https://github.com/mister36/wellness-chatbot).
 
